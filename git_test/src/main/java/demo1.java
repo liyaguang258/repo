@@ -3,4 +3,5 @@ public class demo1 {
         System.out.println("demo1...");
     }
     int a=100;
+    String b="hah ";
 }
