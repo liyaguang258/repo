@@ -976,13 +976,7 @@ public class RunTest<T> {
 
     @Test
     public void questionout() {
-        DbAccount dbAccount = new DbAccount();
-        dbAccount.setCate("mysql");
-        dbAccount.setUrl("jdbc:mysql://47.111.150.118:6063/v09x_platf_core");
-        dbAccount.setUser("root");
-        dbAccount.setPwd("*Zhong123098!");
-
-        DbKit dbKit = new DbKit(dbAccount, "v09x_platf_core");
+       dbrun();
 
         String sql1 = "SELECT a.userid,b.username FROM userinvitecode a ,userdetail b WHERE a.userid = b.userid GROUP BY userid;";
         Kv users = Kv.of();
