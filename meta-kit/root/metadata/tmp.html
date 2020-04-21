@@ -1,0 +1,221 @@
+<style>
+	.meta-link {
+		padding-top: 5px;
+	}
+	.checkbox-inline:first-child{
+		left: 10px;
+		margin-right: 10px!important;
+	}
+	.checkbox input[type=checkbox], .checkbox-inline input[type=checkbox], .radio input[type=radio], .radio-inline input[type=radio] {
+		margin-top: 12px;
+	}
+	.hv {
+		color: #ea644a!important;
+	}
+	.hv:focus,.hv:hover {
+		color: #8b8a15!important;
+	}
+	.active>.hv{
+		color: #8b8a15!important;
+	}
+	.tlist{
+		height:100%; overflow: auto;
+	}
+	.tlist>li.active>a,
+	.tlist>li.active>a:focus,
+	.tlist>li.active>a:hover,
+	.tlist>li>a:hover {
+		background-color: #92b0cb;
+	}
+	th,td {
+		padding: 5px;
+	}
+</style>
+<row class="meta-link">
+	<div class="info">
+		<a @click="showInfo()" href="javascript:;"><i class="icon icon-info"></i></a>
+	</div>
+	<!-- info -->
+	<div class="modal fade" id="f-info">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">关闭</span></button>
+					<h4 class="modal-title">功能概览</h4>
+				</div>
+				<div class="modal-body" style="text-align: center">
+					<p> 数据结构：<br>
+						系统中每个业务实体表都有唯一别名如：用户表-a,部门表-b,角色表-c，
+					</p>
+					<img src="../res/img/meta_link.png">
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="clearfix" style="padding-top: 5px"></div>
+	<div class="col-xs-2 sheet-cell">
+		<div style="padding-left: 10px;background-color: #ccc;width: 100%"> DB-Table</div>
+		<ul class="nav nav-tabs nav-stacked tlist" style="height: 100%">
+			<li class="clearfix" v-for="item in tables" >
+				<a href="javascript:;" @click="tableAlias=item.alias" data-target="#tab3Content1" data-toggle="tab" v-text="tableItem(item)"></a>
+			</li>
+		</ul>
+		<!--<p v-show="ckTable && ckTable.length">已选择 <code v-text="ckTable.length||0"></code> 个实体待导入</p>-->
+	</div>
+
+	<div class="col-xs-8">
+
+		<button @click="aliasB=link.alias" :class="['btn', {'primary' :aliasB==link.alias}]" v-for="link in linkInfo" v-text="link.comment" style="margin-right: 5px"> </button>
+
+
+		<table class="table-bordered" style="width: 100%; margin-top: 10px">
+			<tr>
+				<th width="120px">关联的表</th>
+				<th colspan="2">关联字段</th>
+				<th>操作</th>
+			</tr>
+
+
+			<tbody v-html="buildTable(linkInfo)">
+
+			</tbody>
+
+			<!--<tr v-for="item in linkInfo">
+				<td rowspan="2" v-text="xx"></td>
+
+				<td>deptId</td>
+				<td>id</td>
+				<td rowspan="2">修改</td>
+			</tr>
+			<tr>
+				<td>deptId</td>
+				<td>id</td>
+			</tr>-->
+		</table>
+
+	</div>
+
+
+	<!--<div class="modal fade" id="edit">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">关闭</span></button>
+					<h4 class="modal-title">功能概览</h4>
+				</div>
+				<div class="modal-body" style="text-align: center">
+					<table class="table-bordered" style="width: 100%">
+						<tr>
+							<th v-text="tableA.comment"></th>
+							<th v-text="tableB.comment"></th>
+							<th>操作</th>
+						</tr>
+						<tr v-for="key in linkInfo.link">
+						   <td>
+							   <span v-text="key"></span>
+						   </td>
+						   <td>
+							   <span v-text="linkInfo.link[key]"></span>
+						   </td>
+						</tr>
+
+					</table>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>-->
+</row>
+
+<script>
+	let {tableLinkList, linkSave, linkInfo, tableInfo} = meta
+	var vm = new Vue({
+		el: ".meta-link",
+		data: {
+			tables: [],
+			tableName: '',
+			tableAlias: '',
+			aliasB: '',
+			tableA: {},
+			tableB: {},
+			linkInfo: {},
+			link: {},
+
+		},
+		watch: {
+			tableAlias(v) {
+				let alias = v
+				linkInfo({alias}).then(res => {
+					this.linkInfo = res
+				})
+				tableInfo({alias}).then(res => this.tableA = res)
+			}
+		},
+		methods: {
+			loadLinkList() {
+				tableLinkList().then(res => {
+					this.tables = res
+				})
+			},
+			tableItem(table) {
+				return `${table.name} [${table.comment}] (${table.linkCount})`
+			},
+			buildTable(linkInfo) {
+				let html = ''
+
+				for (let i = 0; i < linkInfo.length; i++) {
+					let link = linkInfo[i].link
+
+					html += `<tr>`
+					html += `<td rowspan='${linkInfo[i].linkSize}'>${linkInfo[i].name} [${linkInfo[i].comment}]</td>`
+					for (let k in link) {
+						html +=  `<td>${k}</td><td>${link[k]}</td>`
+						break
+					}
+
+					html += `<td rowspan='${linkInfo[i].linkSize}'><a href="javascript:vm.edit('${linkInfo[i]['alias']}');">修改</a></td>`
+					html += '</tr>'
+
+					let t = 0
+					for (let k in link) {
+						if (++t == 1) continue
+						html += '<tr>'
+						html +=  `<td>${k}</td><td>${link[k]}</td>`
+						html += '</tr>'
+					}
+				}
+				return html
+			},
+			edit(alias) {
+				this.linkAlias = alias
+
+				// 查询关联表的信息
+				tableInfo({alias}).then(res => {
+					this.tableB = res
+					$('#edit').modal()
+				})
+			},
+			showInfo() {
+				$('#f-info').modal({moveable: true})
+			}
+		},
+		mounted: function () {
+			this.loadLinkList()
+
+			/*
+
+			var m = {"a.field": "lxyer", "a.`age`": 11}
+			console.log(m["a.field"])
+			console.log("---------")
+			for (var k in m) {
+				console.log(k)
+			}*/
+		}
+	});
+</script>

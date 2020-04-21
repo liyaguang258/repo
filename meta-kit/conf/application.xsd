@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.w3school.com.cn" xmlns="http://www.w3school.com.cn">
+
+    <!-- **************************************************** -->
+    <!-- 复合元素定义 -->
+
+    <!-- server -->
+    <xs:element name="request">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="remoteaddr">
+                    <xs:complexType>
+                        <xs:attribute name="value" type="xs:string"></xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="response">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="addheader">
+                    <xs:complexType>
+                        <xs:attribute name="name" type="xs:string"></xs:attribute>
+                        <xs:attribute name="value" type="xs:string"></xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="resource-servlet"></xs:element>
+    <xs:element name="rest">
+        <xs:complexType>
+            <xs:attribute name="autoload"></xs:attribute>
+            <xs:attribute name="base"></xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="services">
+        <xs:complexType>
+            <xs:attribute name="autoload"></xs:attribute>
+            <xs:attribute name="base"></xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="servlets">
+        <xs:complexType>
+            <xs:attribute name="autoload"></xs:attribute>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="render">
+        <xs:complexType>
+            <xs:attribute name="value"></xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+
+    <xs:element name="resources">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="listener">
+                    <xs:complexType>
+                        <xs:attribute name="value" type="xs:string"></xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="properties">
+                    <xs:complexType>
+                        <xs:attribute name="load" type="xs:anyURI"></xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="server">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="request"/>
+                <xs:element ref="response"/>
+                <xs:element ref="resource-servlet"/>
+                <xs:element ref="rest"/>
+                <xs:element ref="services"/>
+                <xs:element ref="servlets"/>
+                <xs:element ref="render"/>
+            </xs:sequence>
+
+            <xs:attribute name="protocol" type="xs:string"></xs:attribute>
+            <xs:attribute name="host" type="xs:string"></xs:attribute>
+            <xs:attribute name="port" type="xs:string"></xs:attribute>
+            <xs:attribute name="root" type="xs:string"></xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- **************************************************** -->
+
+    <xs:element name="application">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="resources"/>
+                <xs:element ref="server"/>
+
+            </xs:sequence>
+
+            <xs:attribute name="port" type="xs:integer"/>
+            <xs:attribute name="version" type="xs:string"/>
+            <xs:attribute name="xmlns" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
+
+</xs:schema>

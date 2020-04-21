@@ -1,0 +1,124 @@
+<row class="qtask-debug">
+    <div class="col-md-12">
+        <h3>QTask - [测试用例]</h3>
+    </div>
+    <div class="col-md-6">
+        <div class="input-group">
+            <span class="input-group-btn">
+                    <a href="javascript:;" class="btn" type="button"> 选择QTask任务</a>
+            </span>
+            <select class="form-control" v-model="row">
+                <option v-for="item in list.rows" :value="item" v-text="`${item.name}--${item.title}`"></option>
+            </select>
+        </div>
+
+
+        <div class="modal-body">
+            <form class="form-horizontal">
+                <!--<div class="form-group">
+                    <label class="col-sm-2">业务名称</label>
+                    <div class="col-md-6 col-sm-10" v-text="row.title" style="padding-top: 5px"></div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2">业务标识码</label>
+                    <div class="col-md-6 col-sm-10" v-text="row.name" style="padding-top: 5px"></div>
+                </div>-->
+                <div class="form-group">
+                    <label for="para" class="col-sm-2 required">数据平台</label>
+                    <div class="col-md-6">
+                        <select v-model="row.dbPlatId" class="form-control">
+                            <option></option>
+                            <option v-for="item in dbPlats" :value="item.key" v-text="item.name"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <select v-model="row.catalog" class="form-control">
+                            <option></option>
+                            <option v-for="item in catalogs()" :value="item" v-text="item"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 0">
+                    <label for="content" class="col-md-2">执行的内容</label>
+                    <div class="col-md-10">
+                        <textarea v-model="row.content" class="form-control layui-code" rows="10" id="content" placeholder="请输入 SQL  (支持jfinal-enjoy模板语法)" > </textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="para" class="col-sm-2">执行参数</label>
+                    <div class="col-md-6 col-sm-10">
+                        <input v-model="row.para" class="form-control" id="para" placeholder="请输入 默认查询参数格式: {k:v}">
+                    </div>
+                </div>
+
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button @click="query(row)" type="button" class="btn btn-primary">RUN</button>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <h5>查询结果：</h5>
+        <pre class="layui-code" v-show="result" v-text="result"></pre>
+    </div>
+</row>
+<script src="http://www.1216.top/res/layui/layui.js"></script>
+<script>
+    let {qtaskList, qtaskDebug} = qtask
+    let {dbList} = plat
+
+    var vm = new Vue({
+        el: ".qtask-debug",
+        data: {
+            row: {},
+            list: {rows:[], total: 0},
+            dbPlats: [],
+            result: ""
+        },
+        watch: {
+            qtask: function () {
+                console.log(this.qtask)
+            },
+            "row.key": function () {
+                //vm.query();
+            }
+        },
+        methods: {
+            catalogs: function () {
+                let dbPlats = this.dbPlats;
+                for (i in dbPlats) {
+                    if (dbPlats[i].key == this.row.dbPlatId) {
+                        return dbPlats[i]["catalogs"]
+                    }
+                }
+            },
+            query: function () {
+                this.result = "";
+                qtaskDebug({task: this.row}).then(res => {
+                    this.result = res;
+                    red.showOk("查询成功")
+                })
+            }
+        },
+        mounted: function () {
+            dbList().then(res => {
+                this.dbPlats = res.rows;
+            })
+            qtaskList().then(res => {
+                let list = res
+
+                if(list && list.rows.length > 0) {
+                    this.row =  list.rows[0]
+                }
+                this.list = list
+            })
+
+
+            setTimeout(function () {
+                layui.use('code', function(){ //加载code模块
+                    layui.code({title:"",about: false, height: "500"}); //引用code方法
+                });
+            }, 200)
+        }
+    });
+</script>

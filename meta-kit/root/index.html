@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MetaKit</title>
+    <link rel="stylesheet" href="/res/zui/css/zui.min.css">
+    <link rel="stylesheet" href="/res/css/zui-theme.css">
+    <link rel="stylesheet" href="/res/css/red-kit.css">
+</head>
+<body id="home">
+<div class="container-fluid">
+    <row>
+        <div class="col-md-12" id="top">
+            <div class="logo">
+                <h1>Meta-Kit</h1>
+            </div>
+            <ul class="nav nav-tabs">
+                <!--item in pages-->
+                <li v-for="item in pages" @click="loadMain(item)" :class="{active:item.name==pageId}">
+                    <a data-tab href="#" v-text="item.name"></a>
+                </li>
+
+                <li class="pull-right" title="刷新服务端缓存数据">
+                    <a @click="refresh()" href="javascript:;" style="padding: 6px 15px;border: 0;background-color: #404a53;color: #fff;">
+                        <i class="icon icon-repeat"></i>
+                    </a>
+                </li>
+
+                <li class="pull-right">
+                    <a @click="logout()" href="javascript:;" style="padding: 6px 15px;border: 0;background-color: #404a53;color: #fff;">
+                        <i class="icon icon-user"></i> 退出
+                    </a>
+                </li>
+
+                <li class="pull-right">
+                    <select v-model="sysPlat" class="form-control" style="border: 0;background-color: #404a53;color: #fff;">
+                        <option v-for="item in sysPlats" :value="item" v-text="item.name"></option>
+                    </select>
+                </li>
+            </ul>
+        </div>
+
+        <div id="mainDiv">
+            <div class="col-md-1" id="left">
+                <nav class="menu" data-ride="menu">
+                    <ul class="nav nav-primary">
+                        <li class="active show nav-parent" style="width: 100%;">
+                            <a href="javascript:;"><i class="icon icon-tasks"></i> <span v-text="pageId"></span></a>
+                            <ul class="nav">
+                                <!-- item in menus -->
+                                <li v-for="item in menus" @click="loadPage(item)" :class="{active:page.url==item.url}">
+                                    <a href="javascript:;"><i :class="['icon', item.icon ? item.icon : 'icon-circle-blank']"></i> <span v-text="item.name"></span></a>
+                                </li>
+
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="col-md-11">
+                <!--<div style="height: 40px;background-color: #fff;"></div>-->
+                <!-- load main body to here -->
+                <div id="main"></div>
+                <div class="footer">
+                    Meta-Kit Developer v0.2
+                </div>
+            </div>
+        </div>
+    </row>
+</div>
+
+<!--<script src="https://cdn.jsdelivr.net/npm/vue"></script>-->
+<script src="/res/libs/vue.min.js"></script>
+<script src="/res/zui/lib/jquery/jquery.js"></script>
+<script src="/res/libs/axios.min.js"></script>
+<script src="/res/zui/js/zui.js"></script>
+<script src="/res/js/red.js"></script>
+<script src="/api/meta.js"></script>
+<script src="/api/plat.js"></script>
+<script src="/api/qtask.js"></script>
+<script src="/api/db.js"></script>
+<script src="/api/table.js"></script>
+<script src="/api/dict.js"></script>
+<script src="/res/zui/lib/sortable/zui.sortable.js"></script>
+<script src="/res/zui/lib/uploader/zui.uploader.min.js"></script>
+<script type="module">
+	import { logout } from './api/user.js'
+    let { refresh } = meta
+    let { platList } = plat
+    var vm = new Vue({
+        el: ".container-fluid",
+        data: {
+            sysPlat: red.getData('sysPlat'),
+            sysPlats: red.getData('sysPlats'),
+            pages: [
+                /*{name: "DDL", url: "/qtask/ddl.html"},*/
+                {name: "元服务", url: "/meta", nodes: [
+                        /*{url:"/metadata/metatable/list.html", name:"TableList"},*/
+                        {url:"/metadata/metatable/metaTable.html", name:"实体管理", icon: "icon-table"},
+                        /*{url:"/metadata/metatable/import.html", name:"导入实体"},*/
+                        {url:"/metadata/metaLink.html", name:"实体关系"},
+                        {url:"/metadata/metaService.html", name:"业务管理", icon:"icon-usecase"},
+                        {url:"/metadata/dataList.html", name:"业务预览", icon:"icon-bug"},
+                        {url:"/metadata/dict.html", name:"字典管理", icon:"icon-usecase"},
+                    ]
+                },
+                {
+                    name: "QTask", url: "/qtask", nodes: [
+                        {url:"/qtask/list.html", name:"QTask", icon:"icon-cube-alt"},
+                        {url:"/qtask/debug.html", name:"QTask-Debug", icon:"icon-bug"},
+                    ]
+                },
+                {
+                    name: "其他服务", url: "/plat/db.html", nodes: [
+                        {url:"/plat/db.html", name:"文件服务", icon: "icon-database"},
+                    ]
+                },
+                {
+                    name: "业务平台", url: "/qtask", nodes: [
+                        {url:"/plat/index.html", name:"业务平台", icon:"icon-server"},
+                        {url:"/plat/dev.html", name:"dev", icon:"icon-beaker"},
+                    ]
+                },
+                {
+                    name: "数据平台", url: "/plat/db.html", nodes: [
+                        {url:"/plat/db.html", name:"数据中心", icon: "icon-database"},
+                    ]
+                },
+                {name: "关于", url: "/single", nodes: [
+                        {url:"/single/about.html", name:"关于MetaKit", icon:"icon-server"},
+                        {url:"/single/code.html", name:"整体实现", icon:"icon-server"},
+                        {url:"/single/core.html", name:"组件关系", icon:"icon-server"},
+                        {url:"/single/metaFlow.html", name:"MetaKit使用", icon:"icon-server"},
+                    ]
+                },
+
+            ],
+            menus: {},
+            page: {},
+            pageId: ''
+        },
+        watch: {
+            page: function () {
+                //page main chenged，up all cache for munus/pageId/page data
+                red.setData("page", this.page);
+                red.setData("menus", this.menus);
+                red.setData("pageId", this.pageId);
+            },
+            sysPlat: function (v) {
+                red.setData("sysPlat", v);
+                this.loadPage();
+            }
+        },
+        methods: {
+            loadPage(page) {
+                if (page && this.page.url == page.url) {
+                    return false;
+                }
+                page = page || this.page;
+                this.page = page;
+                $("#main").load(page.url, () => this.showInfo());
+
+            },
+            showInfo() {
+                if (red.getData('userName') === 'root' || red.getData('userName') === 'admin') {
+                    $('#main .info').show()
+                }
+            },
+            loadMain(item) {
+                this.menus = item.nodes || [item];
+                this.pageId = item.name;
+            },
+            refresh() {
+                refresh().then(res => red.showOk())
+            },
+            logout() {
+                logout()
+            }
+        },
+        mounted: function () {
+            this.menus = red.getData('menus', this.pages[0]['nodes'])
+            this.page = red.getData('page', this.menus[0])
+            this.pageId = red.getData("pageId", this.page['mame'])
+            //绑定事件
+            $('.menu .nav').on('click', 'li:not(.nav-parent) > a', function() {
+                var $this = $(this);
+                $('.menu .nav .active').removeClass('active');
+                $this.closest('li').addClass('active');
+                $this.closest('.nav-parent').addClass('active');
+            });
+
+            $("#main").load(this.page.url,() => this.showInfo());
+            //this.loadPage(this.page);
+
+            //监听浏览器窗口大小变化
+            function autoLeftHeight() {
+                var h = document.documentElement.clientHeight || document.body.clientHeight;
+                $("#left").attr("style", "height:" + (h - 50) + "px");
+                $("#main").attr("style", "height:" + (h - 90) + "px; overflow: auto;");
+                $(".sheet-cell").attr("style", "height:" + (h - 265) + "px;margin-bottom:20px;");
+            }
+            autoLeftHeight();
+            $(window).resize(function () {
+                autoLeftHeight();
+            });
+        }
+    });
+</script>
+</body>
+</html>

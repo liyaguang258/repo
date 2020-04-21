@@ -1,0 +1,481 @@
+<style>
+    .importDev {
+        padding-top: 5px;
+    }
+    .checkbox-inline:first-child{
+        left: 10px;
+        margin-right: 10px!important;
+    }
+    .checkbox input[type=checkbox], .checkbox-inline input[type=checkbox], .radio input[type=radio], .radio-inline input[type=radio] {
+        margin-top: 12px;
+    }
+    .hv {
+        color: #ea644a!important;
+    }
+    .hv:focus,.hv:hover {
+        color: #8b8a15!important;
+    }
+    .active>.hv{
+        color: #8b8a15!important;
+    }
+    .tlist{
+        height:100%; overflow: auto;
+    }
+    .tlist>li.active>a,
+    .tlist>li.active>a:focus,
+    .tlist>li.active>a:hover,
+    .tlist>li>a:hover {
+        background-color: #92b0cb;
+    }
+</style>
+<!-- 对话框HTML -->
+<div class="importDev">
+    <div class="info">
+        <a @click="showInfo()" href="javascript:;"><i class="icon icon-info"></i></a>
+    </div>
+
+    <!-- info -->
+    <div class="modal fade" id="f-info">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">关闭</span></button>
+                    <h4 class="modal-title">功能概览</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        本地导入、从数据源导入流程相似，都是： 介质中读取可用业务实体 => 选择要导入的实体 => 保存实体到元数据MetaTable
+                    </p>
+                    <img src="../res/img/table_import_flow.png">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button @click="back()" type="button" class="btn btn-primary pull-right" data-dismiss="modal">返回</button>
+    <ul class="nav nav-tabs">
+        <li @click="cate = 'excel'" :class="{active: cate=='excel'}"><a href="javascript:;">从本地上传</a></li>
+        <li @click="cate = 'mysql'" :class="{active: cate=='mysql'}"><a href="javascript:;">从数据源导入</a></li>
+        <li @click="cate = 'oth'" :class="{active: cate=='oth'}"><a href="javascript:;">其他</a></li>
+    </ul>
+    <div class="tab-content">
+        <!-- 本地excel导入 -->
+        <div :class="['tab-pane', 'fade','in',{active: cate=='excel'}]">
+            <div id="tableUploader" class="uploader">
+                <!--<div class="uploader-message text-center">
+                    <div class="content"></div>
+                    <button type="button" class="close">×</button>
+                </div>-->
+
+                <!-- 文件上传 -->
+                <table class="table table-bordered" style="margin-top: 15px;">
+                    <tbody class="uploader-files">
+                    <tr class="file template">
+                        <td style="width: 38px; padding: 3px"><div class="file-icon"></div></td>
+                        <td style="padding: 0">
+                            <div style="position: relative; padding: 8px;">
+                                <strong class="file-name"></strong>
+                                <div class="file-progress-bar"></div>
+                            </div>
+                        </td>
+                        <td><span class="file-size text-muted"></span></td>
+                        <!--<td class="actions text-right" style="padding: 0 4px;">
+                            <div class="file-status" data-toggle="tooltip" style="margin: 8px;"><i class="icon"></i> <span class="text"></span></div>
+                            <a data-toggle="tooltip" class="btn btn-link btn-download-file" target="_blank"><i class="icon icon-download-alt"></i></a>
+                            <button type="button" data-toggle="tooltip" class="btn btn-link btn-reset-file" title="Repeat"><i class="icon icon-repeat"></i></button>
+                            <button type="button" data-toggle="tooltip" class="btn btn-link btn-rename-file" title="Rename"><i class="icon icon-pencil"></i></button>
+                            <button type="button" data-toggle="tooltip" title="Remove" class="btn btn-link btn-delete-file"><i class="icon icon-trash text-danger"></i></button>
+                        </td>-->
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="4" style="padding: 4px 0">
+                            <div style="position: relative;">
+                                <div class="pull-right text-muted" style="margin-top: 5px;margin-right: 5px">
+                                    <p v-show="sheet">数据文件已上传，下面<code class="text-danger">红色</code> 部分已经导入过的数据表</p>
+                                </div>
+                                <button type="button" class="btn btn-link uploader-btn-browse"><i class="icon icon-plus"></i> 选择数据文件</button>
+                                <button type="button" class="btn btn-link uploader-btn-start"><i class="icon icon-cloud-upload"></i> 上传文件</button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tfoot>
+                </table>
+
+                <!-- excel sheets -->
+                <div class="row" v-show="sheet">
+                    <div class="col-xs-2 sheet-cell">
+                        <div style="padding-left: 10px;background-color: #ccc;width: 100%"> Excel-Sheet</div>
+                        <ul class="nav nav-tabs nav-stacked tlist" style="height: 100%">
+                            <li class="checkbox-inline clearfix" v-for="item in sheetArr" >
+                                <!--  || sheetData[item]['hv']==1 -->
+                                <input type="checkbox"
+                                       v-model="ck"
+                                       :value="sheetData[item]['name']"
+                                       :disabled="item=='表说明' || item=='表名称'"
+                                >
+                                <a :class="[{hv: sheetData[item]['hv']==1 }]" href="javascript:;" @click="sheet=item" data-target="#tab3Content1" data-toggle="tab" v-text="item"></a>
+                            </li>
+                        </ul>
+                        <p v-show="ck && ck.length">已选择 <code v-text="ck.length||0"></code> 个实体待导入</p>
+                    </div>
+                    <div class="col-xs-8">
+                        <div style="padding-left: 10px;background-color: #ccc;width: 100%"> Sheet-Detail</div>
+                        <div class="tab-content col-xs-9">
+                            <div class="tab-pane fade active in" id="">
+                                <table class="table-bordered" style="width: 100%">
+                                    <caption class="" v-show="sheet && (sheet!='表说明' || sheet!='表名称')">
+                                        表名称： <span v-text="metaTable.field"></span>，中文名：<span v-text="metaTable.comment"></span>
+                                    </caption>
+                                    <thead>
+                                    <tr style="background-color: #f1f1f1" v-show="sheet && sheet!='表说明' && sheet!='表名称'">
+                                        <th>字段名</th>
+                                        <th>中文名</th>
+                                        <th>数据类型</th>
+                                        <th>输入类型</th>
+                                        <th>附加属性</th>
+                                        <th>备注</th>
+                                    </tr>
+                                    <tr style="background-color: #f1f1f1" v-show="sheet && (sheet=='表说明' || sheet=='表名称')">
+                                        <th>A</th>
+                                        <th>B</th>
+                                        <th>C</th>
+                                        <th>D</th>
+                                        <th>E</th>
+                                        <th>F</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr v-for="(item, index) in metaTable.items">
+                                        <td v-text="item.name"></td>
+                                        <td v-text="item.label"></td>
+                                        <td v-text="item.type"></td>
+                                        <td v-text="item.inType"></td>
+                                        <td v-text="item.inExt"></td>
+                                        <td v-text="item.remark"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!--<div class="col-xs-2">
+                        <div style="padding-left: 10px;background-color: #ccc;width: 100%"> Checked-Sheet</div>
+                        <ul class="nav nav-tabs nav-stacked tlist" style="height: 100%">
+                            <li class="checkbox-inline clearfix" v-for="item in ck" >
+                                <a href="javascript:;" @click="sheet=getSheetName(item)" data-target="#tab3Content1" data-toggle="tab" v-text="getSheetName(item)"></a>
+                            </li>
+                        </ul>
+                        <p v-show="ck && ck.length">已选择 <code v-text="ck.length||0"></code> 个实体待导入</p>
+                    </div>-->
+                </div>
+            </div>
+        </div>
+
+        <!-- 从数据源导入 -->
+        <div :class="['tab-pane', 'fade','in',{active: cate=='mysql'}]">
+            <div class="form-group">
+                <label class="col-md-1 col-sm-1" style="padding-bottom: 10px;padding-top: 5px;">数据源选择</label>
+                <div class="col-md-2 col-sm-10" style="padding-bottom: 10px">
+                    <select class="form-control" v-model="dbPlat">
+                        <option v-for="item in dbPlats" :value="item" v-text="item.name"></option>
+                    </select>
+                </div>
+                <div class="col-md-2 col-sm-10" style="padding-bottom: 10px">
+                    <select class="form-control" v-model="catalog">
+                        <option v-for="item in dbPlat['catalogs']" :value="item" v-text="item"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+            <div class="row" v-show="tableName">
+                <div class="col-xs-2 sheet-cell">
+                    <div style="padding-left: 10px;background-color: #ccc;width: 100%"> DB-Table</div>
+                    <ul class="nav nav-tabs nav-stacked tlist" style="height: 100%">
+                        <li class="checkbox-inline clearfix" v-for="item in tableArr" >
+                            <!--  || tableData[item]['hv']==1 -->
+                            <input type="checkbox"
+                                   v-model="ckTable"
+                                   :value="tableData[item]['name']"
+                                   :disabled="item=='表说明' || item=='表名称'"
+                            >
+                            <a :class="[{hv: tableData[item]['hv']==1 }]" href="javascript:;" @click="tableName=item" data-target="#tab3Content1" data-toggle="tab" v-text="item"></a>
+                        </li>
+                    </ul>
+                    <!-- v-show="ckTable && ckTable.length" -->
+                    <p >已选择 <code v-text="ckTable.length||0"></code> 个实体待导入，上面<code class="text-danger">红色</code> 部分已经导入过的数据表</p>
+                </div>
+                <div class="col-xs-8">
+                    <div style="padding-left: 10px;background-color: #ccc;width: 100%"> Table-Detail</div>
+                    <div class="tab-content col-xs-9">
+                        <div class="tab-pane fade active in">
+                            <table class="table-bordered" style="width: 100%">
+                                <caption class="" v-show="tableName && (sheet!='表说明' || sheet!='表名称')">
+                                    表名称： <span v-text="tableInfo.name"></span>，中文名：<span v-text="tableInfo.comment"></span>
+                                </caption>
+                                <thead>
+                                <tr style="background-color: #f1f1f1">
+                                    <th>字段名</th>
+                                    <th>中文名</th>
+                                    <th>数据类型</th>
+                                    <!--<th>输入类型</th>
+                                    <th>附加属性</th>
+                                    <th>备注</th>-->
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="item in tableInfo.items">
+                                    <td v-text="item.name"></td>
+                                    <td v-text="item.label"></td>
+                                    <td v-text="item.type"></td>
+                                    <!--<td v-text="item.inType"></td>
+                                    <td v-text="item.inExt"></td>
+                                    <td v-text="item.remark"></td>-->
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 其他导入 -->
+        <div :class="['tab-pane', 'fade','in',{active: cate=='oth'}]">
+            <p>其他一些定制的特殊格式的 实体数据形式</p>
+        </div>
+    </div>
+
+    <div class="modal-footer" v-show="cate=='excel'">
+        <button @click="ck=[]" type="button" class="btn btn-default" data-dismiss="modal">取消选择</button>
+        <button @click="saveTable()" type="button" class="btn btn-primary">确定</button>
+    </div>
+    <div class="modal-footer" v-show="cate=='mysql'">
+        <button @click="ckTable=[]" type="button" class="btn btn-default" data-dismiss="modal">取消选择</button>
+        <button @click="back()" type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button @click="saveTable()" type="button" class="btn btn-primary">确定</button>
+    </div>
+</div>
+
+<script>
+    let {dbList} = plat
+    let {catalogList, tableList, tableInfo} = db
+    let {sheetsExcel, sheetMySql, sheetInfo, saveTable, saveSheet} = table
+
+    var vm = new Vue({
+        el: ".importDev",
+        data: {
+            cate: 'excel',
+
+            filePath: '',
+            importStatus: false,
+            sheetData: {}, // 所有的完整数据 {name1: {}}
+            sheetArr: [], // [name1,name2,]
+            sheet: '',
+            ck: [],
+            metaTable: {items: []},
+
+            // 从数据源导入实体
+            dbPlats: red.getData('dbPlats'),
+            catalogs: [],
+            tableData: {},
+            tableArr: [],
+            dbPlat: red.getData("dbPlat",{}),
+            dbPlatId: red.getData("dbPlatId",''),
+            catalog: '',
+            tableName: '',
+            ckTable: [],
+            tableInfo: {},
+        },
+        watch: {
+            sheetData: function (v) { // 查询sheet列表数据
+                var arr = [];
+                var ck = [];
+                for (k in v) {
+                    let field = v[k]['name'];
+                    if (k!='表说明' && k!='表名称' && v[k]['hv'] != 1) {
+                        ck.push(field);
+                    }
+                    arr.push(k);
+                }
+                this.sheetArr = arr;
+                this.ck = ck;
+                if (arr.length > 0) {
+                    this.sheet = arr[0]
+                } else {
+                    this.sheet = "";
+                }
+            },
+            sheet: function (v) { // 查询sheet详情
+                this.metaTable = this.sheetData[v];
+                if (this.metaTable['load'] != 1) {
+                    this.loadSheetData();
+                }
+            },
+            dbPlat(v) {
+                this.dbPlatId = v['key']
+                this.catalogs = v['catalogs']
+            },
+            catalog() {
+                this.loadTables();
+
+                //cache
+                red.setData("dbPlat", this.dbPlat)
+                red.setData("dbPlatId", this.dbPlatId)
+                red.setData("catalog", this.catalog)
+            },
+            tableName() {
+                this.loadTableInfo();
+            }
+        },
+        methods: {
+            loadSheets: function(filePath) {
+                if(!filePath) {
+                    return false;
+                }
+                sheetsExcel({filePath}).then(res => {
+                    vm.sheetData = res
+                })
+            },
+            loadSheetData: function() {
+                let sheetName = this.sheet
+                sheetInfo({filePath: this.filePath, sheetName: this.sheet}).then(res => {
+                    res["hv"] = vm.sheetData[sheetName]["hv"]
+                    res["load"] = 1
+                    this.sheetData[sheetName] = res
+                    if (this.sheet == sheetName) {
+                        this.metaTable = res
+                    }
+                })
+
+                /*red.post("/file/sheet_data",{filePath: this.filePath, sheetName}, function (json) {
+                    json["hv"] = vm.sheetData[sheetName]["hv"];
+                    json["load"] = 1;
+                    vm.sheetData[sheetName] = json;
+                    if (vm.sheet == sheetName) {
+                        vm.metaTable = json;
+                    }
+                })*/
+            },
+            getSheetName: function (tableName) {
+                for(k in this.sheetData) {
+                    if (this.sheetData[k]['field'] == tableName) {
+                        return k;
+                    }
+                }
+                //return "";
+            },
+            back() {
+                $("#main").load('/metadata/metatable/metaTable.html')
+            },
+            showInfo() {
+                $('#f-info').modal({moveable: true})
+            },
+            saveSheet: function () {
+                if (!this.ck || this.ck.length == 0) {
+                    red.showMsg({msg: "请选择导入数据", type:"danger", placement: "top"});
+                    return false;
+                }
+                red.post("/file/import_metatable", {sheetArr: JSON.stringify(this.ck), filePath: this.filePath});
+            },
+            //------从mysql导入使用的相关方法-------
+            loadTables() { // 查询table列表
+                let [dbPlatId, catalog] = [this.dbPlatId, this.catalog]
+                sheetMySql({dbPlatId, catalog}).then(res => { // 数据转换
+                    this.tableData = res
+                    let tableArr = []
+                    let ckTable = []
+                    for (k in res) {
+                        tableArr.push(k)
+                        if (res[k]['hv'] != 1) {
+                            ckTable.push(k)
+                        }
+                    }
+                    this.tableArr = tableArr
+                    this.ckTable = ckTable
+                    if(tableArr.length > 0) {
+                        this.tableName = tableArr[0];
+                    }
+                })
+            },
+            loadTableInfo() { // 查询表信息
+                this.tableInfo = this.tableData[this.tableName]
+
+                if (!this.tableInfo['load']) {
+                    tableInfo({dbPlatId: this.dbPlatId, catalog: this.catalog, tableName: this.tableName}).then(res => {
+                        res['hv'] = this.tableData[this.tableName]['hv']
+                        res['load'] = 1
+
+                        this.tableInfo = res
+                        this.tableData[this.tableName] = res
+                    })
+                }
+            },
+            saveTable() { // 保存数据
+                if (this.cate == 'mysql') {
+                    let [dbPlatId, catalog, tableArr] = [this.dbPlatId, this.catalog, this.ckTable]
+                    saveTable({dbPlatId, catalog, tableArr}).then(res => {
+                        red.showOk()
+                        this.loadTables()
+                    })
+                } else if (this.cate == 'excel') {
+                    if (!this.ck || this.ck.length == 0) {
+                        red.showMsg({msg: "请选择导入数据", type: "danger", placement: "top"});
+                        return false;
+                    }
+                    saveSheet({filePath: this.filePath, sheetNames: this.ck}).then(res => {
+                        red.showOk()
+
+                        // 刷新列表
+                        let sheetData = this.sheetData
+                        for (let i in this.ck) {
+                            if (sheetData[this.ck[i]]) {
+                                sheetData[this.ck[i]]['hv'] = 1
+                            }
+                        }
+                        this.sheetData = sheetData
+                        this.ck = []
+                    })
+                }
+            }
+        },
+        mounted: function () {
+            setTimeout(() => this.catalog =  red.getData("catalog",''), 100)
+
+            // 初始化文件上传组件
+            $('#tableUploader').uploader({
+                url: '/upload/x',
+                responseHandler: function (res, file) {
+                    var file = JSON.parse(res.response)["body"][0];
+                    vm.loadSheets(file["filePath"]);
+                    vm.importStatus = true;
+                    vm.filePath = file["filePath"];
+                },
+                filters: {
+                    mime_types: [
+                        {title: 'Excel文件', extensions: 'xls,xlsx'},
+                    ],
+                    prevent_duplicates: true
+                }
+            });
+
+            dbList().then(res => {
+                this.dbPlats = res.rows
+                /*setTimeout(() => {
+                    this.dbPlat = res.rows[3]
+                    this.tableName = 'db_redbbs'
+                }, 1000)*/
+            })
+
+
+            var h = document.documentElement.clientHeight || document.body.clientHeight;
+            $(".sheet-cell").attr("style", "height:" + (h - 265) + "px;margin-bottom:20px;");
+        }
+    });
+
+</script>

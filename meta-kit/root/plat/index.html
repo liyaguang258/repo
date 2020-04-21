@@ -1,0 +1,135 @@
+<row class="plat">
+
+    <!-- head -->
+    <div class="col-md-11">
+        <h3 v-text="cfg.title"></h3>
+    </div>
+    <div class="col-md-1">
+        <div class="input-group pull-right" style="padding-top: 10px">
+        <span class="input-group-btn">
+            <button @click="edit({})" class="btn btn-primary" type="button"> 新增业务平台 </button>
+        </span>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <table class="table table-bordered table-hover" style="width: 100%">
+            <thead>
+            <tr>
+                <th v-for="field in cfg.cols" v-text="field.label"></th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="item in list.rows">
+                <td v-for="field in cfg.cols" v-title="item[field.col]" v-text="field.fmt ? field.fmt(item[field.col]) : item[field.col]"></td>
+                <td>
+                    <a @click="edit(item)" href="javascript:;">编辑</a> <!-- |
+                    <a @click="update({status:1}, item)" v-show="item.status != 1" href="javascript:;">启用</a>
+                    <a @click="update({status:0}, item)" v-show="item.status == 1" href="javascript:;">不启用</a> |
+                    <a @click="update({status:-1}, item)" href="javascript:;">删除</a> -->
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- edit.modal -->
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">关闭</span></button>
+                    <h4 class="modal-title">业务平台 - [编辑]</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="queryId" class="col-md-2 required">平台名称</label>
+                            <div class="col-md-8">
+                                <input v-model="row.name" class="form-control" id="queryId" placeholder="请输入 平台名称">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="token" class="col-md-2 required">平台 Token</label>
+                            <div class="col-md-8 col-sm-10">
+                                <input v-model="row.token" class="form-control" id="token" placeholder="请输入 Token">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="remark" class="col-md-2">备注</label>
+                                <div class="col-md-8 col-sm-10">
+                                <input v-model="row.remark" class="form-control" id="remark" placeholder="请输入 备注">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button @click="save(row)" type="button" class="btn btn-primary">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</row>
+
+<script>
+    let { platList, platSave } = plat;
+
+    var vm = new Vue({
+        el: ".plat",
+        data: {
+            cfg: {
+                title: "业务平台 管理",
+                cols: [
+                    {col: "name", label: "业务名称"},
+                    {col: "token", label: "Token"},
+                    {col: "remark", label: "说明"},
+                    {col: "status", label: "状态", fmt: function (v) {
+                           return {"0":"未启用", "1":"启用", "-1":"删除"}[v] || "";
+                        }},
+
+                ],
+                filters: []
+            },
+            list: {rows:[], total: 0},
+            row: {}
+        },
+        watch: {
+
+        },
+        methods: {
+            findList () {
+                platList().then(res => {
+                    vm.list = res
+                })
+            },
+            update: function (kv, row) {
+                red.post("/meta/save", {
+                    _id: row._id,
+                    doc: JSON.stringify(kv)
+                }, function (json) {
+                    red.showMsg();
+                    red.putAll(row, kv);
+                    vm.findList();
+                });
+            },
+            edit: function (row) {
+                vm.row = row;
+                console.log(this.row);
+                $('#myModal').modal({moveable: true});
+            },
+            save: function (row) {
+                platSave({plat: row}).then(() => {
+                    red.showMsg({msg: "操作成功"})
+                    $('#myModal').modal('hide')
+                })
+            }
+        },
+        mounted: function () {
+            this.findList();
+        }
+    });
+</script>

@@ -1,0 +1,101 @@
+<row class="metatable-list">
+    <div class="col-md-12">
+        <h3 v-text="cfg.title"></h3>
+    </div>
+    <div class="col-md-12">
+        <div class="input-group list-head pull-left">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button">数据平台</button>
+            </span>
+            <select class="form-control" v-model="filter.dbPlatId" style="width: 150px;">
+                <option></option>
+                <option v-for="item in dbPlats" :value="item.key">{{item.name}}</option>
+            </select>
+
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button">Catalog</button>
+            </span>
+            <select class="form-control" v-model="filter.catalog" style="width: 150px;">
+                <option></option>
+                <option v-for="item in catalogs()" :value="item" v-text="item"></option>
+            </select>
+
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button">表名称</button>
+            </span>
+            <input class="form-control" v-model="filter.name" style="width: 100px">
+
+        </div>
+    </div>
+    <div class="col-md-12" style="padding-top: 10px;overflow:auto;">
+        <table class="table table-bordered table-hover" style="width: 100%">
+            <thead>
+            <tr>
+                <th v-for="field in cfg.cols" v-text="field.label"></th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="row in list.rows">
+                <td v-for="field in cfg.cols" v-title="row[field.col]" v-text="row[field.col]"></td>
+                <td>
+
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</row>
+<script>
+    var vm = new Vue({
+        el: ".metatable-list",
+        data: {
+            cfg: {
+                title: "MetaTable 列表",
+                cols: [
+                    {col: "name", label: "表名称"},
+                    {col: "comment", label: "注释"},
+                    {col: "dbPlatName", label: "所属数据库"},
+                    {col: "catalog", label: "所属Database"},
+                    {col: "dataCount", label: "数据量"}
+                ],
+                filters: [],
+                cates: ["find","update"]
+            },
+            dbPlats:[],
+            list:{rows:[{name:"user", comment:"[用户表]", dataCount: 23}]},
+            filter: {dbPlatId: "", catalog: "", name: ""},
+        },
+        watch: {
+            filter: {
+                handler(n, o) {
+                    vm.tableList();
+                },
+                immediate: true,
+                deep: true
+            }
+
+        },
+        methods: {
+            catalogs: function () {
+                var dbPlats = this.dbPlats;
+                for (i in dbPlats) {
+                    if (dbPlats[i].key == this.filter.dbPlatId) {
+                        return dbPlats[i]["catalogs"]
+                    }
+                }
+            },
+            tableList: function () {
+                var para = red.putAll({}, vm.filter);
+                red.getJSON("/meta/tablelist", para, function (json) {
+                    vm.list = {rows: json};
+                });
+            },
+        },
+        mounted: function () {
+
+            this.tableList();
+        }
+    });
+</script>

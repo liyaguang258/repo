@@ -1,0 +1,98 @@
+四月 28, 2019 6:17:11 下午 [Transport-Thread-3] org.redkale.net.sncp.SncpClient$1$1 completed
+严重: public net.tccn.base.JBean net.tccn.service.MetadataService.serviceList(java.lang.String) sncp (params: ["3421432"]) deal error (retcode=1073741824, retinfo=Inner exception)
+四月 28, 2019 6:17:11 下午 [Transport-Thread-3] org.redkale.net.sncp.SncpClient$1$1 completed
+严重: public net.tccn.base.JBean net.tccn.service.MetadataService.serviceList(java.lang.String) sncp (params: ["3421432"]) deal error
+java.lang.RuntimeException: remote service(public net.tccn.base.JBean net.tccn.service.MetadataService.serviceList(java.lang.String)) deal error (retcode=1073741824, retinfo=Inner exception)
+	at org.redkale.net.sncp.SncpClient$1$1.completed(SncpClient.java:437)
+	at org.redkale.net.sncp.SncpClient$1$1.completed(SncpClient.java:396)
+	at sun.nio.ch.Invoker.invokeUnchecked(Invoker.java:126)
+	at sun.nio.ch.Invoker$2.run(Invoker.java:218)
+	at sun.nio.ch.AsynchronousChannelGroupImpl$1.run(AsynchronousChannelGroupImpl.java:112)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+
+四月 28, 2019 6:18:34 下午 [Transport-Thread-6] org.redkale.net.sncp.SncpClient$1$1 completed
+严重: public net.tccn.base.JBean net.tccn.service.MetadataService.serviceList(java.lang.String) sncp (params: ["3421432"]) deal error (retcode=1073741824, retinfo=Inner exception)
+四月 28, 2019 6:18:34 下午 [Transport-Thread-6] org.redkale.net.sncp.SncpClient$1$1 completed
+严重: public net.tccn.base.JBean net.tccn.service.MetadataService.serviceList(java.lang.String) sncp (params: ["3421432"]) deal error
+java.lang.RuntimeException: remote service(public net.tccn.base.JBean net.tccn.service.MetadataService.serviceList(java.lang.String)) deal error (retcode=1073741824, retinfo=Inner exception)
+	at org.redkale.net.sncp.SncpClient$1$1.completed(SncpClient.java:437)
+	at org.redkale.net.sncp.SncpClient$1$1.completed(SncpClient.java:396)
+	at sun.nio.ch.Invoker.invokeUnchecked(Invoker.java:126)
+	at sun.nio.ch.Invoker$2.run(Invoker.java:218)
+	at sun.nio.ch.AsynchronousChannelGroupImpl$1.run(AsynchronousChannelGroupImpl.java:112)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+
+四月 28, 2019 6:23:34 下午 [Transport-Thread-2] org.redkale.net.sncp.SncpClient$1$1 completed
+严重: public net.tccn.base.JBean net.tccn.service.MetadataService.serviceList(java.lang.String) sncp (params: ["3421432"]) deal error (retcode=1073741824, retinfo=Inner exception)
+四月 28, 2019 6:24:04 下午 [Transport-Thread-2] org.redkale.net.sncp.SncpClient$1$1 completed
+严重: public net.tccn.base.JBean net.tccn.service.MetadataService.serviceList(java.lang.String) sncp (params: ["3421432"]) deal error
+java.lang.RuntimeException: remote service(public net.tccn.base.JBean net.tccn.service.MetadataService.serviceList(java.lang.String)) deal error (retcode=1073741824, retinfo=Inner exception)
+	at org.redkale.net.sncp.SncpClient$1$1.completed(SncpClient.java:437)
+	at org.redkale.net.sncp.SncpClient$1$1.completed(SncpClient.java:396)
+	at sun.nio.ch.Invoker.invokeUnchecked(Invoker.java:126)
+	at sun.nio.ch.Invoker$2.run(Invoker.java:218)
+	at sun.nio.ch.AsynchronousChannelGroupImpl$1.run(AsynchronousChannelGroupImpl.java:112)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+
+四月 28, 2019 6:24:44 下午 [Transport-Thread-4] org.redkale.net.sncp.SncpClient$1$1 completed
+严重: public net.tccn.base.JBean net.tccn.service.MetadataService.serviceList(java.lang.String) sncp (params: ["3421432"]) deal error (retcode=1073741824, retinfo=Inner exception)
+四月 28, 2019 6:24:44 下午 [Transport-Thread-4] org.redkale.net.sncp.SncpClient$1$1 completed
+严重: public net.tccn.base.JBean net.tccn.service.MetadataService.serviceList(java.lang.String) sncp (params: ["3421432"]) deal error
+java.lang.RuntimeException: remote service(public net.tccn.base.JBean net.tccn.service.MetadataService.serviceList(java.lang.String)) deal error (retcode=1073741824, retinfo=Inner exception)
+	at org.redkale.net.sncp.SncpClient$1$1.completed(SncpClient.java:437)
+	at org.redkale.net.sncp.SncpClient$1$1.completed(SncpClient.java:396)
+	at sun.nio.ch.Invoker.invokeUnchecked(Invoker.java:126)
+	at sun.nio.ch.Invoker$2.run(Invoker.java:218)
+	at sun.nio.ch.AsynchronousChannelGroupImpl$1.run(AsynchronousChannelGroupImpl.java:112)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+
+四月 28, 2019 6:24:44 下午 [Transport-Thread-7] org.redkale.net.sncp.SncpClient$1$1 completed
+严重: public net.tccn.base.JBean net.tccn.service.MetadataService.serviceList(java.lang.String) sncp (params: ["3421432"]) deal error (retcode=1073741824, retinfo=Inner exception)
+四月 28, 2019 6:24:44 下午 [Transport-Thread-7] org.redkale.net.sncp.SncpClient$1$1 completed
+严重: public net.tccn.base.JBean net.tccn.service.MetadataService.serviceList(java.lang.String) sncp (params: ["3421432"]) deal error
+java.lang.RuntimeException: remote service(public net.tccn.base.JBean net.tccn.service.MetadataService.serviceList(java.lang.String)) deal error (retcode=1073741824, retinfo=Inner exception)
+	at org.redkale.net.sncp.SncpClient$1$1.completed(SncpClient.java:437)
+	at org.redkale.net.sncp.SncpClient$1$1.completed(SncpClient.java:396)
+	at sun.nio.ch.Invoker.invokeUnchecked(Invoker.java:126)
+	at sun.nio.ch.Invoker$2.run(Invoker.java:218)
+	at sun.nio.ch.AsynchronousChannelGroupImpl$1.run(AsynchronousChannelGroupImpl.java:112)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+
+四月 28, 2019 6:24:47 下午 [Transport-Thread-3] org.redkale.net.sncp.SncpClient$1$1 completed
+严重: public net.tccn.base.JBean net.tccn.service.MetadataService.serviceList(java.lang.String) sncp (params: ["3421432"]) deal error (retcode=1073741824, retinfo=Inner exception)
+四月 28, 2019 6:24:47 下午 [Transport-Thread-3] org.redkale.net.sncp.SncpClient$1$1 completed
+严重: public net.tccn.base.JBean net.tccn.service.MetadataService.serviceList(java.lang.String) sncp (params: ["3421432"]) deal error
+java.lang.RuntimeException: remote service(public net.tccn.base.JBean net.tccn.service.MetadataService.serviceList(java.lang.String)) deal error (retcode=1073741824, retinfo=Inner exception)
+	at org.redkale.net.sncp.SncpClient$1$1.completed(SncpClient.java:437)
+	at org.redkale.net.sncp.SncpClient$1$1.completed(SncpClient.java:396)
+	at sun.nio.ch.Invoker.invokeUnchecked(Invoker.java:126)
+	at sun.nio.ch.Invoker$2.run(Invoker.java:218)
+	at sun.nio.ch.AsynchronousChannelGroupImpl$1.run(AsynchronousChannelGroupImpl.java:112)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+
+四月 28, 2019 6:25:08 下午 [Transport-Thread-6] org.redkale.net.sncp.SncpClient$1$1 completed
+严重: public net.tccn.base.JBean net.tccn.service.MetadataService.serviceList(java.lang.String) sncp (params: ["3421432"]) deal error (retcode=1073741824, retinfo=Inner exception)
+四月 28, 2019 6:25:08 下午 [Transport-Thread-6] org.redkale.net.sncp.SncpClient$1$1 completed
+严重: public net.tccn.base.JBean net.tccn.service.MetadataService.serviceList(java.lang.String) sncp (params: ["3421432"]) deal error
+java.lang.RuntimeException: remote service(public net.tccn.base.JBean net.tccn.service.MetadataService.serviceList(java.lang.String)) deal error (retcode=1073741824, retinfo=Inner exception)
+	at org.redkale.net.sncp.SncpClient$1$1.completed(SncpClient.java:437)
+	at org.redkale.net.sncp.SncpClient$1$1.completed(SncpClient.java:396)
+	at sun.nio.ch.Invoker.invokeUnchecked(Invoker.java:126)
+	at sun.nio.ch.Invoker$2.run(Invoker.java:218)
+	at sun.nio.ch.AsynchronousChannelGroupImpl$1.run(AsynchronousChannelGroupImpl.java:112)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+

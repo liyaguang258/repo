@@ -1,0 +1,26 @@
+#--------------- FTP --------------
+ftp.host=
+ftp.port=
+ftp.user=
+ftp.passwd=
+ftp.verdict.url_file_path=verdict_url
+ftp.verdict.app_file_path=verdict_app
+
+#--------------- xml-rpc、kafak --------------
+rpc.url=
+
+kafak.servers=
+
+#--------------- arango --------------
+arango.host=120.24.230.60
+arango.port=8529
+arango.user=root
+arango.passwd=abc123
+arango.database=db_dev
+
+#--------------- arango --------------
+tplPath=/tpl
+
+# file|db
+dataCate=db
+dataPath=${APP_HOME}/conf/data/

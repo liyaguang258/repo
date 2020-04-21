@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>登录 - MetaKit</title>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/zui/1.8.1/css/zui.min.css">
+    <link rel="stylesheet" href="../res/css/zui-theme.css">
+    <link rel="stylesheet" href="../res/css/red-kit.css">
+    <style>
+        body {
+            background: url('http://img.1216.top/static/material/6060f.webp') no-repeat fixed;
+            width: 100%;
+            height: 100%;
+            background-size: 100% 100%;
+            position: fixed;
+            z-index: -1;
+            top: 0;
+            left: 0;
+        }
+        .modal-dialog {
+            background: #fff8efad;
+        }
+        .form-control {
+            background-color: #fff8edd1;
+        }
+        .footer{
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 35px;
+            /*background-color: #eee;*/
+            padding: 8px;
+            color: #fdf2e5;
+            text-align: center;
+        }
+    </style>
+</head>
+<body style="padding-top: 100px" class="">
+    <div class="container-fixed-sm login">
+        <div class="modal-dialog" v-show="!choose" style="width: 400px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">关闭</span></button>
+                    <h4 class="modal-title">登陆管理系统</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="username" class="col-sm-2">用户名</label>
+                            <div class="col-md-10">
+                                <input v-model="row.username" class="form-control" id="username" placeholder="请输入 用户名">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pwd" class="col-sm-2">密码</label>
+                            <div class="col-md-10">
+                                <input type="password" v-model="row.pwd" class="form-control" id="pwd" placeholder="请输入 密码">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button @click="row={}" type="button" class="btn btn-default" data-dismiss="modal">重置</button>
+                    <button @click="login(row)" type="button" class="btn btn-primary">登录</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-dialog" v-show="choose" style="width: 400px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">关闭</span></button>
+                    <h4 class="modal-title">选择业务平台</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="username" class="col-md-3">业务平台</label>
+                            <div class="col-md-8">
+                                <select v-model="sysPlat" class="form-control">
+                                    <option v-for="item in sysPlats" :value="item" v-text="item.name"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <!--<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>-->
+                    <button @click="goIndex()" type="button" class="btn btn-primary btn-block">确定选择 <span v-text="[sysPlat.name]"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        Meta-Kit Developer v0.2
+    </div>
+<script src="../res/zui/lib/jquery/jquery.js" defer></script>
+<script src="../res/zui/js/zui.js" defer></script>
+<script src="../res/js/red.js" defer></script>
+<script src="../res/libs/axios.min.js" defer></script>
+<script src="../api/meta.js"></script>
+<script src="../api/plat.js"></script>
+<!--<script src="https://cdn.jsdelivr.net/npm/vue"></script>-->
+<script src="../res/libs/vue.min.js"></script>
+<script type="module">
+    import { login } from '../api/user.js'
+    let { platList } = plat;
+
+    var vm = new Vue({
+        el: ".login",
+        data: {
+            row:{},
+            sysPlat: red.getData("sysPlat"),
+            sysPlats: [],
+            choose: false
+        },
+        watch: {
+
+        },
+        methods: {
+            login({username,  pwd}) {
+                login({username,  pwd}).then(res => {
+                    console.log(res)
+                    platList().then(res => {
+                        let rows = res.rows
+                        console.log(rows)
+                        red.showMsg({msg:"请选择业务平台"})
+
+                        this.sysPlats = rows;
+                        if (!this.sysPlat) {
+                            this.sysPlat = rows[0];
+                        }
+
+                        red.setData("sysPlats", rows);
+                        red.setData('userName', username)
+                        setTimeout(function () {
+                            vm.choose = true;
+                        }, 500);
+                    })
+                })
+            },
+            goIndex: function () {
+                if (!this.sysPlat) {
+                    red.showMsg({msg:"请选择选择业务平台", type:"error"});
+                    return false;
+                }
+                red.setData("sysPlat", this.sysPlat);
+                location.href = "/";
+            },
+            bindEvent: function () {
+                $('body').bind('keyup', function(event) {
+                    if (event.keyCode == "13") {
+                        if (!vm.choose) {
+                            vm.login(vm.row);
+                        } else {
+                            vm.goIndex();
+                        }
+                    }
+                });
+            }
+        },
+        mounted: function () {
+            this.bindEvent();
+        }
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<link rel="stylesheet" href="/res/ztree/zTreeStyle.css">
+<link rel="stylesheet" href="/res/zui/lib/datagrid/zui.datagrid.min.css">
+
+<row class="column-index">
+    <div class="col-md-2">
+        <div style="padding-left: 10px;background-color: #ccc;width: 100%"> 字典类别</div>
+        <ul id="treeDemo" class="ztree"></ul>
+    </div>
+    <div class="col-md-10">
+        <div class="btn-toolbar">
+            <div id="uploaderExample" class="uploader">
+                <button type="button" class="btn btn-primary uploader-btn-browse"><i class="icon icon-cloud-upload"></i> 导入字典数据</button>
+            </div>
+
+        </div>
+
+        <div id="datagridPageExample" class="datagrid" style="margin-top: 5px;">
+            <table class="table datatable">
+                <thead>
+                <tr>
+                    <!-- 以下两列左侧固定 -->
+                    <th>#</th>
+                    <th>时间</th>
+
+                    <!-- 以下三列中间可滚动 -->
+                    <th class="flex-col" data-width="100">事件类型</th>
+                    <th class="flex-col" data-width="200">描述</th>
+                    <th class="flex-col" data-width="300">相关人物</th>
+
+                    <!-- 以下列右侧固定 -->
+                    <th>评分</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>101026</td>
+                    <td>2019-07-01 17:36:29</td>
+                    <td>A143</td>
+
+                    <td>地卜师</td>
+                    <td>喝水</td>
+                    <td>happy</td>
+                </tr>
+                <tr>
+                    <td>101027</td>
+                    <td>2019-07-01 17:36:29</td>
+                    <td>A143</td>
+
+                    <td>地卜师</td>
+                    <td>喝水</td>
+                    <td>happy</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div>
+                <ul class="pager pull-right" style="margin: 5px 10px">
+
+                    <li class="previous">
+                        <a style="border: 0;">共{{list.total}}条数据</a>
+                    </li>
+                    <li :class="['previous', {'disabled':limit.pn==1}]">
+                        <a @click="findList(-- limit.pn)" href="javascript:;">«上一页</a>
+                    </li>
+                    <li :class="['next', {'disabled':limit.pn >= limit.total}]">
+                        <a @click="findList(limit.pn = ++limit.pn )" href="javascript:;">»下一页</a>
+                    </li>
+
+                    <li class="previous">
+                        <a style="border-bottom: 0;border-right: 0;border-top: 0;">到第<input v-model="limit.pn" style="width: 30px;height: 21px;">/ {{limit.total}}页</a>
+                    </li>
+                    <li class="previous">
+                        <a @click="findList(limit.pn)" href="javascript:;">确定</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+    </div>
+</row>
+<script src="/res/ztree/jquery.ztree.all.min.js"></script>
+<script src="/res/zui/lib/datagrid/zui.datagrid.min.js"></script>
+
+<script>
+    let setting = {
+        data: {
+            simpleData: {
+                enable: true
+            }
+        }
+    };
+
+    let zNodes =[
+        { id:0, pId:"-1", name:"栏目", open:true},
+        { id:"111", pId:0, name:"首页", abx:"abx"},
+        { id:1, pId:"0", name:"博客"},
+        { id:1, pId:0, name:"求助"},
+        { id:1, pId:0, name:"动弹"},
+        { id:2, pId:0, name:"专题", open:true},
+        { id:3, pId:0, name:"下载", open:true},
+        { id:4, pId:0, name:"项目", open:true},
+        { id:5, pId:0, name:"管理"},
+        { id:5, pId:0, name:"留言反馈"},
+        { id:5, pId:0, name:"关于"},
+
+        { id:6, pId:2, name:"架构设计"},
+        { id:7, pId:2, name:"数据库"},
+        { id:8, pId:2, name:"后端"},
+        { id:9, pId:2, name:"前端"},
+
+        { id:10, pId:3, name:"办公软件"},
+        { id:11, pId:3, name:"开发人员"},
+        { id:12, pId:3, name:"视频资料"},
+
+
+        { id:13, pId:4, name:"Redbbs"},
+        { id:14, pId:4, name:"JFly"},
+        { id:15, pId:4, name:"JKit"},
+        { id:16, pId:4, name:"RedTimer"},
+
+
+
+
+    ];
+
+    $(document).ready(function(){
+        $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+    });
+
+    $('#uploaderExample').uploader({
+        autoUpload: true,            // 当选择文件后立即自动进行上传操作
+        url: '/upload/upload',  // 文件上传提交地址
+        fileTemplate: ' '
+    });
+
+    $('#tableDataGridExample').datagrid({
+        dataSource: {},
+        states: {
+            pager: {page: 1, recPerPage: 20}
+        }
+    });
+</script>

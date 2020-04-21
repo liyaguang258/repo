@@ -1,0 +1,16 @@
+/target/
+.project
+.classpath
+/.settings/
+/.externalToolBuilders/
+/bin/
+*.iml
+.idea/
+/.idea/
+/out/
+/tmp/
+/lib/
+/libs/
+/root/u/
+
+apidoc.*

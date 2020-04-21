@@ -1,0 +1,24 @@
+<div id="abc">
+    {{cfg.title}}
+
+    <button @click="abc">asf</button>
+    <button @click="abc">openDia</button>
+</div>
+
+<script>
+    var vm = new Vue({
+        el: "#abc",
+        data: {
+            cfg: {
+                title: "12"
+            }
+        },
+        methods: {
+            abc: function () {
+                console.log("abc");
+
+            }
+        }
+
+    });
+</script>

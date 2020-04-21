@@ -1,0 +1,217 @@
+<row class="qtask-list">
+    <div class="col-md-12">
+        <h3 v-text="cfg.title"></h3>
+    </div>
+
+    <div class="col-md-12 ">
+            <!--<div class="col-md-2" style="padding-left: 0">
+                <div class="input-group">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button">选择业务平台</button>
+                    </span>
+                    <select class="form-control">
+                        <option>sdfa</option>
+                        <option>sadf</option>
+                    </select>
+                </div>
+            </div>-->
+
+        <div class="input-group pull-right">
+            <button @click="openDia({})" class="btn btn-primary" type="button"> 添加QTask</button>
+            <!--<button @click="openDia({})" class="btn btn-primary" type="button" style="margin-left: 5px"> 添加QTask</button>-->
+        </div>
+    </div>
+    <div class="col-md-12" style="padding-top: 10px;overflow:auto;">
+        <table class="table table-bordered table-hover" style="width: 100%">
+            <thead>
+            <tr>
+                <th v-for="field in cfg.cols" v-text="field.label"></th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="row in list.rows">
+                <td v-for="field in cfg.cols" v-title="row[field.col]" v-text="row[field.col]"></td>
+                <td>
+                    <a @click="openDia(row)" href="javascript:;">编辑</a>|
+                    <a @click="row['status']=1;qsave(row);" v-show="row.status != 1" href="javascript:;">启用</a>
+                    <a @click="row['status']=0;qsave(row);" v-show="row.status == 1" href="javascript:;">不启用</a> |
+                    <a @click="row['status']=-1;comfirmDel(row);" href="javascript:;">删除</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div v-show="!row || list.rows == 0" style="text-align: center">
+            <img src="../res/img/none.png">
+            <p>暂无数据</p>
+        </div>
+    </div>
+
+    <!-- modal-tpl -->
+    <div class="col-md-12">
+        <!-- 对话框触发按钮 -->
+        <!-- 对话框HTML -->
+        <div class="modal fade" id="myModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">关闭</span></button>
+                        <h4 class="modal-title">QTask编辑</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-2 required">任务名称</label>
+                                <div class="col-md-6 col-sm-10">
+                                    <input v-model="row.title" class="form-control" placeholder="请输入 业务名称">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 required">任务标识码</label>
+                                <div class="col-md-6 col-sm-10">
+                                    <input v-model="row.name" :readonly="row.key" class="form-control" placeholder="请输入 任务标识码">
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0">
+                                <label class="col-md-2 required">执行内容</label>
+                                <div class="col-md-10">
+                                    <textarea v-model="row.content" class="form-control layui-code" rows="5" placeholder="请输入 SQL  (支持jfinal-enjoy模板语法)" > </textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="para" class="col-sm-2">默认查询参数</label>
+                                <div class="col-sm-10">
+                                    <input v-model="row.para" class="form-control" id="para" placeholder="请输入 默认查询参数格式: {k:v}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="para" class="col-sm-2 required">数据平台</label>
+                                <div class="col-md-6">
+                                    <select v-model="row.dbPlatId" class="form-control">
+                                        <option></option>
+                                        <option v-for="item in dbPlats" :value="item.key" v-text="item.name"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <select v-model="row.catalog" class="form-control">
+                                        <option></option>
+                                        <option v-for="item in catalogs()" :value="item" v-text="item"></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="para" class="col-sm-2">备注(注释)</label>
+                                <div class="col-sm-10">
+                                    <input v-model="row.remark" class="form-control" id="remark" placeholder="请输入 备注">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button @click="save()" type="button" class="btn btn-primary">确定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 小对话框 -->
+        <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mySmModal">小对话框</button>-->
+        <div class="modal fade" id="mySmModal">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">关闭</span></button>
+                    <h4 class="modal-title">确认删除数据吗？</h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button @click="save()" type="button" class="btn btn-primary">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</row>
+<script src="http://www.1216.top/res/layui/layui.js"></script>
+<script>
+    let {qtaskList,qtaskSave} = qtask
+    let {dbList} = plat
+
+    var vm = new Vue({
+        el: ".qtask-list",
+        data: {
+            sysPlat: red.getData("sysPlat"),
+            cfg: {
+                title: "QTask 管理",
+                cols: [
+                    {col: "name", label: "任务标识码",},
+                    {col: "title", label: "任务名称",},
+                    {col: "remark", label: "备注",},
+                ],
+                filters: [],
+                cates: ["find","update"]
+            },
+            list: {rows:[], total: 0},
+            row: {},
+            dbPlats: [],
+            sysPlats: [{name: "工控系统"}]
+        },
+        watch: {
+
+        },
+        methods: {
+            loadList: function () {
+                qtaskList().then(res => {
+                    let list = res
+                    this.list = list
+                })
+            },
+            openDia: function (row) {
+                vm.row = row;
+                $('#myModal').modal({moveable: true});
+                if (this.dbPlats.length == 0) {
+                    dbList().then(res => {
+                        this.dbPlats = res.rows;
+                    })
+                }
+            },
+            save() {
+                qtaskSave({task:this.row}).then(res => {
+                    red.showOk()
+                    this.loadList()
+                    $('#myModal').modal('hide')
+                    this.row = {}
+                })
+            },
+            dealStatus: function (n) {
+                var arr = {"0":"未启用", "1":"启用", "-1":"删除",}
+
+                return arr[n+""] || "";
+            },
+            comfirmDel: function (row) {
+                vm.row = row;
+                $('#mySmModal').modal({});
+            },
+            abc: function () {
+                $(".container-fixed").load("abc.html");
+            },
+            catalogs: function () {
+                let dbPlats = this.dbPlats;
+                for (i in dbPlats) {
+                    if (dbPlats[i].key == this.row.dbPlatId) {
+                        return dbPlats[i]["catalogs"]
+                    }
+                }
+            }
+        },
+        mounted: function () {
+            this.loadList();
+
+            setTimeout(function () {
+                layui.use('code', function(){ //加载code模块
+                    layui.code(/*{skin: 'notepad'}*/); //引用code方法
+                });
+            }, 500)
+        }
+    });
+</script>

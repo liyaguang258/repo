@@ -1,0 +1,435 @@
+<row class="meta-list">
+    <div class="info">
+        <a @click="showInfo()" href="javascript:;"><i class="icon icon-info"></i></a>
+    </div>
+    <!-- info -->
+    <div class="modal fade" id="f-info">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">关闭</span></button>
+                    <h4 class="modal-title">MetaTable概念模型</h4>
+                </div>
+                <div class="modal-body" style="text-align: center">
+                    <img src="../res/img/MetaTable.png">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="input-group list-head">
+            <div class="pull-left">
+                <span class="input-group-btn">
+                    <button @click="loadImportPage()" :class="['btn','btn-primary']" type="button"> <i class="icon icon-signin"></i>导入实体</button>
+                </span>
+            </div>
+
+            <span class="input-group-btn" style="padding-left: 5px">
+                <button @click="status=8" :class="['btn',{'btn-primary':status==8}]" type="button"> 实体关系（MetaLink）</button>
+            </span>
+
+            <span class="input-group-btn" style="padding-left: 10px">
+                <button @click="status=2" :class="['btn',{'btn-primary':status==2}]" type="button"> 字段编辑</button>
+            </span>
+            <span class="input-group-btn">
+                <button @click="status=1" :class="['btn',{'btn-primary':status==1}]" type="button"> 排序</button>
+            </span>
+
+            <span class="input-group-btn" style="padding-left: 10px">
+                <button @click="status=7;" :class="['btn',{'btn-primary':status==7}]" type="button"> 基本属性</button>
+            </span>
+
+            <span class="input-group-btn" style="padding-left: 20px">
+                <button @click="save()" :class="['btn',{'btn-primary':status!=0},{'disabled':status==0}]" type="button"> 保存</button>
+            </span>
+        </div>
+        <hr style="margin: 0px 5px 5px">
+    </div>
+
+    <!-- 实体列表 -->
+    <div class="col-md-2">
+        <div style="padding-left: 10px;background-color: #ccc;width: 100%"> 实体表(Meta-Table)</div>
+        <ul class="nav nav-tabs nav-stacked tlist" style="height: 100%">
+            <li :class="['clearfix',{'active':alias==item.alias}]" v-for="item in tables" >
+                <a @click="alias=item.alias" :title="dealTableLabel(item)" v-text="dealTableLabel(item)" href="javascript:;"></a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 实体表信息 -->
+    <div class="col-md-10" v-show="status!=7  && status!=8">
+        <div style="padding-left: 10px;background-color: #ccc;width: 100%"> 实体字段信息</div>
+        <table :class="[{'table':status!=2},'table-bordered']" style="width: 100%">
+            <tr style="background-color: #f1f1f1">
+                <td v-show="status==3 || status==4 || status==5 || status==6"><input type="checkbox"></td>
+                <th v-show="status==1"></th>
+                <th>字段名</th>
+                <th>中文名</th>
+                <th>数据类型</th>
+                <!--
+                <th>输入类型</th>
+                <th>附加属性</th>
+                -->
+                <th>主键</th>
+            </tr>
+            <tr v-for="(item, index) in meta.items" class="item">
+                <td v-show="status==1" class="icon icon-move"></td>
+                <td v-show="status!=2" v-text="item.name" style="background-color: rgb(235, 235, 228);"></td>
+                <td v-show="status!=2" v-text="item.label"></td>
+                <td v-show="status!=2" v-text="item.type"></td>
+                <!--
+                <td v-show="status!=2" v-text="item.inType"></td>
+                <td v-show="status!=2" v-text="item.inExt"></td>
+                -->
+                <td v-show="status!=2">
+                    <i v-if="item.pk" class="icon icon-check"></i>
+                </td>
+
+                <td v-show="status==2">
+                    <input type="hidden" name="item" :value="JSON.stringify(item)">
+                    <input v-model="item" type="hidden">
+                    <input :value="item.name" disabled class="form-control">
+                    <input v-model="item.name" type="hidden">
+                    <input name="name" type="hidden" :value="item.name">
+                </td>
+                <td v-show="status==2"><input v-model="item.label" class="form-control"></td>
+                <td v-show="status==2"><input v-model="item.type" class="form-control"></td>
+                <!--
+                <td v-show="status==2">
+                    <select v-model="item.inType" class="form-control" style="width: 130px">
+                        <option></option>
+                        <option v-for="x in inTypes" :value="x">{{x}}</option>
+                    </select>
+                </td>
+                <td v-show="status==2"><input v-model="item.inExt" class="form-control"></td>
+                -->
+                <td v-show="status==2" style="text-align: center">
+                    <label>
+                        <input v-model="item.pk" type="checkbox">
+                    </label>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="col-md-10">
+
+        <!-- baseInfo -->
+        <div class="panel" v-show="status==7 ">
+            <div style="padding-left: 10px;background-color: #ccc;width: 100%"> 基本属性配置</div>
+            <!--<div class="panel-heading">基本属性配置</div>-->
+            <div class="panel-body" style="overflow:auto;">
+                <form class="form-horizontal">
+                    <input type="hidden" v-model="row.key">
+                    <div class="form-group">
+                        <label for="name" class="col-md-2">Table名称</label>
+                        <div class="col-md-4 col-sm-8">
+                            <input v-model="row.name" class="form-control" id="name" placeholder="请输入Table名称">
+                        </div>
+                        <label for="name" class="col-md-2">表别名</label>
+                        <div class="col-md-3 col-sm-2">
+                            <input v-model="row.alias" class="form-control" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="comment" class="col-md-2">Table标题</label>
+                        <div class="col-md-4 col-sm-8">
+                            <input v-model="row.comment" class="form-control" id="comment" placeholder="请输入 Table标题">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2">数据平台</label>
+                        <div class="col-md-4 col-sm-8">
+                            <select v-model="row.dbPlatId" class="form-control">
+                                <option></option>
+                                <option v-for="item in dbPlats" :value="item.key" v-text="item.name"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <select v-model="row.catalog" class="form-control">
+                                <option></option>
+                                <option v-for="item in catalogs()" :value="item" v-text="item"></option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="panel" v-show="status==8">
+            <div style="padding-left: 10px;background-color: #ccc;width: 100%"> 实体关系</div>
+
+            <p style="padding: 5px">整理中，【实体关系】放到此处维护</p>
+        </div>
+    </div>
+
+</row>
+
+<script>
+    let {tableList, tableInfo, itemSort, itemUpdate} = meta;
+    let {showOk} = red
+    let {dbList} = plat
+
+    var vm = new Vue({
+        el: ".meta-list",
+        data: {
+            inTypes: ["INPUT", "SELECT_EXT", "INPUT_DT", "FMT_FUN"],
+            dataTypes: ["bigint(20)", "varchar(255)", "varchar(64)", "varchar(32)", "varchar(16)", "int(11)", "int(3)", "int(2)", "datetime"],
+            filterCate: ["EQUAL", "NOTEQUAL", "LIKE", "IN"],
+            tables: [],//所有的业务类型，【测试用】
+            meta: {
+                items: [],
+            },//完整的元数据数据，
+            move: false,
+            status: 0, //页面默认状态
+            table: "", //页面选择的table表名称
+            alias: "", //页面选择的table表别名
+            metaTable: {},
+
+            itemSort: [], //待保存的业务属性
+
+            oldItems: [], //不被修改的字段属性
+            itemEdit: {}, //待修改的字段属性
+
+            dbPlats:[],
+            row: {key: "", platId: "", dbPlatId:"", catalog: "", name:"", comment:"", alias: ""},
+            filter: {db: "", catalog: "", name: ""},//tableList 过滤条件
+        },
+        watch: {
+            metaTable(v) {
+                this.name = v.name
+                this.alias = v.alias
+            },
+            status: function (v) {
+                this.setMove(v)
+            },
+            alias: function () {
+                this.loadDetail();
+            },
+            "meta.items": {
+                handler: function (nv) {
+                    let itemNv = nv || [];
+                    let itemOv = this.oldItems || [];
+                    if (itemOv.length == 0) return;
+
+                    let attr = ["label", "name", "pk", "type", "inType","inExt"];
+                    let itemEdit = [];
+                    a:for (let i = 0; i < itemOv.length; i++) {
+                        for (let j = 0; j < attr.length; j++) {
+                            let k = attr[j];
+                            //console.log(itemOv[i][k], '--', itemNv[i][k])
+                            if (itemOv[i][k] != itemNv[i][k]) {
+                                itemEdit.push(itemNv[i]);
+                                continue a;
+                            }
+                        }
+                    }
+
+                    this.itemEdit = itemEdit;
+                },
+                deep: true
+            },
+            "meta.shows": function (v) {
+                //console.log(v.length)
+            },
+            tables: function (v) {
+                if(v.length > 0) {
+                    this.metaTable = v[0]
+                    //vm.table = v[0]["name"];
+                }
+            },
+            meta: function (v) {
+                this.row = {key:v.key, dbPlatId: v.dbPlatId, catalog: v.catalog, name:v.name, comment:v.comment, alias: v.alias};
+                let oldItems = v['items'] || []
+                this.oldItems = JSON.parse(JSON.stringify(oldItems))
+            },
+
+        },
+        methods: {
+            loadDetail() {
+                tableInfo({alias: this.alias}).then(res => {
+                    let row = res;
+                    vm.meta = row;
+                    let oldItems = [];
+                    row.items.forEach(item => {
+                        oldItems.push({label, name, remark, type, inType} = item)
+                    });
+                    vm.oldItems = oldItems;
+                })
+            },
+            tableList() {
+                tableList().then(res => {
+                    this.tables = res
+                })
+            },
+            catalogs: function() {
+                let dbPlats = this.dbPlats;
+                for (i in dbPlats) {
+                    if (dbPlats[i].key == this.row.dbPlatId) {
+                        return dbPlats[i]["catalogs"]
+                    }
+                }
+            },
+            setMove: function () {
+                if (this.status == 1) {
+                    $('#sortableList,table>tbody').sortable({
+                        selector: '.item', // '.list-group-item, tr',
+                        finish: function (e) {
+                            let rows = e.list;
+                            vm.itemSort = [];
+                            for (let i = 0; i < rows.length; i++) {
+                                let item = $(rows[i]).find("input[name='name']").val();
+                                vm.itemSort.push(item);
+                            }
+                        },
+                        // 设置更多选项...
+                    });
+                }
+                else if (this.status == 5) {
+                    $('#show>table>tbody').sortable({
+                        selector: 'tr',
+                        finish: function (e) {
+                            let rows = e.list;
+                            let shows = [];
+                            for (let i = 0; i < rows.length; i++) {
+                                let item = $(rows[i]).find("input[name='name']").val();
+                                shows.push(item);
+                            }
+                            vm.meta.shows = shows;
+                        }
+                    });
+                } else if (this.status == 4) {
+                    $('#import>table>tbody').sortable({
+                        selector: 'tr',
+                        finish: function (e) {
+                            let rows = e.list;
+                            let shows = [];
+                            for (let i = 0; i < rows.length; i++) {
+                                let item = $(rows[i]).find("input[name='name']").val();
+                                shows.push(item);
+                            }
+                            vm.meta.imports = shows;
+                        }
+                    });
+                } else if (this.status == 3) {
+                    $('#export>table>tbody').sortable({
+                        selector: 'tr',
+                        finish: function (e) {
+                            let rows = e.list;
+                            let shows = [];
+                            for (let i = 0; i < rows.length; i++) {
+                                let item = $(rows[i]).find("input[name='name']").val();
+                                shows.push(item);
+                            }
+                            vm.meta.exports = shows;
+                        }
+                    });
+                }
+                else if (this.status == 6) {
+                    $('#filter>table>tbody').sortable({
+                        selector: 'tr',
+                        finish: function (e) {
+                            let rows = e.list;
+                            let filterArr = [];
+                            for (let i = 0; i < rows.length; i++) {
+                                let item = $(rows[i]).find("input[name='name']").val();
+                                filterArr.push(item);
+                            }
+                            vm.filterArr = filterArr;
+                        }
+                    });
+                }
+
+                else {
+                    $('table>tbody').sortable('destroy');
+                }
+            },
+            /**
+             * 保存元数据变更：
+             * 1、基础数据排序
+             *     --> 传递元素的顺序，后台对元素顺序重排
+             * 2、基础数据属性修改
+             *    --> 只提交被修改过的元素及属性数据，后端通过属性名称对应修改，
+             * 3、导出
+             *  导出排序
+             *    --> 传递元素的顺序，后台对元素的顺利重排，（同基础元素排序）
+             *  导出元素加减
+             *    --> 将元素完整传递到后台，进行覆盖保存
+             * 4、导入
+             *  导入排序
+             *  导入元素加减
+             * 5、
+             *
+             * 7、数据平台
+             *  记录元数据，存贮的数据平台
+             *
+             */
+            save: function () {
+                if (vm.status == 1 && vm.itemSort.length > 0) {
+                    itemSort({alias: this.alias, items: this.itemSort}).then(() => red.showOk())
+
+                }
+
+                else if (vm.status == 2 && vm.itemEdit.length > 0) {
+                    itemUpdate({alias: this.alias, items: this.itemEdit}).then(() => red.showOk())
+                }
+                else if (vm.status == 5) {
+                    red.post("/meta/showsort", {
+                        serviceKey: vm.table,
+                        items: JSON.stringify(vm.meta.shows)
+                    }).then(() => showOk())
+                }
+
+                else if (vm.status == 6) {
+                    console.log(vm.filters);
+                    red.post("/meta/filter_update", {
+                        serviceKey: vm.table,
+                        filters: JSON.stringify(vm.filters)
+                    })
+
+                }
+
+                else if (vm.status == 7) {
+                    console.log(vm.row);
+                    red.postX("/meta/dbplatupdate", {metaTable: JSON.stringify(vm.row)}).then(() => showOk())
+                }
+
+                else {
+                    red.showMsg();
+                }
+            },
+            dealTableLabel(table) {
+                // (${table.linkCount})
+                return `${table.name} [${table.comment}]`
+            },
+            getFieldLabel (col) {
+                if (!col) {
+                    return "";
+                }
+                for (var i = 0; i < vm.oldItems.length; i++) {
+                    if (vm.oldItems[i].name == col) {
+                        return vm.oldItems[i].label;
+                    }
+                }
+            },
+            loadImportPage() {
+                $("#main").load('/metadata/metatable/import.html')
+            },
+            showInfo() {
+                $('#f-info').modal({moveable: true})
+            }
+
+        },
+        mounted: function (){
+            dbList().then(res => {
+                this.dbPlats = res.rows;
+            })
+            this.tableList();
+        }
+    });
+</script>

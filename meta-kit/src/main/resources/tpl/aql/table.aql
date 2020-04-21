@@ -1,0 +1,13 @@
+#sql("xx")
+    select * from user
+#end
+#sql("link.update")
+    UPDATE "#(key)" WITH { link:null  } IN Characters
+#end
+
+#sql("metaTable.lastAlias")
+    for d in MetaTable
+        sort length(d.alias) desc, d.alias desc
+        limit 1
+        return d.alias
+#end

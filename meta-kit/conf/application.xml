@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<application port="5001" xmlns="application.xsd">
+    <resources>
+        <listener value="net.tccn.base.MetaListenter"/>
+        <properties load="config.txt"></properties>
+    </resources>
+
+    <server protocol="HTTP" host="0.0.0.0" port="80" root="root">
+        <request>
+            <remoteaddr value="request.headers.X-RemoteAddress"/>
+        </request>
+        <response>
+            <addheader name="X-Node" value="system.property.APP_NODE"/>
+        </response>
+        <resource-servlet/>
+
+        <rest autoload="true" base="net.tccn.base.BaseServlet"/>
+        <services autoload="true"/>
+        <servlets autoload="true"/>
+        <render value="net.tccn.base.MetaRender"/>
+    </server>
+
+
+</application>

@@ -1,0 +1,186 @@
+body {
+
+}
+
+.container-fluid {
+    padding-left: 0px;
+}
+
+#home {
+
+}
+#top {
+    background-color: #404a53;
+    padding: 5px 10px;
+    margin: 0px;
+    height: 50px;
+}
+#top a {
+    color: #ddd;
+    font-size: 15px;
+}
+
+#top .nav-tabs{
+    border-bottom:0;
+}
+#top>.nav-tabs>li>a{
+    border: 0;
+}
+#top>.nav-tabs>li.active>a,
+#top>.nav-tabs>li.active>a:focus,
+#top>.nav-tabs>li.active>a:hover,
+#top>.nav-tabs>li>a:hover {
+    background-color: #404a53;
+    color: #fff;
+    border: 0;
+    border-bottom: 3px solid #607d8b;
+}
+
+#left {
+    background-color: #404a53; /*padding-bottom: 0px; margin-bottom: 0px;*/
+}
+#main {
+    margin-top: 15px;
+}
+#left.col-md-1 {
+    padding: 0 2px;
+    width: 10.63333333%;
+}
+#mainDiv .col-md-11 {
+    width: 89.36666667%;
+    /*background-color: #fff;*/
+}
+#left .nav {
+    background-color: #404a53;
+}
+
+#left .menu > .nav > li > .nav > li > a {
+    border:0;
+    border-bottom: 1px solid #495158;
+    color: #eee;
+}
+#left .menu > .nav > li > .nav > li>a:hover {
+    background-color: #404a53;
+    border:0;
+    border-bottom: 1px solid #495158;
+    color: #fff;
+}
+#left .menu > .nav > li > .nav > li.active > a:hover {
+    background-color: rgba(255,255,255,.2);/*#607D8B;*/
+    color: #fff;
+}
+
+
+#left .menu > .nav > li > .nav > li.active a,#left .menu > .nav > li > .nav > li a:hover{
+    background-color: rgba(255,255,255,.2);/*#607D8B;*/
+    border-left: 2px solid #77cb99;
+    color: #fff;
+}
+.logo h1{
+    float: left;
+    color: #ccc;
+    margin-top: 10px;
+    width: 150px;
+    font-size: 22px;
+}
+.footer{
+    position: fixed;
+    bottom: 0;
+    margin-left: -10px;
+    width: 100%;
+    height: 35px;
+    background-color: #eee;
+    padding: 8px;
+    color: #808080;
+}
+
+.list-head {
+    padding-bottom: 10px;
+}
+
+table td,th{
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+th{
+    background-color: #f1f1f1;
+}
+
+/*ddl-page*/
+.ddl .input-group {
+    margin-bottom: 10px;
+}
+
+/*.data-list 元数据测试用例页面*/
+.data-list .table > thead > tr > th.sort:after{
+    display: inline-block;
+    margin-left: 5px;
+    font-family: ZenIcon;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    line-height: 1;
+    color: #808080;
+    text-transform: none;
+    content: '\e6bd';
+    speak: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.data-list .table > thead > tr > th.sort:hover{
+    cursor:pointer;
+}
+.data-list .table > thead > tr > th.sort-up:after {
+    color: #145ccd;
+    content: '\e6b9';
+}
+.data-list .table > thead > tr > th.sort-down:after {
+    color: #145ccd;
+    content: '\e6b8';
+}
+
+.table td, .table th{
+    padding: 5px;
+}
+.table td {background-color: #fff;}
+
+/* 页面信息按钮样式 */
+#main .info {
+    position: fixed;
+    float: right;
+    display: none;
+    right: 15px;
+    bottom: 7px;
+    z-index:99999;
+}
+
+/* 设置对话框内容居中显示 */
+.modal-body {
+    text-align: center;
+}
+
+.tlist{
+    height:100%; overflow: auto;
+}
+.tlist>li{
+    margin-top: 0;
+}
+.tlist>li.active>a,
+.tlist>li.active>a:focus,
+.tlist>li.active>a:hover,
+.tlist>li>a:hover {
+    background-color: #e2effc;
+    border-radius: 2px 0 0 2px;
+}
+
+/* 为可拖动的条目应用可移动光标类型 */
+.icon.icon-move {cursor: move}
+
+/* 为正在被拖动的条目应用半透明外观 */
+tr.dragging {
+    visibility: visible;
+    opacity: .3;
+}
