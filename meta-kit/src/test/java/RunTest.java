@@ -911,7 +911,7 @@ public class RunTest<T> {
 
         List<Map<String, Object>> l = new ArrayList<>();
 
-        users.keySet().forEach(x->{
+        users.keySet().forEach(x -> {
             Object username = users.get(x);
             String sql3 = "SELECT  invitecode FROM userinvitecode WHERE userid = " + x + ";";
             List<Map> list2 = findList(sql3);
@@ -976,78 +976,87 @@ public class RunTest<T> {
 
     @Test
     public void questionout() {
-       dbrun();
+        DbAccount dbAccount = new DbAccount();
+        dbAccount.setCate("mysql");
+        dbAccount.setUrl("jdbc:mysql://47.111.150.118:6063");
+        dbAccount.setUser("root");
+        dbAccount.setPwd("*Zhong123098!");
 
-        String sql1 = "SELECT a.userid,b.username FROM userinvitecode a ,userdetail b WHERE a.userid = b.userid GROUP BY userid;";
+        DbKit dbKit = new DbKit(dbAccount, "");
+        String sql1 = "SELECT * FROM `platf_oth`.`questionrecord` ORDER BY `createtime` DESC ;";
+        String sql2 = "SELECT userid,username FROM `v09x_platf_core`.userdetail;";
+        List<Map> list1 = dbKit.findList(sql1, Map.class);
         Kv users = Kv.of();
-
-        findList(sql1).forEach(x -> {
+        findList(sql2).forEach(x -> {
             users.put(x.get("userid"), x.get("username"));
         });
+        List<Map> list = new ArrayList<>();
 
-
-        List<Map<String, Object>> l = new ArrayList<>();
-
-        users.keySet().forEach(x->{
-            Object username = users.get(x);
-            String sql3 = "SELECT  invitecode FROM userinvitecode WHERE userid = " + x + ";";
-            List<Map> list2 = findList(sql3);
-//            invites.put(userid, list2);
-            Kv sheet1 = Kv.of();
-            List<Kv> kvs = new ArrayList<>();
-            for (int i = 0; i < list2.size(); i++) {
-                kvs.add(Kv.of("num", i + 1).set("invitecode", list2.get(i).get("invitecode")));
+        list1.forEach(x -> {
+            HashMap<Object, Object> map = new HashMap<>();
+            map.putAll(x);
+            Object createtime = x.get("createtime");
+            String s = datechange((Long) createtime);
+            Object link_from = x.get("link_from");
+            int i =0;
+            if (link_from!=null&&!link_from.equals("sina")){
+                i = Integer.parseInt(link_from.toString());
+            }
+            map.put("link_from", users.get(i));
+            map.put("createtime", s);
+            Object status = x.get("status");
+            if (status.equals(10)){
+                map.put("status","正常");
+            }else if (status.equals(20)){
+                map.put("status","待审核");
+            }else if (status.equals(11)){
+                map.put("status","审核通过");
+            }else if (status.equals(30)){
+                map.put("status","审核不通过");
             }
 
-            sheet1.set("data", kvs);
-            sheet1.set("sheetName", username);
-            sheet1.set("hdNames", new String[]{"序号", "邀请码"});
-            sheet1.set("hds", new String[]{"num", "invitecode"});
-            l.add(sheet1);
+            list.add(map);
         });
 
-//        List<Map> list1 = findList(sql1);
-//        list1.forEach(x -> {
-//            Object userid = x.get("userid");
-//            String sql3 = "SELECT  invitecode FROM userinvitecode WHERE userid = " + userid + ";";
-//            List<Map> list2 = findList(sql3);
-////            invites.put(userid, list2);
-//            Kv sheet1 = Kv.of();
-//            List<Kv> kvs = new ArrayList<>();
-//            for (int i = 0; i < list2.size(); i++) {
-//                kvs.add(Kv.of("num", i + 1).set("invitecode", list2.get(i).get("invitecode")));
-//            }
-//
-//            sheet1.set("data", kvs);
-//            sheet1.set("sheetName", x.toString());
-//            sheet1.set("hdNames", new String[]{"序号", "邀请码"});
-//            sheet1.set("hds", new String[]{"num", "invitecode"});
-//            l.add(sheet1);
-//        });
+        Kv kv = Kv.of();
 
+        kv.set("email", "邮箱");
+        kv.set("mobile", "电话");
+        kv.set("phone_os", "手机系统");
+        kv.set("playgame_count", "玩过几款游戏");
+        kv.set("playgame_age", "游戏年龄");
+        kv.set("game_cate", "游戏类型");
+        kv.set("game_device", "游戏设备");
+        kv.set("profession", "职业状态");
+        kv.set("playgame_usertype", "玩家类型");
+        kv.set("playgame_role", "主要角色");
+        kv.set("daypaly_timelong", "每天游戏时常");
+        kv.set("monthpay_rmb", "每月花费金额");
+        kv.set("creation_platform", "创作平台");
+        kv.set("creation_cate", "创作类型");
+        kv.set("creation_fanscount", "粉丝量");
+        kv.set("creation_frequency", "创作频率");
+        kv.set("creation_mainpage", "主页截图");
+        kv.set("live_platform", "直播平台");
+        kv.set("live_followcount", "直播关注度");
+        kv.set("play_qq_group", "玩家QQ群");
+        kv.set("union_name", "公会名字");
+        kv.set("want_say", "想说的话");
+        kv.set("link_from", "渠道来源");
+        kv.set("ip", "来源IP");
+        kv.set("invitecode", "邀请码");
+        kv.set("createtime", "创建时间");
+        kv.set("status", "状态");
 
-//        invites.keySet().forEach(x -> {
-//            List<Map> list3 = (List) invites.get(x);
-//            Kv sheet1 = Kv.of();
-//            List<Kv> kvs = new ArrayList<>();
-//            for (int i = 0; i < list3.size(); i++) {
-//                kvs.add(Kv.of("num", i + 1).set("invitecode", list3.get(i).get("invitecode")));
-//            }
-//
-//            sheet1.set("data", kvs);
-//            sheet1.set("sheetName", x.toString());
-//            sheet1.set("hdNames", new String[]{"序号", "邀请码"});
-//            sheet1.set("hds", new String[]{"num", "invitecode"});
-//            l.add(sheet1);
-//        });
-
-
-        Workbook wb = ExcelKit.exportExcels(l);
         try {
-            wb.write(new FileOutputStream(new File("target/bbbb.xls"))); // 将工作簿对象写到磁盘文件
-        } catch (IOException e) {
+            Workbook workbook = ExcelKit.exportExcel(list, kv);
+
+            workbook.write(new FileOutputStream(new File("target/question.xls")));
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
 
     }
 
