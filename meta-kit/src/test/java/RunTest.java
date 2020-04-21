@@ -990,7 +990,6 @@ public class RunTest<T> {
 
         DbKit dbKit = new DbKit(dbAccount, "v09x_platf_core");
 
-//        String sql1 = "SELECT userid FROM userinvitecode GROUP BY userid;";
         String sql1 = "SELECT a.userid,b.username FROM userinvitecode a ,userdetail b WHERE a.userid = b.userid GROUP BY userid;";
         Kv users = Kv.of();
 
