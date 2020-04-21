@@ -980,6 +980,90 @@ public class RunTest<T> {
 
     }
 
+    @Test
+    public void questionout() {
+        DbAccount dbAccount = new DbAccount();
+        dbAccount.setCate("mysql");
+        dbAccount.setUrl("jdbc:mysql://47.111.150.118:6063/v09x_platf_core");
+        dbAccount.setUser("root");
+        dbAccount.setPwd("*Zhong123098!");
+
+        DbKit dbKit = new DbKit(dbAccount, "v09x_platf_core");
+
+//        String sql1 = "SELECT userid FROM userinvitecode GROUP BY userid;";
+        String sql1 = "SELECT a.userid,b.username FROM userinvitecode a ,userdetail b WHERE a.userid = b.userid GROUP BY userid;";
+        Kv users = Kv.of();
+
+        findList(sql1).forEach(x -> {
+            users.put(x.get("userid"), x.get("username"));
+        });
+
+
+        List<Map<String, Object>> l = new ArrayList<>();
+
+        users.keySet().forEach(x->{
+            Object username = users.get(x);
+            String sql3 = "SELECT  invitecode FROM userinvitecode WHERE userid = " + x + ";";
+            List<Map> list2 = findList(sql3);
+//            invites.put(userid, list2);
+            Kv sheet1 = Kv.of();
+            List<Kv> kvs = new ArrayList<>();
+            for (int i = 0; i < list2.size(); i++) {
+                kvs.add(Kv.of("num", i + 1).set("invitecode", list2.get(i).get("invitecode")));
+            }
+
+            sheet1.set("data", kvs);
+            sheet1.set("sheetName", username);
+            sheet1.set("hdNames", new String[]{"序号", "邀请码"});
+            sheet1.set("hds", new String[]{"num", "invitecode"});
+            l.add(sheet1);
+        });
+
+//        List<Map> list1 = findList(sql1);
+//        list1.forEach(x -> {
+//            Object userid = x.get("userid");
+//            String sql3 = "SELECT  invitecode FROM userinvitecode WHERE userid = " + userid + ";";
+//            List<Map> list2 = findList(sql3);
+////            invites.put(userid, list2);
+//            Kv sheet1 = Kv.of();
+//            List<Kv> kvs = new ArrayList<>();
+//            for (int i = 0; i < list2.size(); i++) {
+//                kvs.add(Kv.of("num", i + 1).set("invitecode", list2.get(i).get("invitecode")));
+//            }
+//
+//            sheet1.set("data", kvs);
+//            sheet1.set("sheetName", x.toString());
+//            sheet1.set("hdNames", new String[]{"序号", "邀请码"});
+//            sheet1.set("hds", new String[]{"num", "invitecode"});
+//            l.add(sheet1);
+//        });
+
+
+//        invites.keySet().forEach(x -> {
+//            List<Map> list3 = (List) invites.get(x);
+//            Kv sheet1 = Kv.of();
+//            List<Kv> kvs = new ArrayList<>();
+//            for (int i = 0; i < list3.size(); i++) {
+//                kvs.add(Kv.of("num", i + 1).set("invitecode", list3.get(i).get("invitecode")));
+//            }
+//
+//            sheet1.set("data", kvs);
+//            sheet1.set("sheetName", x.toString());
+//            sheet1.set("hdNames", new String[]{"序号", "邀请码"});
+//            sheet1.set("hds", new String[]{"num", "invitecode"});
+//            l.add(sheet1);
+//        });
+
+
+        Workbook wb = ExcelKit.exportExcels(l);
+        try {
+            wb.write(new FileOutputStream(new File("target/bbbb.xls"))); // 将工作簿对象写到磁盘文件
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public String datechange(long date) {
         Date current = new Date(date);
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(
