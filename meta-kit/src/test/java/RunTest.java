@@ -22,10 +22,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
+import java.security.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 
@@ -999,7 +1003,7 @@ public class RunTest<T> {
             String s = datechange((Long) createtime);
             Object link_from = x.get("link_from");
             int i =0;
-            if (link_from!=null&&!link_from.equals("sina")){
+            if (link_from!=null&&!link_from.equals("sina")&&!link_from.equals("default")&&!link_from.equals("")){
                 i = Integer.parseInt(link_from.toString());
             }
             map.put("link_from", users.get(i));
@@ -1060,12 +1064,59 @@ public class RunTest<T> {
 
     }
 
+
+    // 邀请码使用情况
+    @Test
+    public void x() {
+        String sql = "SELECT v.`invitecode` '邀请码',u.`username` '邀请人', u1.`username` '被邀请人',FROM_UNIXTIME(v.`createtime`/1000, '%Y-%m-%d %H:%i:%S') '激活码使用时间' FROM `userinviterecord` v LEFT JOIN userdetail u ON v.`userid`=u.`userid` LEFT JOIN userdetail u1 ON v.`inviteeid`=u1.`userid`\n" +
+                "WHERE v.`userid` IN (11244,11255,11192 , 11047 , 11039 , 11189 , 11190 , 11191 , 11042 , 11038 , 11041 , 11043 , 11044 , 11050 , 11049 , 11051 , 11053 , 11054 , 11058 , 11193 , 11194 , 11195 , 11196 , 11197 , 11198 , 11199 , 11200 , 11201 , 11202 , 11037)  ORDER BY v.`createtime` DESC;";
+
+        Map<Object, List<Map>> listMap = findList(sql).stream().collect(Collectors.groupingBy(x -> x.get("邀请人")));
+        List<Map<String, Object>> sheets = new ArrayList<>();
+        listMap.forEach((k,v) -> {
+            Map<String, Object> sheet = new HashMap<>();
+            sheet.put("sheetName", k);
+            sheet.put("hdNames", new String[]{"邀请码","被邀请人", "激活码使用时间"});
+            sheet.put("hds", new String[]{"邀请码","被邀请人", "激活码使用时间"});
+
+            sheet.put("data", v);
+            sheets.add(sheet);
+        });
+
+        sheets.sort(Comparator.comparing(x -> -((List)x.get("data")).size()));
+        // 创建文件
+        Workbook wb = ExcelKit.exportExcels(sheets);
+        try {
+            wb.write(new FileOutputStream(new File("tmp/邀请码_邀请记录_4-24.xls"))); // 将工作簿对象写到磁盘文件
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public String datechange(long date) {
         Date current = new Date(date);
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(
                 "yyyy-MM-dd HH:mm:ss");
         String time = sdf.format(current);
         return time;
+    }
+
+    @Test
+    public void time() throws ParseException {
+//        Date current = new Date();
+//        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(
+//                "yyyy-MM-dd HH:mm:ss");
+//        String time = sdf.format(current);
+//        System.out.println(time);
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String start="2020-04-24 00:00:00";
+        String end ="2020-04-23 00:00:00";
+//得到毫秒数
+        long timeStart=sdf.parse(start).getTime();
+        System.out.println(timeStart);
+        long timeEnd =sdf.parse(end).getTime();
+        System.out.println(timeEnd);
+
     }
 
 }
