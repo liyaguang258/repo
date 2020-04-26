@@ -760,12 +760,12 @@ public class RunTest<T> {
     public List<Map> findList(String sql) {
         DbAccount dbAccount = new DbAccount();
         dbAccount.setCate("mysql");
-        dbAccount.setUrl("jdbc:mysql://47.111.150.118:6063/v09x_platf_core");
+//        dbAccount.setUrl("jdbc:mysql://47.111.150.118:6063/v09x_platf_core");
+        dbAccount.setUrl("jdbc:mysql://122.112.180.156:6033/v09x_platf_core");
         dbAccount.setUser("root");
-        dbAccount.setPwd("*Zhong123098!");
+//        dbAccount.setPwd("*Zhong123098!");
 
-//        dbAccount.setUrl("jdbc:mysql://122.112.180.156:6033/v09x_platf_core");
-//        dbAccount.setPwd("*Hello@27.com!");
+        dbAccount.setPwd("*Hello@27.com!");
 
 
         DbKit dbKit = new DbKit(dbAccount, "v09x_platf_core");
@@ -982,12 +982,14 @@ public class RunTest<T> {
     public void questionout() {
         DbAccount dbAccount = new DbAccount();
         dbAccount.setCate("mysql");
-        dbAccount.setUrl("jdbc:mysql://47.111.150.118:6063");
+//        dbAccount.setUrl("jdbc:mysql://47.111.150.118:6063");
+        dbAccount.setUrl("jdbc:mysql://122.112.180.156:6033/v09x_platf_core");
         dbAccount.setUser("root");
-        dbAccount.setPwd("*Zhong123098!");
+//        dbAccount.setPwd("*Zhong123098!");
 
+        dbAccount.setPwd("*Hello@27.com!");
         DbKit dbKit = new DbKit(dbAccount, "");
-        String sql1 = "SELECT * FROM `platf_oth`.`questionrecord` ORDER BY `createtime` DESC ;";
+        String sql1 = "SELECT * FROM `platf_oth`.`questionrecord` where createtime<1587830400000 and createtime>1587744000000 ORDER BY `createtime` DESC ;";
         String sql2 = "SELECT userid,username FROM `v09x_platf_core`.userdetail;";
         List<Map> list1 = dbKit.findList(sql1, Map.class);
         Kv users = Kv.of();
@@ -1002,22 +1004,22 @@ public class RunTest<T> {
             Object createtime = x.get("createtime");
             String s = datechange((Long) createtime);
             Object link_from = x.get("link_from");
-            int i =0;
-            if (link_from!=null&&!link_from.equals("sina")&&!link_from.equals("default")&&!link_from.equals("")){
-                i = Integer.parseInt(link_from.toString());
-            }
-            map.put("link_from", users.get(i));
+//            int i =0;
+//            if (link_from!=null&&!link_from.equals("sina")&&!link_from.equals("default")&&!link_from.equals("")){
+//                i = Integer.parseInt(link_from.toString());
+//            }
+//            map.put("link_from", users.get(i));
             map.put("createtime", s);
-            Object status = x.get("status");
-            if (status.equals(10)){
-                map.put("status","正常");
-            }else if (status.equals(20)){
-                map.put("status","待审核");
-            }else if (status.equals(11)){
-                map.put("status","审核通过");
-            }else if (status.equals(30)){
-                map.put("status","审核不通过");
-            }
+//            Object status = x.get("status");
+//            if (status.equals(10)){
+//                map.put("status","正常");
+//            }else if (status.equals(20)){
+//                map.put("status","待审核");
+//            }else if (status.equals(11)){
+//                map.put("status","审核通过");
+//            }else if (status.equals(30)){
+//                map.put("status","审核不通过");
+//            }
 
             list.add(map);
         });
@@ -1049,13 +1051,14 @@ public class RunTest<T> {
         kv.set("link_from", "渠道来源");
         kv.set("ip", "来源IP");
         kv.set("invitecode", "邀请码");
+        kv.set("batch", "封测批次");
         kv.set("createtime", "创建时间");
         kv.set("status", "状态");
 
         try {
             Workbook workbook = ExcelKit.exportExcel(list, kv);
 
-            workbook.write(new FileOutputStream(new File("target/question.xls")));
+            workbook.write(new FileOutputStream(new File("target/问卷4-25日数据.xls")));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1087,7 +1090,7 @@ public class RunTest<T> {
         // 创建文件
         Workbook wb = ExcelKit.exportExcels(sheets);
         try {
-            wb.write(new FileOutputStream(new File("tmp/邀请码_邀请记录_4-24.xls"))); // 将工作簿对象写到磁盘文件
+            wb.write(new FileOutputStream(new File("tmp/邀请码_邀请记录_4-25.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1109,8 +1112,10 @@ public class RunTest<T> {
 //        String time = sdf.format(current);
 //        System.out.println(time);
         SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String start="2020-04-24 00:00:00";
-        String end ="2020-04-23 00:00:00";
+        String start="2020-04-26 00:00:00";
+        String end ="2020-04-25 00:00:00";
+        //1587657600000
+        //1587744000000
 //得到毫秒数
         long timeStart=sdf.parse(start).getTime();
         System.out.println(timeStart);
@@ -1119,6 +1124,119 @@ public class RunTest<T> {
 
     }
 
+    @Test
+    public void createInvitiCode() {
+        // data,sheetName,hds,hdNames,
+
+        List<Map> codeList = findList("SELECT v.`invitecode` FROM `userinvitecode` v");
+
+        Set<String> allCode = new HashSet<>(); // 全部的邀请码
+        codeList.forEach(x -> allCode.add(x.get("invitecode") + ""));
+
+        List<Kv> users = null;
+        {
+            users = asList(
+                  /*Kv.of("userid", 11192).set("name", "周琴").set("n", 50),
+                    Kv.of("userid", 11047).set("name", "姜文洁").set("n", 50),
+                    Kv.of("userid", 11039).set("name", "王思佳").set("n", 50),
+                    Kv.of("userid", 11189).set("name", "吴文俊").set("n", 50),
+                    Kv.of("userid", 11190).set("name", "鲁萍").set("n", 50),
+                    Kv.of("userid", 11191).set("name", "严谨").set("n", 50),
+                    Kv.of("userid", 11042).set("name", "张曼玲").set("n", 10),
+                    Kv.of("userid", 11038).set("name", "包月琪").set("n", 10),
+                    Kv.of("userid", 11041).set("name", "梁显优").set("n", 10),
+                    Kv.of("userid", 11043).set("name", "李佺林").set("n", 10),
+                    Kv.of("userid", 11044).set("name", "曾昌").set("n", 10),
+                    Kv.of("userid", 11050).set("name", "唐华锋").set("n", 10),
+                    Kv.of("userid", 11049).set("name", "胡梦娇").set("n", 10),
+                    Kv.of("userid", 11051).set("name", "李亚光").set("n", 10),
+                    Kv.of("userid", 11053).set("name", "戴文婷").set("n", 10),
+                    Kv.of("userid", 11054).set("name", "吴双江").set("n", 10),
+                    Kv.of("userid", 11058).set("name", "瞿俏").set("n", 10),
+                    Kv.of("userid", 11193).set("name", "张成").set("n", 10),
+                    Kv.of("userid", 11194).set("name", "王伟").set("n", 10),
+                    Kv.of("userid", 11195).set("name", "熊宇").set("n", 10),
+                    Kv.of("userid", 11196).set("name", "赵才华").set("n", 10),
+                    Kv.of("userid", 11197).set("name", "李文龙").set("n", 10),
+                    Kv.of("userid", 11198).set("name", "曹亚军").set("n", 10),
+                    Kv.of("userid", 11199).set("name", "常重阳").set("n", 10),
+                    Kv.of("userid", 11200).set("name", "曾柏超").set("n", 10),
+                    Kv.of("userid", 11201).set("name", "邓聪").set("n", 10),
+                    Kv.of("userid", 11202).set("name", "李凯华").set("n", 10),
+                    Kv.of("userid", 11037).set("name", "汪志").set("n", 10)*/
+
+                    /*Kv.of("userid", 11244).set("name", "岩茹").set("n", 50),
+                    Kv.of("userid", 11245).set("name", "胡胡").set("n", 50)*/
+
+                    /*Kv.of("userid", 11047).set("name", "姜文洁").set("n", 350),
+                    Kv.of("userid", 11039).set("name", "王思佳").set("n", 225)*/
+
+                    /*Kv.of("userid", 11037).set("name", "汪志").set("n", 100)*/
+
+//                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 19)
+//                    Kv.of("userid", 11047).set("name", "姜文洁").set("n", 100)
+//                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 33)
+                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 1)
+            );
+
+        }
+        // 生成邀请码,
+        List<Map<String, Object>> sheets = new ArrayList<>();
+        StringBuilder buf = new StringBuilder("INSERT INTO `v09x_platf_core`.`userinvitecode` (`invitecode`,`userid`,`createtime`) VALUES \n");
+        for (Kv x : users) {
+            Map<String, Object> sheet = new HashMap<>();
+            sheet.put("sheetName", x.get("name"));
+            sheet.put("hdNames", new String[]{"序号", "邀请码"});
+            sheet.put("hds", new String[]{"inx", "code"});
+
+            List<Kv> data = new ArrayList<>();
+            for (int i = 0; i < (Integer) x.get("n"); i++) {
+                String code = null;
+                do {
+                    code = buildCode();
+                    if (!allCode.contains(code)) {
+                        allCode.add(code);
+                        data.add(Kv.of("inx", i + 1).set("code", code));
+                        buf.append(String.format("('%s',%s,%s),\n", code, x.get("userid"), System.currentTimeMillis()));
+                        try {
+                            Thread.sleep(1);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    }
+
+                } while (true);
+            }
+            sheet.put("data", data);
+            sheets.add(sheet);
+        }
+        buf.delete(buf.length() - 1, buf.length() + 1);
+        buf.append(";");
+        // 入库邀请码
+        FileKit.strToFile(buf.toString(), new File("tmp/邀请码_04-26_吴文俊.sql"));
+
+        // 创建文件
+        Workbook wb = ExcelKit.exportExcels(sheets);
+        try {
+            wb.write(new FileOutputStream(new File("tmp/邀请码_04-26_吴文俊.xls"))); // 将工作簿对象写到磁盘文件
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String buildCode() {
+        char[] str = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
+                'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
+                'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+        StringBuffer buf = new StringBuffer();
+        Random random = new Random();
+        while (buf.length() < 6) {
+            buf.append(str[random.nextInt(str.length)]);
+        }
+
+        return buf.toString();
+    }
 }
 
 
