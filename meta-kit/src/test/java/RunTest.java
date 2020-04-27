@@ -902,21 +902,53 @@ public class RunTest<T> {
 
     @Test
     public void inviteout() {
-        dbrun();
+//        dbrun();
 
 //        String sql1 = "SELECT userid FROM userinvitecode GROUP BY userid;";
-        String sql1 = "SELECT a.userid,b.username FROM userinvitecode a ,userdetail b WHERE a.userid = b.userid GROUP BY userid;";
-        Kv users = Kv.of();
-
-        findList(sql1).forEach(x -> {
-            users.put(x.get("userid"), x.get("username"));
-        });
+//        String sql1 = "SELECT a.userid,b.username FROM userinvitecode a ,userdetail b WHERE a.userid = b.userid GROUP BY userid;";
+//        Kv users = Kv.of();
+//
+//        findList(sql1).forEach(x -> {
+//            users.put(x.get("userid"), x.get("username"));
+//        });
+        HashMap<Integer, String> map = new HashMap<>();
+        map.put(11244,"岩茹");
+        map.put(11255,"11255");
+        map.put(11037,"汪志");
+        map.put(11038,"包月琪");
+        map.put(11039,"王思佳");
+        map.put(11041,"梁显优");
+        map.put(11042,"张曼玲");
+        map.put(11043,"李佺林");
+        map.put(11044,"曾昌");
+        map.put(11047,"姜文洁");
+        map.put(11049,"胡梦娇");
+        map.put(11050,"唐华锋");
+        map.put(11051,"李亚光");
+        map.put(11053,"戴文婷");
+        map.put(11054,"吴双江");
+        map.put(11058,"瞿俏");
+        map.put(11189,"吴文俊");
+        map.put(11190,"鲁萍");
+        map.put(11191,"严谨");
+        map.put(11192,"周琴");
+        map.put(11193,"张成");
+        map.put(11194,"王伟");
+        map.put(11195,"熊宇");
+        map.put(11196,"赵才华");
+        map.put(11197,"李文龙");
+        map.put(11198,"曹亚军");
+        map.put(11199,"常重阳");
+        map.put(11200,"曾柏超");
+        map.put(11201,"邓聪");
+        map.put(11202,"李凯华");
 
 
         List<Map<String, Object>> l = new ArrayList<>();
 
-        users.keySet().forEach(x -> {
-            Object username = users.get(x);
+        map.keySet().forEach(x -> {
+            String username = map.get(x);
+            System.out.println(username.toString());
             String sql3 = "SELECT  invitecode FROM userinvitecode WHERE userid = " + x + ";";
             List<Map> list2 = findList(sql3);
 //            invites.put(userid, list2);
@@ -971,7 +1003,7 @@ public class RunTest<T> {
 
         Workbook wb = ExcelKit.exportExcels(l);
         try {
-            wb.write(new FileOutputStream(new File("target/bbbb.xls"))); // 将工作簿对象写到磁盘文件
+            wb.write(new FileOutputStream(new File("target/邀请码信息.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -989,7 +1021,7 @@ public class RunTest<T> {
 
         dbAccount.setPwd("*Hello@27.com!");
         DbKit dbKit = new DbKit(dbAccount, "");
-        String sql1 = "SELECT * FROM `platf_oth`.`questionrecord` where createtime<1587830400000 and createtime>1587744000000 ORDER BY `createtime` DESC ;";
+        String sql1 = "SELECT * FROM `platf_oth`.`questionrecord` where createtime<1587916800000 and createtime>1587830400000 ORDER BY `createtime` DESC ;";
         String sql2 = "SELECT userid,username FROM `v09x_platf_core`.userdetail;";
         List<Map> list1 = dbKit.findList(sql1, Map.class);
         Kv users = Kv.of();
@@ -1071,14 +1103,53 @@ public class RunTest<T> {
     // 邀请码使用情况
     @Test
     public void x() {
-        String sql = "SELECT v.`invitecode` '邀请码',u.`username` '邀请人', u1.`username` '被邀请人',FROM_UNIXTIME(v.`createtime`/1000, '%Y-%m-%d %H:%i:%S') '激活码使用时间' FROM `userinviterecord` v LEFT JOIN userdetail u ON v.`userid`=u.`userid` LEFT JOIN userdetail u1 ON v.`inviteeid`=u1.`userid`\n" +
+//        String sql = "SELECT v.`invitecode` '邀请码',u.`username` '邀请人', u1.`username` '被邀请人',FROM_UNIXTIME(v.`createtime`/1000, '%Y-%m-%d %H:%i:%S') '激活码使用时间' FROM `userinviterecord` v LEFT JOIN userdetail u ON v.`userid`=u.`userid` LEFT JOIN userdetail u1 ON v.`inviteeid`=u1.`userid`\n" +
+//                "WHERE v.`userid` IN (11244,11255,11192 , 11047 , 11039 , 11189 , 11190 , 11191 , 11042 , 11038 , 11041 , 11043 , 11044 , 11050 , 11049 , 11051 , 11053 , 11054 , 11058 , 11193 , 11194 , 11195 , 11196 , 11197 , 11198 , 11199 , 11200 , 11201 , 11202 , 11037)  ORDER BY v.`createtime` DESC;";
+
+        String sql = "SELECT v.`invitecode` '邀请码',u.`userid` '邀请人', u1.`username` '被邀请人',FROM_UNIXTIME(v.`createtime`/1000, '%Y-%m-%d %H:%i:%S') '激活码使用时间' FROM `userinviterecord` v LEFT JOIN userdetail u ON v.`userid`=u.`userid` LEFT JOIN userdetail u1 ON v.`inviteeid`=u1.`userid`\n" +
                 "WHERE v.`userid` IN (11244,11255,11192 , 11047 , 11039 , 11189 , 11190 , 11191 , 11042 , 11038 , 11041 , 11043 , 11044 , 11050 , 11049 , 11051 , 11053 , 11054 , 11058 , 11193 , 11194 , 11195 , 11196 , 11197 , 11198 , 11199 , 11200 , 11201 , 11202 , 11037)  ORDER BY v.`createtime` DESC;";
 
+        HashMap<Object, Object> map = new HashMap<>();
+        map.put(11244,"岩茹");
+        map.put(11255,"11255");
+        map.put(11037,"汪志");
+        map.put(11038,"包月琪");
+        map.put(11039,"王思佳");
+        map.put(11041,"梁显优");
+        map.put(11042,"张曼玲");
+        map.put(11043,"李佺林");
+        map.put(11044,"曾昌");
+        map.put(11047,"姜文洁");
+        map.put(11049,"胡梦娇");
+        map.put(11050,"唐华锋");
+        map.put(11051,"李亚光");
+        map.put(11053,"戴文婷");
+        map.put(11054,"吴双江");
+        map.put(11058,"瞿俏");
+        map.put(11189,"吴文俊");
+        map.put(11190,"鲁萍");
+        map.put(11191,"严谨");
+        map.put(11192,"周琴");
+        map.put(11193,"张成");
+        map.put(11194,"王伟");
+        map.put(11195,"熊宇");
+        map.put(11196,"赵才华");
+        map.put(11197,"李文龙");
+        map.put(11198,"曹亚军");
+        map.put(11199,"常重阳");
+        map.put(11200,"曾柏超");
+        map.put(11201,"邓聪");
+        map.put(11202,"李凯华");
         Map<Object, List<Map>> listMap = findList(sql).stream().collect(Collectors.groupingBy(x -> x.get("邀请人")));
+//        listMap.keySet().forEach(x->{
+//            System.out.println(x);
+//        });
+
         List<Map<String, Object>> sheets = new ArrayList<>();
         listMap.forEach((k,v) -> {
             Map<String, Object> sheet = new HashMap<>();
-            sheet.put("sheetName", k);
+            System.out.println(map.get(k).toString());
+            sheet.put("sheetName", map.get(k).toString());
             sheet.put("hdNames", new String[]{"邀请码","被邀请人", "激活码使用时间"});
             sheet.put("hds", new String[]{"邀请码","被邀请人", "激活码使用时间"});
 
@@ -1090,7 +1161,7 @@ public class RunTest<T> {
         // 创建文件
         Workbook wb = ExcelKit.exportExcels(sheets);
         try {
-            wb.write(new FileOutputStream(new File("tmp/邀请码_邀请记录_4-25.xls"))); // 将工作簿对象写到磁盘文件
+            wb.write(new FileOutputStream(new File("tmp/邀请码_邀请记录_4-27.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1113,7 +1184,7 @@ public class RunTest<T> {
 //        System.out.println(time);
         SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String start="2020-04-26 00:00:00";
-        String end ="2020-04-25 00:00:00";
+        String end ="2020-04-27 00:00:00";
         //1587657600000
         //1587744000000
 //得到毫秒数
@@ -1176,7 +1247,8 @@ public class RunTest<T> {
 //                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 19)
 //                    Kv.of("userid", 11047).set("name", "姜文洁").set("n", 100)
 //                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 33)
-                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 1)
+//                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 1)
+                    Kv.of("userid", 11047).set("name", "姜文洁").set("n", 200)
             );
 
         }
@@ -1214,12 +1286,12 @@ public class RunTest<T> {
         buf.delete(buf.length() - 1, buf.length() + 1);
         buf.append(";");
         // 入库邀请码
-        FileKit.strToFile(buf.toString(), new File("tmp/邀请码_04-26_吴文俊.sql"));
+        FileKit.strToFile(buf.toString(), new File("tmp/邀请码_04-27_姜文洁.sql"));
 
         // 创建文件
         Workbook wb = ExcelKit.exportExcels(sheets);
         try {
-            wb.write(new FileOutputStream(new File("tmp/邀请码_04-26_吴文俊.xls"))); // 将工作簿对象写到磁盘文件
+            wb.write(new FileOutputStream(new File("tmp/邀请码_04-27_姜文洁.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
