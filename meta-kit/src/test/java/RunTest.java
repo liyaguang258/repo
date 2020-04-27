@@ -16,10 +16,7 @@ import org.redkale.convert.json.JsonConvert;
 import org.redkale.source.CacheMemorySource;
 import org.redkale.util.TypeToken;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.security.Timestamp;
@@ -1102,7 +1099,7 @@ public class RunTest<T> {
 
     // 邀请码使用情况
     @Test
-    public void x() {
+    public void invitecodeuse() {
 //        String sql = "SELECT v.`invitecode` '邀请码',u.`username` '邀请人', u1.`username` '被邀请人',FROM_UNIXTIME(v.`createtime`/1000, '%Y-%m-%d %H:%i:%S') '激活码使用时间' FROM `userinviterecord` v LEFT JOIN userdetail u ON v.`userid`=u.`userid` LEFT JOIN userdetail u1 ON v.`inviteeid`=u1.`userid`\n" +
 //                "WHERE v.`userid` IN (11244,11255,11192 , 11047 , 11039 , 11189 , 11190 , 11191 , 11042 , 11038 , 11041 , 11043 , 11044 , 11050 , 11049 , 11051 , 11053 , 11054 , 11058 , 11193 , 11194 , 11195 , 11196 , 11197 , 11198 , 11199 , 11200 , 11201 , 11202 , 11037)  ORDER BY v.`createtime` DESC;";
 
@@ -1110,36 +1107,9 @@ public class RunTest<T> {
                 "WHERE v.`userid` IN (11244,11255,11192 , 11047 , 11039 , 11189 , 11190 , 11191 , 11042 , 11038 , 11041 , 11043 , 11044 , 11050 , 11049 , 11051 , 11053 , 11054 , 11058 , 11193 , 11194 , 11195 , 11196 , 11197 , 11198 , 11199 , 11200 , 11201 , 11202 , 11037)  ORDER BY v.`createtime` DESC;";
 
         HashMap<Object, Object> map = new HashMap<>();
-        map.put(11244,"岩茹");
-        map.put(11255,"11255");
-        map.put(11037,"汪志");
-        map.put(11038,"包月琪");
-        map.put(11039,"王思佳");
-        map.put(11041,"梁显优");
-        map.put(11042,"张曼玲");
-        map.put(11043,"李佺林");
-        map.put(11044,"曾昌");
-        map.put(11047,"姜文洁");
-        map.put(11049,"胡梦娇");
-        map.put(11050,"唐华锋");
-        map.put(11051,"李亚光");
-        map.put(11053,"戴文婷");
-        map.put(11054,"吴双江");
-        map.put(11058,"瞿俏");
-        map.put(11189,"吴文俊");
-        map.put(11190,"鲁萍");
-        map.put(11191,"严谨");
-        map.put(11192,"周琴");
-        map.put(11193,"张成");
-        map.put(11194,"王伟");
-        map.put(11195,"熊宇");
-        map.put(11196,"赵才华");
-        map.put(11197,"李文龙");
-        map.put(11198,"曹亚军");
-        map.put(11199,"常重阳");
-        map.put(11200,"曾柏超");
-        map.put(11201,"邓聪");
-        map.put(11202,"李凯华");
+        map.put(11244,"岩茹");map.put(11255,"11255");map.put(11037,"汪志");map.put(11038,"包月琪");map.put(11039,"王思佳");map.put(11041,"梁显优");map.put(11042,"张曼玲");map.put(11043,"李佺林");map.put(11044,"曾昌");map.put(11047,"姜文洁");map.put(11049,"胡梦娇");map.put(11050,"唐华锋");map.put(11051,"李亚光");map.put(11053,"戴文婷");map.put(11054,"吴双江");map.put(11058,"瞿俏");map.put(11189,"吴文俊");map.put(11190,"鲁萍");map.put(11191,"严谨");map.put(11192,"周琴");map.put(11193,"张成");map.put(11194,"王伟");map.put(11195,"熊宇");map.put(11196,"赵才华");map.put(11197,"李文龙");map.put(11198,"曹亚军");map.put(11199,"常重阳");map.put(11200,"曾柏超");map.put(11201,"邓聪");map.put(11202,"李凯华");
+
+
         Map<Object, List<Map>> listMap = findList(sql).stream().collect(Collectors.groupingBy(x -> x.get("邀请人")));
 //        listMap.keySet().forEach(x->{
 //            System.out.println(x);
@@ -1253,48 +1223,115 @@ public class RunTest<T> {
 
         }
         // 生成邀请码,
-        List<Map<String, Object>> sheets = new ArrayList<>();
-        StringBuilder buf = new StringBuilder("INSERT INTO `v09x_platf_core`.`userinvitecode` (`invitecode`,`userid`,`createtime`) VALUES \n");
-        for (Kv x : users) {
-            Map<String, Object> sheet = new HashMap<>();
-            sheet.put("sheetName", x.get("name"));
-            sheet.put("hdNames", new String[]{"序号", "邀请码"});
-            sheet.put("hds", new String[]{"inx", "code"});
+//        List<Map<String, Object>> sheets = new ArrayList<>();
+//        StringBuilder buf = new StringBuilder("INSERT INTO `v09x_platf_core`.`userinvitecode` (`invitecode`,`userid`,`createtime`) VALUES \n");
+//        for (Kv x : users) {
+//            Map<String, Object> sheet = new HashMap<>();
+//            sheet.put("sheetName", x.get("name"));
+//            sheet.put("hdNames", new String[]{"序号", "邀请码"});
+//            sheet.put("hds", new String[]{"inx", "code"});
+//
+//            List<Kv> data = new ArrayList<>();
+//            for (int i = 0; i < (Integer) x.get("n"); i++) {
+//                String code = null;
+//                do {
+//                    code = buildCode();
+//                    if (!allCode.contains(code)) {
+//                        allCode.add(code);
+//                        data.add(Kv.of("inx", i + 1).set("code", code));
+//                        buf.append(String.format("('%s',%s,%s),\n", code, x.get("userid"), System.currentTimeMillis()));
+//                        try {
+//                            Thread.sleep(1);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                        break;
+//                    }
+//
+//                } while (true);
+//            }
+//            sheet.put("data", data);
+//            sheets.add(sheet);
+//        }
+//        buf.delete(buf.length() - 1, buf.length() + 1);
+//        buf.append(";");
+//        // 入库邀请码
+//        FileKit.strToFile(buf.toString(), new File("tmp/邀请码_04-27_姜文洁.sql"));
+//
+//        // 创建文件
+//        Workbook wb = ExcelKit.exportExcels(sheets);
+//        try {
+//            wb.write(new FileOutputStream(new File("tmp/邀请码_04-27_姜文洁.xls"))); // 将工作簿对象写到磁盘文件
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+    }
 
-            List<Kv> data = new ArrayList<>();
-            for (int i = 0; i < (Integer) x.get("n"); i++) {
-                String code = null;
-                do {
-                    code = buildCode();
-                    if (!allCode.contains(code)) {
-                        allCode.add(code);
-                        data.add(Kv.of("inx", i + 1).set("code", code));
-                        buf.append(String.format("('%s',%s,%s),\n", code, x.get("userid"), System.currentTimeMillis()));
-                        try {
-                            Thread.sleep(1);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                    }
-
-                } while (true);
-            }
-            sheet.put("data", data);
-            sheets.add(sheet);
-        }
-        buf.delete(buf.length() - 1, buf.length() + 1);
-        buf.append(";");
-        // 入库邀请码
-        FileKit.strToFile(buf.toString(), new File("tmp/邀请码_04-27_姜文洁.sql"));
-
-        // 创建文件
-        Workbook wb = ExcelKit.exportExcels(sheets);
+    static Properties properties = new Properties();
+    static {
         try {
-            wb.write(new FileOutputStream(new File("tmp/邀请码_04-27_姜文洁.xls"))); // 将工作簿对象写到磁盘文件
+            // 读取导入配置文件
+            properties.load(new FileReader(new File("src\\test\\resources\\import.txt")));//src\test\resources\import.txt
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    @Test
+    public void  updatequestion(){
+        String key = "questionrecord";    // 假定使用业务实体表名作为key
+        // 获取需要导入的列
+        String cfg = properties.getProperty(key);
+        String[] heads = cfg.split(",");
+        for (int i = 0; i < heads.length; i++) {
+            heads[i] = heads[i].trim();
+        }
+        Map<String, List<Map>> map = ExcelKit.readExcelAll(new File("target/问卷4-26日数据.xls"));
+//        List<Map> list = ExcelKit.readExcel(new File("target/问卷4-26日数据.xls"), heads);
+        Collection<List<Map>> values = map.values();
+        System.out.println(values.size());
+//        list.remove(0); // 去除多余的行首两行
+//        list.remove(0);
+
+//        System.out.println(list.size());
+        // 创建入库语句
+
+//        String sql = buildSql(list, heads, key);
+//        FileKit.strToFile(sql, new File("tmp/xxx.sql"));
+
+    }
+
+    /**
+     * 构建入库语句
+     * @param list  数据list<Map>
+     * @param heads 数据库需要入库的字段
+     * @param table 实体表
+     * @return
+     */
+    private String buildSql(List<Map> list, String[] heads, String table) {
+        StringBuilder bufKs = new StringBuilder();
+        StringBuilder bufVs = new StringBuilder();
+
+        for (String k : heads) {
+            if (!k.isEmpty()) {
+                bufKs.append("`" + k + "`,");
+            }
+        }
+        bufKs.deleteCharAt(bufKs.length() - 1);
+
+        list.forEach(m -> {
+            bufVs.append("(");
+            for (String k : heads) {
+                if (!k.isEmpty()) {
+                    bufVs.append("'" + m.get(k) + "',");
+                }
+            }
+            bufVs.deleteCharAt(bufVs.length() - 1); //去除最后多余的 逗号
+            bufVs.append("),");
+        });
+        bufVs.deleteCharAt(bufVs.length() - 1); //去除最后多余的 逗号
+//        UPDATE `platf_oth`.`questionrecord` SET `invitecode` =
+        return String.format("INSERT INTO  %s (%s) VALUES %s;", table, bufKs, bufVs);    // table, ks, vs
+//        return String.format("INSERT INTO %s (%s) VALUES %s;", table, bufKs, bufVs);    // table, ks, vs
     }
 
     private String buildCode() {
