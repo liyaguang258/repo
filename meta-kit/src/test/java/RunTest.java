@@ -897,7 +897,7 @@ public class RunTest<T> {
 
     }
 
-    @Test
+    @Test//每人所属邀请码信息
     public void inviteout() {
 //        dbrun();
 
@@ -910,7 +910,7 @@ public class RunTest<T> {
 //        });
         HashMap<Integer, String> map = new HashMap<>();
         map.put(11244, "岩茹");
-        map.put(11255, "11255");
+        map.put(11245, "胡胡");
         map.put(11037, "汪志");
         map.put(11038, "包月琪");
         map.put(11039, "王思佳");
@@ -1007,7 +1007,7 @@ public class RunTest<T> {
 
     }
 
-    @Test
+    @Test//每日问卷导出
     public void questionout() {
         DbAccount dbAccount = new DbAccount();
         dbAccount.setCate("mysql");
@@ -1096,6 +1096,81 @@ public class RunTest<T> {
 
     }
 
+    @Test//每日问卷导出
+    public void merchantout() {
+        DbAccount dbAccount = new DbAccount();
+        dbAccount.setCate("mysql");
+//        dbAccount.setUrl("jdbc:mysql://47.111.150.118:6063");
+        dbAccount.setUrl("jdbc:mysql://122.112.180.156:6033/v09x_platf_core");
+        dbAccount.setUser("root");
+//        dbAccount.setPwd("*Zhong123098!");
+
+        dbAccount.setPwd("*Hello@27.com!");
+        DbKit dbKit = new DbKit(dbAccount, "");
+        String sql1 = "SELECT * FROM `v09x_platf_core`.`merchantinfo`  ORDER BY `createtime` DESC ;";
+        String sql2 = "SELECT userid,username FROM `v09x_platf_core`.userdetail;";
+        List<Map> list1 = dbKit.findList(sql1, Map.class);
+        Kv users = Kv.of();
+        findList(sql2).forEach(x -> {
+            users.put(x.get("userid"), x.get("username"));
+        });
+        List<Map> list = new ArrayList<>();
+
+        list1.forEach(x -> {
+            HashMap<Object, Object> map = new HashMap<>();
+            map.putAll(x);
+            Object createtime = x.get("createtime");
+            String s = datechange((Long) createtime);
+            map.put("createtime", s);
+            String updatetime = datechange((Long) x.get("updatetime"));
+            map.put("updatetime",updatetime);
+            list.add(map);
+        });
+
+        Kv kv = Kv.of();
+
+        kv.set("merchantid", "游戏开发/运营商ID");
+        kv.set("merchantname", "商家名称");
+        kv.set("merchantgovurl", "商家官网");
+        kv.set("merchantnameen", "商家英文名称");
+        kv.set("merchantlogo", "商家logo");
+        kv.set("merchantalias", "商家别名");
+        kv.set("creditcode", "统一社会信用代码");
+        kv.set("businesscode", "工商号码");
+        kv.set("teamsize", "团队规模");
+        kv.set("operationstatus ", "经营状态");
+        kv.set("businessstart", "营业期限开始");
+        kv.set("businessend", "营业期限结束");
+        kv.set("behalfuser", "法定代表人");
+        kv.set("mobile", "联系电话");
+        kv.set("createtime", "创建时间");
+        kv.set("creatememberid", "创建人ID");
+        kv.set("updatetime", "修改时间");
+        kv.set("updatememberid", "修改人ID");
+        kv.set("email", "邮箱");
+        kv.set("registration", "登记机关");
+        kv.set("capital", "注册资金");
+        kv.set("zone", "行政区划");
+        kv.set("address", "企业地址");
+        kv.set("introduction", "企业简介");
+        kv.set("licenseimg", "营业执照");
+        kv.set("gamecount", "游戏数量");
+        kv.set("publishedcount", "发行游戏数量");
+        kv.set("developedcount", "开发游戏数量");
+        kv.set("status", "状态");
+        kv.set("followcount", "关注数");
+
+        try {
+            Workbook workbook = ExcelKit.exportExcel(list, kv);
+
+            workbook.write(new FileOutputStream(new File("target/厂商4-28日数据.xls")));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
 
     // 邀请码使用情况
     @Test
@@ -1104,11 +1179,11 @@ public class RunTest<T> {
 //                "WHERE v.`userid` IN (11244,11255,11192 , 11047 , 11039 , 11189 , 11190 , 11191 , 11042 , 11038 , 11041 , 11043 , 11044 , 11050 , 11049 , 11051 , 11053 , 11054 , 11058 , 11193 , 11194 , 11195 , 11196 , 11197 , 11198 , 11199 , 11200 , 11201 , 11202 , 11037)  ORDER BY v.`createtime` DESC;";
 
         String sql = "SELECT v.`invitecode` '邀请码',u.`userid` '邀请人', u1.`username` '被邀请人',FROM_UNIXTIME(v.`createtime`/1000, '%Y-%m-%d %H:%i:%S') '激活码使用时间' FROM `userinviterecord` v LEFT JOIN userdetail u ON v.`userid`=u.`userid` LEFT JOIN userdetail u1 ON v.`inviteeid`=u1.`userid`\n" +
-                "WHERE v.`userid` IN (11244,11255,11192 , 11047 , 11039 , 11189 , 11190 , 11191 , 11042 , 11038 , 11041 , 11043 , 11044 , 11050 , 11049 , 11051 , 11053 , 11054 , 11058 , 11193 , 11194 , 11195 , 11196 , 11197 , 11198 , 11199 , 11200 , 11201 , 11202 , 11037)  ORDER BY v.`createtime` DESC;";
+                "WHERE v.`userid` IN (11244,11245,11192 , 11047 , 11039 , 11189 , 11190 , 11191 , 11042 , 11038 , 11041 , 11043 , 11044 , 11050 , 11049 , 11051 , 11053 , 11054 , 11058 , 11193 , 11194 , 11195 , 11196 , 11197 , 11198 , 11199 , 11200 , 11201 , 11202 , 11037)  ORDER BY v.`createtime` DESC;";
 
         HashMap<Object, Object> map = new HashMap<>();
         map.put(11244, "岩茹");
-        map.put(11255, "11255");
+        map.put(11245, "胡胡");
         map.put(11037, "汪志");
         map.put(11038, "包月琪");
         map.put(11039, "王思佳");
@@ -1165,6 +1240,7 @@ public class RunTest<T> {
         }
     }
 
+    //时间格式转换
     public String datechange(long date) {
         Date current = new Date(date);
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(
@@ -1173,7 +1249,7 @@ public class RunTest<T> {
         return time;
     }
 
-    @Test
+    @Test//时间转换
     public void time() throws ParseException {
 //        Date current = new Date();
 //        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(
@@ -1181,7 +1257,7 @@ public class RunTest<T> {
 //        String time = sdf.format(current);
 //        System.out.println(time);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String start = "2020-04-28 00:00:00";
+        String start = "2020-04-22 00:00:00";
         String end = "2020-04-27 00:00:00";
         //1587657600000
         //1587744000000
@@ -1193,7 +1269,7 @@ public class RunTest<T> {
 
     }
 
-    @Test
+    @Test//生成邀请码
     public void createInvitiCode() {
         // data,sheetName,hds,hdNames,
 
@@ -1247,73 +1323,65 @@ public class RunTest<T> {
 //                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 33)
 //                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 1)
 //                    Kv.of("userid", 11047).set("name", "姜文洁").set("n", 200)
-                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 2)
+//                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 2)
+//                    Kv.of("userid", 11047).set("name", "姜文洁").set("n", 200)
             );
 
         }
          //生成邀请码,
-//        List<Map<String, Object>> sheets = new ArrayList<>();
-//        StringBuilder buf = new StringBuilder("INSERT INTO `v09x_platf_core`.`userinvitecode` (`invitecode`,`userid`,`createtime`) VALUES \n");
-//        for (Kv x : users) {
-//            Map<String, Object> sheet = new HashMap<>();
-//            sheet.put("sheetName", x.get("name"));
-//            sheet.put("hdNames", new String[]{"序号", "邀请码"});
-//            sheet.put("hds", new String[]{"inx", "code"});
-//
-//            List<Kv> data = new ArrayList<>();
-//            for (int i = 0; i < (Integer) x.get("n"); i++) {
-//                String code = null;
-//                do {
-//                    code = buildCode();
-//                    if (!allCode.contains(code)) {
-//                        allCode.add(code);
-//                        data.add(Kv.of("inx", i + 1).set("code", code));
-//                        buf.append(String.format("('%s',%s,%s),\n", code, x.get("userid"), System.currentTimeMillis()));
-//                        try {
-//                            Thread.sleep(1);
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                        break;
-//                    }
-//
-//                } while (true);
-//            }
-//            sheet.put("data", data);
-//            sheets.add(sheet);
-//        }
-//        buf.delete(buf.length() - 1, buf.length() + 1);
-//        buf.append(";");
-//        // 入库邀请码
-//        FileKit.strToFile(buf.toString(), new File("tmp/邀请码_04-28_吴文俊.sql"));
-//
-//        // 创建文件
-//        Workbook wb = ExcelKit.exportExcels(sheets);
-//        try {
-//            wb.write(new FileOutputStream(new File("tmp/邀请码_04-28_吴文俊.xls"))); // 将工作簿对象写到磁盘文件
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-    }
+        List<Map<String, Object>> sheets = new ArrayList<>();
+        StringBuilder buf = new StringBuilder("INSERT INTO `v09x_platf_core`.`userinvitecode` (`invitecode`,`userid`,`createtime`) VALUES \n");
+        for (Kv x : users) {
+            Map<String, Object> sheet = new HashMap<>();
+            sheet.put("sheetName", x.get("name"));
+            sheet.put("hdNames", new String[]{"序号", "邀请码"});
+            sheet.put("hds", new String[]{"inx", "code"});
 
-    static Properties properties = new Properties();
+            List<Kv> data = new ArrayList<>();
+            for (int i = 0; i < (Integer) x.get("n"); i++) {
+                String code = null;
+                do {
+                    code = buildCode();
+                    if (!allCode.contains(code)) {
+                        allCode.add(code);
+                        data.add(Kv.of("inx", i + 1).set("code", code));
+                        buf.append(String.format("('%s',%s,%s),\n", code, x.get("userid"), System.currentTimeMillis()));
+                        try {
+                            Thread.sleep(1);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    }
 
-    static {
+                } while (true);
+            }
+            sheet.put("data", data);
+            sheets.add(sheet);
+        }
+        buf.delete(buf.length() - 1, buf.length() + 1);
+        buf.append(";");
+        // 入库邀请码
+        FileKit.strToFile(buf.toString(), new File("tmp/邀请码_04-28_姜文洁.sql"));
+
+        // 创建文件
+        Workbook wb = ExcelKit.exportExcels(sheets);
         try {
-            // 读取导入配置文件
-            properties.load(new FileReader(new File("src\\test\\resources\\import.txt")));//src\test\resources\import.txt
+            wb.write(new FileOutputStream(new File("tmp/邀请码_04-28_姜文洁.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    //读取问卷excle生成updatesql信息；
 
+    //读取问卷excle生成updatesql语句；
     @Test
     public void updatequestion() throws FileNotFoundException {
         StringBuffer buff = new StringBuffer();
         String[] FIELDS = {"email", "mobile", "phone_os", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "invitecode", "batch", "", "status"};
-        List<Map> list = ExcelKit.readExcel(new File("target/问卷4-26日数据.xls"), FIELDS, "sheet0");
+//        List<Map> list = ExcelKit.readExcel(new File("target/问卷4-27日数据.xls"), FIELDS, "sheet0");
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\编辑每日数据\\4月23日数据.xls"), FIELDS, "sheet0");
+        //C:\Users\wh\Desktop\编辑每日数据
         list.remove(0);//去除多余的行首
         list.forEach(x -> {
             buff.append("UPDATE `platf_oth`.`questionrecord` ");
@@ -1330,41 +1398,6 @@ public class RunTest<T> {
         // 问卷更新sql
         FileKit.strToFile(buff.toString(), new File("tmp/问卷_04-27_吴文俊.sql"));
 
-    }
-
-    /**
-     * 构建入库语句
-     *
-     * @param list  数据list<Map>
-     * @param heads 数据库需要入库的字段
-     * @param table 实体表
-     * @return
-     */
-    private String buildSql(List<Map> list, String[] heads, String table) {
-        StringBuilder bufKs = new StringBuilder();
-        StringBuilder bufVs = new StringBuilder();
-
-        for (String k : heads) {
-            if (!k.isEmpty()) {
-                bufKs.append("`" + k + "`,");
-            }
-        }
-        bufKs.deleteCharAt(bufKs.length() - 1);
-
-        list.forEach(m -> {
-            bufVs.append("(");
-            for (String k : heads) {
-                if (!k.isEmpty()) {
-                    bufVs.append("'" + m.get(k) + "',");
-                }
-            }
-            bufVs.deleteCharAt(bufVs.length() - 1); //去除最后多余的 逗号
-            bufVs.append("),");
-        });
-        bufVs.deleteCharAt(bufVs.length() - 1); //去除最后多余的 逗号
-//        UPDATE `platf_oth`.`questionrecord` SET `invitecode` =
-        return String.format("INSERT INTO  %s (%s) VALUES %s;", table, bufKs, bufVs);    // table, ks, vs
-//        return String.format("INSERT INTO %s (%s) VALUES %s;", table, bufKs, bufVs);    // table, ks, vs
     }
 
     private String buildCode() {
