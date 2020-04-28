@@ -909,36 +909,36 @@ public class RunTest<T> {
 //            users.put(x.get("userid"), x.get("username"));
 //        });
         HashMap<Integer, String> map = new HashMap<>();
-        map.put(11244,"岩茹");
-        map.put(11255,"11255");
-        map.put(11037,"汪志");
-        map.put(11038,"包月琪");
-        map.put(11039,"王思佳");
-        map.put(11041,"梁显优");
-        map.put(11042,"张曼玲");
-        map.put(11043,"李佺林");
-        map.put(11044,"曾昌");
-        map.put(11047,"姜文洁");
-        map.put(11049,"胡梦娇");
-        map.put(11050,"唐华锋");
-        map.put(11051,"李亚光");
-        map.put(11053,"戴文婷");
-        map.put(11054,"吴双江");
-        map.put(11058,"瞿俏");
-        map.put(11189,"吴文俊");
-        map.put(11190,"鲁萍");
-        map.put(11191,"严谨");
-        map.put(11192,"周琴");
-        map.put(11193,"张成");
-        map.put(11194,"王伟");
-        map.put(11195,"熊宇");
-        map.put(11196,"赵才华");
-        map.put(11197,"李文龙");
-        map.put(11198,"曹亚军");
-        map.put(11199,"常重阳");
-        map.put(11200,"曾柏超");
-        map.put(11201,"邓聪");
-        map.put(11202,"李凯华");
+        map.put(11244, "岩茹");
+        map.put(11255, "11255");
+        map.put(11037, "汪志");
+        map.put(11038, "包月琪");
+        map.put(11039, "王思佳");
+        map.put(11041, "梁显优");
+        map.put(11042, "张曼玲");
+        map.put(11043, "李佺林");
+        map.put(11044, "曾昌");
+        map.put(11047, "姜文洁");
+        map.put(11049, "胡梦娇");
+        map.put(11050, "唐华锋");
+        map.put(11051, "李亚光");
+        map.put(11053, "戴文婷");
+        map.put(11054, "吴双江");
+        map.put(11058, "瞿俏");
+        map.put(11189, "吴文俊");
+        map.put(11190, "鲁萍");
+        map.put(11191, "严谨");
+        map.put(11192, "周琴");
+        map.put(11193, "张成");
+        map.put(11194, "王伟");
+        map.put(11195, "熊宇");
+        map.put(11196, "赵才华");
+        map.put(11197, "李文龙");
+        map.put(11198, "曹亚军");
+        map.put(11199, "常重阳");
+        map.put(11200, "曾柏超");
+        map.put(11201, "邓聪");
+        map.put(11202, "李凯华");
 
 
         List<Map<String, Object>> l = new ArrayList<>();
@@ -1018,7 +1018,7 @@ public class RunTest<T> {
 
         dbAccount.setPwd("*Hello@27.com!");
         DbKit dbKit = new DbKit(dbAccount, "");
-        String sql1 = "SELECT * FROM `platf_oth`.`questionrecord` where createtime<1587916800000 and createtime>1587830400000 ORDER BY `createtime` DESC ;";
+        String sql1 = "SELECT * FROM `platf_oth`.`questionrecord` where createtime<1588003200000 and createtime>1587916800000 ORDER BY `createtime` DESC ;";
         String sql2 = "SELECT userid,username FROM `v09x_platf_core`.userdetail;";
         List<Map> list1 = dbKit.findList(sql1, Map.class);
         Kv users = Kv.of();
@@ -1087,7 +1087,7 @@ public class RunTest<T> {
         try {
             Workbook workbook = ExcelKit.exportExcel(list, kv);
 
-            workbook.write(new FileOutputStream(new File("target/问卷4-25日数据.xls")));
+            workbook.write(new FileOutputStream(new File("target/问卷4-27日数据.xls")));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1107,7 +1107,36 @@ public class RunTest<T> {
                 "WHERE v.`userid` IN (11244,11255,11192 , 11047 , 11039 , 11189 , 11190 , 11191 , 11042 , 11038 , 11041 , 11043 , 11044 , 11050 , 11049 , 11051 , 11053 , 11054 , 11058 , 11193 , 11194 , 11195 , 11196 , 11197 , 11198 , 11199 , 11200 , 11201 , 11202 , 11037)  ORDER BY v.`createtime` DESC;";
 
         HashMap<Object, Object> map = new HashMap<>();
-        map.put(11244,"岩茹");map.put(11255,"11255");map.put(11037,"汪志");map.put(11038,"包月琪");map.put(11039,"王思佳");map.put(11041,"梁显优");map.put(11042,"张曼玲");map.put(11043,"李佺林");map.put(11044,"曾昌");map.put(11047,"姜文洁");map.put(11049,"胡梦娇");map.put(11050,"唐华锋");map.put(11051,"李亚光");map.put(11053,"戴文婷");map.put(11054,"吴双江");map.put(11058,"瞿俏");map.put(11189,"吴文俊");map.put(11190,"鲁萍");map.put(11191,"严谨");map.put(11192,"周琴");map.put(11193,"张成");map.put(11194,"王伟");map.put(11195,"熊宇");map.put(11196,"赵才华");map.put(11197,"李文龙");map.put(11198,"曹亚军");map.put(11199,"常重阳");map.put(11200,"曾柏超");map.put(11201,"邓聪");map.put(11202,"李凯华");
+        map.put(11244, "岩茹");
+        map.put(11255, "11255");
+        map.put(11037, "汪志");
+        map.put(11038, "包月琪");
+        map.put(11039, "王思佳");
+        map.put(11041, "梁显优");
+        map.put(11042, "张曼玲");
+        map.put(11043, "李佺林");
+        map.put(11044, "曾昌");
+        map.put(11047, "姜文洁");
+        map.put(11049, "胡梦娇");
+        map.put(11050, "唐华锋");
+        map.put(11051, "李亚光");
+        map.put(11053, "戴文婷");
+        map.put(11054, "吴双江");
+        map.put(11058, "瞿俏");
+        map.put(11189, "吴文俊");
+        map.put(11190, "鲁萍");
+        map.put(11191, "严谨");
+        map.put(11192, "周琴");
+        map.put(11193, "张成");
+        map.put(11194, "王伟");
+        map.put(11195, "熊宇");
+        map.put(11196, "赵才华");
+        map.put(11197, "李文龙");
+        map.put(11198, "曹亚军");
+        map.put(11199, "常重阳");
+        map.put(11200, "曾柏超");
+        map.put(11201, "邓聪");
+        map.put(11202, "李凯华");
 
 
         Map<Object, List<Map>> listMap = findList(sql).stream().collect(Collectors.groupingBy(x -> x.get("邀请人")));
@@ -1116,22 +1145,21 @@ public class RunTest<T> {
 //        });
 
         List<Map<String, Object>> sheets = new ArrayList<>();
-        listMap.forEach((k,v) -> {
+        listMap.forEach((k, v) -> {
             Map<String, Object> sheet = new HashMap<>();
-            System.out.println(map.get(k).toString());
             sheet.put("sheetName", map.get(k).toString());
-            sheet.put("hdNames", new String[]{"邀请码","被邀请人", "激活码使用时间"});
-            sheet.put("hds", new String[]{"邀请码","被邀请人", "激活码使用时间"});
+            sheet.put("hdNames", new String[]{"邀请码", "被邀请人", "激活码使用时间"});
+            sheet.put("hds", new String[]{"邀请码", "被邀请人", "激活码使用时间"});
 
             sheet.put("data", v);
             sheets.add(sheet);
         });
 
-        sheets.sort(Comparator.comparing(x -> -((List)x.get("data")).size()));
+        sheets.sort(Comparator.comparing(x -> -((List) x.get("data")).size()));
         // 创建文件
         Workbook wb = ExcelKit.exportExcels(sheets);
         try {
-            wb.write(new FileOutputStream(new File("tmp/邀请码_邀请记录_4-27.xls"))); // 将工作簿对象写到磁盘文件
+            wb.write(new FileOutputStream(new File("tmp/邀请码_邀请记录_4-28.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1152,15 +1180,15 @@ public class RunTest<T> {
 //                "yyyy-MM-dd HH:mm:ss");
 //        String time = sdf.format(current);
 //        System.out.println(time);
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String start="2020-04-26 00:00:00";
-        String end ="2020-04-27 00:00:00";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String start = "2020-04-28 00:00:00";
+        String end = "2020-04-27 00:00:00";
         //1587657600000
         //1587744000000
 //得到毫秒数
-        long timeStart=sdf.parse(start).getTime();
+        long timeStart = sdf.parse(start).getTime();
         System.out.println(timeStart);
-        long timeEnd =sdf.parse(end).getTime();
+        long timeEnd = sdf.parse(end).getTime();
         System.out.println(timeEnd);
 
     }
@@ -1218,11 +1246,12 @@ public class RunTest<T> {
 //                    Kv.of("userid", 11047).set("name", "姜文洁").set("n", 100)
 //                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 33)
 //                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 1)
-                    Kv.of("userid", 11047).set("name", "姜文洁").set("n", 200)
+//                    Kv.of("userid", 11047).set("name", "姜文洁").set("n", 200)
+                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 2)
             );
 
         }
-        // 生成邀请码,
+         //生成邀请码,
 //        List<Map<String, Object>> sheets = new ArrayList<>();
 //        StringBuilder buf = new StringBuilder("INSERT INTO `v09x_platf_core`.`userinvitecode` (`invitecode`,`userid`,`createtime`) VALUES \n");
 //        for (Kv x : users) {
@@ -1256,18 +1285,19 @@ public class RunTest<T> {
 //        buf.delete(buf.length() - 1, buf.length() + 1);
 //        buf.append(";");
 //        // 入库邀请码
-//        FileKit.strToFile(buf.toString(), new File("tmp/邀请码_04-27_姜文洁.sql"));
+//        FileKit.strToFile(buf.toString(), new File("tmp/邀请码_04-28_吴文俊.sql"));
 //
 //        // 创建文件
 //        Workbook wb = ExcelKit.exportExcels(sheets);
 //        try {
-//            wb.write(new FileOutputStream(new File("tmp/邀请码_04-27_姜文洁.xls"))); // 将工作簿对象写到磁盘文件
+//            wb.write(new FileOutputStream(new File("tmp/邀请码_04-28_吴文俊.xls"))); // 将工作簿对象写到磁盘文件
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
     }
 
     static Properties properties = new Properties();
+
     static {
         try {
             // 读取导入配置文件
@@ -1276,32 +1306,35 @@ public class RunTest<T> {
             e.printStackTrace();
         }
     }
+
+    //读取问卷excle生成updatesql信息；
+
     @Test
-    public void  updatequestion(){
-        String key = "questionrecord";    // 假定使用业务实体表名作为key
-        // 获取需要导入的列
-        String cfg = properties.getProperty(key);
-        String[] heads = cfg.split(",");
-        for (int i = 0; i < heads.length; i++) {
-            heads[i] = heads[i].trim();
-        }
-        Map<String, List<Map>> map = ExcelKit.readExcelAll(new File("target/问卷4-26日数据.xls"));
-//        List<Map> list = ExcelKit.readExcel(new File("target/问卷4-26日数据.xls"), heads);
-        Collection<List<Map>> values = map.values();
-        System.out.println(values.size());
-//        list.remove(0); // 去除多余的行首两行
-//        list.remove(0);
-
-//        System.out.println(list.size());
-        // 创建入库语句
-
-//        String sql = buildSql(list, heads, key);
-//        FileKit.strToFile(sql, new File("tmp/xxx.sql"));
+    public void updatequestion() throws FileNotFoundException {
+        StringBuffer buff = new StringBuffer();
+        String[] FIELDS = {"email", "mobile", "phone_os", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "invitecode", "batch", "", "status"};
+        List<Map> list = ExcelKit.readExcel(new File("target/问卷4-26日数据.xls"), FIELDS, "sheet0");
+        list.remove(0);//去除多余的行首
+        list.forEach(x -> {
+            buff.append("UPDATE `platf_oth`.`questionrecord` ");
+            String invitecode = x.get("invitecode").toString();
+            String batch = x.get("batch").toString();
+            String status = x.get("status").toString();
+            String mobile = x.get("mobile").toString();
+            buff.append("SET invitecode = '"+invitecode+"' ,");
+            buff.append(" batch = '"+batch+"' ,");
+            buff.append(" status = "+status+" ");
+            buff.append("WHERE mobile = '"+mobile+"';"+"\n");
+        });
+        System.out.println(buff);
+        // 问卷更新sql
+        FileKit.strToFile(buff.toString(), new File("tmp/问卷_04-27_吴文俊.sql"));
 
     }
 
     /**
      * 构建入库语句
+     *
      * @param list  数据list<Map>
      * @param heads 数据库需要入库的字段
      * @param table 实体表
