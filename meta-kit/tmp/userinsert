@@ -54,26 +54,26 @@ UPDATE `v09x_platf_core`.`dictinfo` SET `strvalue` = ',11453,11454,11455,11456,1
 
 UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://zimg.1216.top/face/f.png' WHERE `userid` = 11339
 
-UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/timg1.jpg' WHERE `userid` = 11453 ;
-UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/timg2.jpg' WHERE `userid` = 11454 ;
-UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/timg3.jpg' WHERE `userid` = 11455 ;
-UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/timg4.jpg' WHERE `userid` = 11456 ;
-UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/timg5.jpg' WHERE `userid` = 11457 ;
-UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/timg6.jpg' WHERE `userid` = 11458 ;
-UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/timg7.jpg' WHERE `userid` = 11459 ;
-UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/timg8.jpg' WHERE `userid` = 11460 ;
-UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/timg9.jpg' WHERE `userid` = 11461 ;
-UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/timg10.jpg' WHERE `userid` = 11462 ;
-UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/IMG_2570.JPG' WHERE `userid` = 11463 ;
-UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/IMG_2571.JPG' WHERE `userid` = 11464 ;
-UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/IMG_2572.JPG' WHERE `userid` = 11465 ;
-UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/IMG_2573.JPG' WHERE `userid` = 11466 ;
-UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/IMG_2574.JPG' WHERE `userid` = 11467 ;
-UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/IMG_2575.JPG' WHERE `userid` = 11468 ;
-UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/IMG_2576.JPG' WHERE `userid` = 11469 ;
-UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/IMG_2577.JPG' WHERE `userid` = 11470 ;
-UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/IMG_2578.JPG' WHERE `userid` = 11471 ;
-UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/IMG_2579.JPG' WHERE `userid` = 11472 ;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/face/timg1.jpg' WHERE `userid` = 11320;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/face/timg2.jpg' WHERE `userid` = 11321;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/face/timg3.jpg' WHERE `userid` = 11322;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/face/timg4.jpg' WHERE `userid` = 11323;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/face/timg5.jpg' WHERE `userid` = 11324;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/face/timg6.jpg' WHERE `userid` = 11325;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/face/timg7.jpg' WHERE `userid` = 11326;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/face/timg8.jpg' WHERE `userid` = 11327;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/face/timg9.jpg' WHERE `userid` = 11328;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/face/timg10.jpg' WHERE `userid` = 11329;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/face/IMG_2570.JPG' WHERE `userid` = 11330;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/face/IMG_2571.JPG' WHERE `userid` = 11331;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/face/IMG_2572.JPG' WHERE `userid` = 11332;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/face/IMG_2573.JPG' WHERE `userid` = 11333;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/face/IMG_2574.JPG' WHERE `userid` = 11334;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/face/IMG_2575.JPG' WHERE `userid` = 11335;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/face/IMG_2576.JPG' WHERE `userid` = 11336;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/face/IMG_2577.JPG' WHERE `userid` = 11337;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/face/IMG_2578.JPG' WHERE `userid` = 11338;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/face/IMG_2579.JPG' WHERE `userid` = 11339;
 
 
 UPDATE `v09x_platf_core`.`dictinfo` SET `strvalue` = ',11078,11079,11080,11081,11082,11083,11084,11085,11086,11087,11320,11321,11322,11323,11324,11325,11326,11327,11328,11329,' WHERE `keyname` = 'SYS-MEMEBER-USER-1000004'
