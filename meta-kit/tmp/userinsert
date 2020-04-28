@@ -1,21 +1,79 @@
-INSERT INTO `v09x_platf_core`.`userdetail` (`userid`,`username`,'face','birthday','gender') VALUES
-('11318','一硕公子','','1999-03-26',2),
-('11319','文惠三岁啦','','2009-04-25',4),
-('11320','小小江吖','','1995-12-25',4),
-('11321','邻家淑敏','','1998-02-22',4),
-('11322','平绿超级甜','','1990-04-28',2),
-('11323','爱梅mio','','2001-05-21',4),
-('11324','瑜然大叔','','2002-04-15',2),
-('11325','银柳小可爱','','1997-07-23',4),
-('11326','志民mm','','1996-10-05',2),
-('11327','一只冰玉呀','','1998-07-24',4),
-('11328','不务正业的退役选手','','2003-08-25',2),
-('11329','热心玩家曹某某','','2006-03-23',2),
-('11330','偷你家西瓜','','2000-07-15',2),
-('11331','绝不让你得逞','','1999-09-25',2),
-('11332','妄想有钱','','2000-01-23',2),
-('11333','小小小小大哥','','2005-08-15',4),
-('11334','你出戏了','','2002-12-05',4),
-('11335','我来抓你了','','2003-08-25',4),
-('11336','谁还不知道你是谁','','2004-03-05',2),
-('11337','我没有黑眼圈','','2005-11-25',2);
+INSERT INTO `v09x_platf_core`.`userdetail` (`userid`,userno,`username`,birthday,gender) VALUES
+(11320,100386,'一硕公子','1999-03-26',2),
+(11321,100387,'文惠三岁啦','2009-04-25',4),
+(11322,100388,'小小江吖','1995-12-25',4),
+(11323,100389,'邻家淑敏','1998-02-22',4),
+(11324,100390,'平绿超级甜','1990-04-28',2),
+(11325,100391,'爱梅mio','2001-05-21',4),
+(11326,100392,'瑜然大叔','2002-04-15',2),
+(11327,100393,'银柳小可爱','1997-07-23',4),
+(11328,100394,'志民mm','1996-10-05',2),
+(11329,100395,'一只冰玉呀','1998-07-24',4),
+(11330,100396,'不务正业的退役选手','2003-08-25',2),
+(11331,100397,'热心玩家曹某某','2006-03-23',2),
+(11332,100398,'偷你家西瓜','2000-07-15',2),
+(11333,100399,'绝不让你得逞','1999-09-25',2),
+(11334,100400,'妄想有钱','2000-01-23',2),
+(11335,100401,'小小小小大哥','2005-08-15',4),
+(11336,100402,'你出戏了','2002-12-05',4),
+(11337,100403,'我来抓你了','2003-08-25',4),
+(11338,100404,'谁还不知道你是谁','2004-03-05',2),
+(11339,100405,'我没有黑眼圈','2005-11-25',2);
+
+UPDATE `v09x_platf_core`.`dictinfo` SET `strvalue` = ',11078,11079,11080,11081,11082,11083,11084,11085,11086,11087,11320, 11321, 11322, 11323, 11324, 11325, 11326, 11327, 11328, 11329,' WHERE `keyname` = 'SYS-MEMEBER-USER-1000004'
+
+UPDATE `v09x_platf_core`.`dictinfo` SET `strvalue` = ',11069,11070,11071,11072,11073,11074,11075,11076,11077,11108,11330, 11331, 11332, 11333, 11334, 11335, 11336, 11337, 11338, 11339,' WHERE `keyname` = 'SYS-MEMEBER-USER-1000003'
+
+
+
+INSERT INTO `v09x_platf_core`.`userdetail` (`userid`,userno,`username`,birthday,gender) VALUES
+(11453,100460,'一硕公子','1999-03-26',2),
+(11454,100461,'文惠三岁啦','2009-04-25',4),
+(11455,100462,'小小江吖','1995-12-25',4),
+(11456,100463,'邻家淑敏','1998-02-22',4),
+(11457,100464,'平绿超级甜','1990-04-28',2),
+(11458,100465,'爱梅mio','2001-05-21',4),
+(11459,100466,'瑜然大叔','2002-04-15',2),
+(11460,100467,'银柳小可爱','1997-07-23',4),
+(11461,100468,'志民mm','1996-10-05',2),
+(11462,100469,'一只冰玉呀','1998-07-24',4),
+(11463,100470,'不务正业的退役选手','2003-08-25',2),
+(11464,100471,'热心玩家曹某某','2006-03-23',2),
+(11465,100472,'偷你家西瓜','2000-07-15',2),
+(11466,100473,'绝不让你得逞','1999-09-25',2),
+(11467,100474,'妄想有钱','2000-01-23',2),
+(11468,100475,'小小小小大哥','2005-08-15',4),
+(11469,100476,'你出戏了','2002-12-05',4),
+(11470,100477,'我来抓你了','2003-08-25',4),
+(11471,100478,'谁还不知道你是谁','2004-03-05',2),
+(11472,100479,'我没有黑眼圈','2005-11-25',2);
+
+ UPDATE `v09x_platf_core`.`dictinfo` SET `strvalue` = ',11463,11464,11465,11466,11467,11468,11469,11470,11471,11472,11069,11070,11071,11072,11073,11074,11075,11076,11077,11108,' WHERE `keyname` = 'SYS-MEMEBER-USER-1000003'
+UPDATE `v09x_platf_core`.`dictinfo` SET `strvalue` = ',11453,11454,11455,11456,11457,11458,11459,11460,11461,11462,11078,11079,11080,11081,11082,11083,11084,11085,11086,11087,' WHERE `keyname` = 'SYS-MEMEBER-USER-1000004'
+
+
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://zimg.1216.top/face/f.png' WHERE `userid` = 11339
+
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/timg1.jpg' WHERE `userid` = 11453 ;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/timg2.jpg' WHERE `userid` = 11454 ;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/timg3.jpg' WHERE `userid` = 11455 ;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/timg4.jpg' WHERE `userid` = 11456 ;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/timg5.jpg' WHERE `userid` = 11457 ;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/timg6.jpg' WHERE `userid` = 11458 ;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/timg7.jpg' WHERE `userid` = 11459 ;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/timg8.jpg' WHERE `userid` = 11460 ;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/timg9.jpg' WHERE `userid` = 11461 ;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/timg10.jpg' WHERE `userid` = 11462 ;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/IMG_2570.JPG' WHERE `userid` = 11463 ;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/IMG_2571.JPG' WHERE `userid` = 11464 ;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/IMG_2572.JPG' WHERE `userid` = 11465 ;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/IMG_2573.JPG' WHERE `userid` = 11466 ;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/IMG_2574.JPG' WHERE `userid` = 11467 ;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/IMG_2575.JPG' WHERE `userid` = 11468 ;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/IMG_2576.JPG' WHERE `userid` = 11469 ;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/IMG_2577.JPG' WHERE `userid` = 11470 ;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/IMG_2578.JPG' WHERE `userid` = 11471 ;
+UPDATE `v09x_platf_core`.`userdetail` SET `face` = 'http://aimg.woaihaoyouxi.com/app/zimg/IMG_2579.JPG' WHERE `userid` = 11472 ;
+
+
+UPDATE `v09x_platf_core`.`dictinfo` SET `strvalue` = ',11078,11079,11080,11081,11082,11083,11084,11085,11086,11087,11320,11321,11322,11323,11324,11325,11326,11327,11328,11329,' WHERE `keyname` = 'SYS-MEMEBER-USER-1000004'
