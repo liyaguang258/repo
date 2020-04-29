@@ -80,6 +80,6 @@ UPDATE `v09x_platf_core`.`dictinfo` SET `strvalue` = ',11078,11079,11080,11081,1
 
 SELECT * FROM userdetail WHERE userid IN (11037, 11038, 11039, 11041, 11042, 11043, 11044, 11047, 11049, 11050, 11051, 11053, 11054, 11058, 11189, 11190, 11191, 11192, 11193, 11194, 11195, 11196, 11197, 11198, 11199, 11200, 11201, 11202);
 
-INSERT INTO `v09x_platf_core`.`userdetail` (`userid`,`userno`,username,mobile) VALUES
-(11494,90029,'Tienerry','13164616931'),
-(11495,90030,'---然后呢。？','17602141184');
+INSERT INTO `v09x_platf_core`.`userdetail` (`userid`,`userno`,username,mobile，usertype) VALUES
+(11494,90029,'Tienerry','13164616931',21),
+(11495,90030,'---然后呢。？','17602141184',21);
