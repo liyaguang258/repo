@@ -1,0 +1,12 @@
+UPDATE `platf_oth`.`questionrecord` SET invitecode = '5GYWBE' , batch = '第一次封测' , status = 10 WHERE mobile = '15914317702';
+UPDATE `platf_oth`.`questionrecord` SET invitecode = 'WFU5VX' , batch = '第一次封测' , status = 10 WHERE mobile = '17826039397';
+UPDATE `platf_oth`.`questionrecord` SET invitecode = 'UGZI4R' , batch = '第一次封测' , status = 11 WHERE mobile = '15914319014';
+UPDATE `platf_oth`.`questionrecord` SET invitecode = 'FJCU7Y' , batch = '第一次封测' , status = 10 WHERE mobile = '15778418683';
+UPDATE `platf_oth`.`questionrecord` SET invitecode = '62XL8V' , batch = '第一次封测' , status = 11 WHERE mobile = '16620057279';
+UPDATE `platf_oth`.`questionrecord` SET invitecode = 'RNS88V' , batch = '第一次封测' , status = 10 WHERE mobile = '15120026080';
+UPDATE `platf_oth`.`questionrecord` SET invitecode = 'GXNT71' , batch = '第一次封测' , status = 10 WHERE mobile = '18210885898';
+UPDATE `platf_oth`.`questionrecord` SET invitecode = 'VHERWZ' , batch = '第一次封测' , status = 10 WHERE mobile = '13771152744';
+UPDATE `platf_oth`.`questionrecord` SET invitecode = 'OFZK31' , batch = '第一次封测' , status = 11 WHERE mobile = '13907195775';
+UPDATE `platf_oth`.`questionrecord` SET invitecode = '' , batch = '第三次封测' , status = 11 WHERE mobile = '18072801662';
+UPDATE `platf_oth`.`questionrecord` SET invitecode = '' , batch = '第二次封测' , status = 11 WHERE mobile = '15083384388';
+UPDATE `platf_oth`.`questionrecord` SET invitecode = '' , batch = '第二次封测' , status = 11 WHERE mobile = '13560447378';
