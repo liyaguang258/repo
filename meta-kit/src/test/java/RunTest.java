@@ -1018,7 +1018,7 @@ public class RunTest<T> {
 
         dbAccount.setPwd("*Hello@27.com!");
         DbKit dbKit = new DbKit(dbAccount, "");
-        String sql1 = "SELECT * FROM `platf_oth`.`questionrecord` where createtime<1588003200000 and createtime>1587916800000 ORDER BY `createtime` DESC ;";
+        String sql1 = "SELECT * FROM `platf_oth`.`questionrecord` where createtime<1588089600000 and createtime>1588003200000 ORDER BY `createtime` DESC ;";
         String sql2 = "SELECT userid,username FROM `v09x_platf_core`.userdetail;";
         List<Map> list1 = dbKit.findList(sql1, Map.class);
         Kv users = Kv.of();
@@ -1087,7 +1087,7 @@ public class RunTest<T> {
         try {
             Workbook workbook = ExcelKit.exportExcel(list, kv);
 
-            workbook.write(new FileOutputStream(new File("target/问卷4-27日数据.xls")));
+            workbook.write(new FileOutputStream(new File("target/问卷4-28日数据.xls")));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1096,7 +1096,7 @@ public class RunTest<T> {
 
     }
 
-    @Test//每日问卷导出
+    @Test//厂商信息导出
     public void merchantout() {
         DbAccount dbAccount = new DbAccount();
         dbAccount.setCate("mysql");
@@ -1234,7 +1234,7 @@ public class RunTest<T> {
         // 创建文件
         Workbook wb = ExcelKit.exportExcels(sheets);
         try {
-            wb.write(new FileOutputStream(new File("tmp/邀请码_邀请记录_4-28.xls"))); // 将工作簿对象写到磁盘文件
+            wb.write(new FileOutputStream(new File("tmp/邀请码_邀请记录_4-29.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1257,8 +1257,8 @@ public class RunTest<T> {
 //        String time = sdf.format(current);
 //        System.out.println(time);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String start = "2020-04-22 00:00:00";
-        String end = "2020-04-27 00:00:00";
+        String start = "2020-04-28 00:00:00";
+        String end = "2020-04-29 00:00:00";
         //1587657600000
         //1587744000000
 //得到毫秒数
@@ -1325,6 +1325,7 @@ public class RunTest<T> {
 //                    Kv.of("userid", 11047).set("name", "姜文洁").set("n", 200)
 //                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 2)
 //                    Kv.of("userid", 11047).set("name", "姜文洁").set("n", 200)
+//                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 3)
             );
 
         }
@@ -1362,12 +1363,12 @@ public class RunTest<T> {
         buf.delete(buf.length() - 1, buf.length() + 1);
         buf.append(";");
         // 入库邀请码
-        FileKit.strToFile(buf.toString(), new File("tmp/邀请码_04-28_姜文洁.sql"));
+        FileKit.strToFile(buf.toString(), new File("tmp/邀请码_04-29_严谨.sql"));
 
         // 创建文件
         Workbook wb = ExcelKit.exportExcels(sheets);
         try {
-            wb.write(new FileOutputStream(new File("tmp/邀请码_04-28_姜文洁.xls"))); // 将工作簿对象写到磁盘文件
+            wb.write(new FileOutputStream(new File("tmp/邀请码_04-29_严谨.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1380,8 +1381,7 @@ public class RunTest<T> {
         StringBuffer buff = new StringBuffer();
         String[] FIELDS = {"email", "mobile", "phone_os", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "invitecode", "batch", "", "status"};
 //        List<Map> list = ExcelKit.readExcel(new File("target/问卷4-27日数据.xls"), FIELDS, "sheet0");
-        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\编辑每日数据\\4月23日数据.xls"), FIELDS, "sheet0");
-        //C:\Users\wh\Desktop\编辑每日数据
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\编辑每日数据\\4月28日数据.xlsx"), FIELDS);
         list.remove(0);//去除多余的行首
         list.forEach(x -> {
             buff.append("UPDATE `platf_oth`.`questionrecord` ");
@@ -1394,9 +1394,9 @@ public class RunTest<T> {
             buff.append(" status = "+status+" ");
             buff.append("WHERE mobile = '"+mobile+"';"+"\n");
         });
-        System.out.println(buff);
+//        System.out.println(buff);
         // 问卷更新sql
-        FileKit.strToFile(buff.toString(), new File("tmp/问卷_04-27_吴文俊.sql"));
+        FileKit.strToFile(buff.toString(), new File("tmp/问卷_04-23_3文3.sql"));
 
     }
 
