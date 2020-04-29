@@ -1400,6 +1400,30 @@ public class RunTest<T> {
 
     }
 
+    //读取员工账号生成updatesql语句；
+    @Test
+    public void usersql() throws FileNotFoundException {
+        StringBuffer buff = new StringBuffer();
+//        String[] FIELDS = {"email", "mobile", "phone_os", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "invitecode", "batch", "", "status"};
+        String[] FIELDS = {"userid", "userno", "", "", "mobile"};
+//        List<Map> list = ExcelKit.readExcel(new File("target/问卷4-27日数据.xls"), FIELDS, "sheet0");
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\文档\\员工账号.xls"), FIELDS);
+        list.remove(0);//去除多余的行首
+        list.forEach(x -> {
+            buff.append("UPDATE `v09x_platf_core`.`userdetail` ");
+            String userid = x.get("userid").toString();
+//            String userno = x.get("userno").toString();
+//            String mobile = x.get("mobile").toString();
+            buff.append("SET healthvalue = "+100+"  ");
+//            buff.append(" mobile = '"+mobile+"'  ");
+            buff.append("WHERE userid = "+userid+";"+"\n");
+        });
+//        System.out.println(buff);
+        // 问卷更新sql
+        FileKit.strToFile(buff.toString(), new File("tmp/员工健康值更新.sql"));
+
+    }
+
     private String buildCode() {
         char[] str = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
                 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
