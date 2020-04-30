@@ -1,0 +1,2 @@
+# 假定我们就使用数据库对应的 “列名”作为导入配置，如果excel中间有需要跳过的列 配置中用空号占位
+user= ,username, ,     sex,phone,email
