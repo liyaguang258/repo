@@ -1234,7 +1234,7 @@ public class RunTest<T> {
         // 创建文件
         Workbook wb = ExcelKit.exportExcels(sheets);
         try {
-            wb.write(new FileOutputStream(new File("tmp/邀请码_邀请记录_5-01.xls"))); // 将工作簿对象写到磁盘文件
+            wb.write(new FileOutputStream(new File("tmp/邀请码_邀请记录_5-05.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1419,7 +1419,7 @@ public class RunTest<T> {
             buff.append("WHERE userid = "+userid+";"+"\n");
         });
 //        System.out.println(buff);
-        // 问卷更新sql
+        // 更新sql
         FileKit.strToFile(buff.toString(), new File("tmp/员工健康值更新.sql"));
 
     }
