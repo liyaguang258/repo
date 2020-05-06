@@ -12,7 +12,7 @@ rpc.url=
 kafak.servers=
 
 #--------------- arango --------------
-arango.host=120.24.230.60
+arango.host=39.108.56.246
 arango.port=8529
 arango.user=root
 arango.passwd=abc123
