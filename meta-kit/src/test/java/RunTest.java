@@ -34,9 +34,9 @@ import static java.util.Arrays.asList;
  * @author: liangxianyou at 2019/1/20 12:43.
  */
 public class RunTest<T> {
-    static {
+    /*static {
         MetaKit.init();
-    }
+    }*/
 
     JsonConvert convert = JsonConvert.root();
 
@@ -1123,7 +1123,7 @@ public class RunTest<T> {
             String s = datechange((Long) createtime);
             map.put("createtime", s);
             String updatetime = datechange((Long) x.get("updatetime"));
-            map.put("updatetime",updatetime);
+            map.put("updatetime", updatetime);
             list.add(map);
         });
 
@@ -1234,7 +1234,7 @@ public class RunTest<T> {
         // 创建文件
         Workbook wb = ExcelKit.exportExcels(sheets);
         try {
-            wb.write(new FileOutputStream(new File("tmp/邀请码_邀请记录_5-05.xls"))); // 将工作簿对象写到磁盘文件
+            wb.write(new FileOutputStream(new File("tmp/邀请码_邀请记录_5-06.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1258,7 +1258,7 @@ public class RunTest<T> {
 //        System.out.println(time);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String start = "2020-04-28 00:00:00";
-        String end = "2020-04-29 00:00:00";
+        String end = "2020-05-13 17:50:00";
         //1587657600000
         //1587744000000
 //得到毫秒数
@@ -1326,10 +1326,11 @@ public class RunTest<T> {
 //                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 2)
 //                    Kv.of("userid", 11047).set("name", "姜文洁").set("n", 200)
 //                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 3)
+                    Kv.of("userid", 11042).set("name", "墨菲").set("n", 3)
             );
 
         }
-         //生成邀请码,
+        //生成邀请码,
         List<Map<String, Object>> sheets = new ArrayList<>();
         StringBuilder buf = new StringBuilder("INSERT INTO `v09x_platf_core`.`userinvitecode` (`invitecode`,`userid`,`createtime`) VALUES \n");
         for (Kv x : users) {
@@ -1363,12 +1364,12 @@ public class RunTest<T> {
         buf.delete(buf.length() - 1, buf.length() + 1);
         buf.append(";");
         // 入库邀请码
-        FileKit.strToFile(buf.toString(), new File("tmp/邀请码_04-29_严谨.sql"));
+        FileKit.strToFile(buf.toString(), new File("tmp/邀请码_05-12_张曼玲.sql"));
 
         // 创建文件
         Workbook wb = ExcelKit.exportExcels(sheets);
         try {
-            wb.write(new FileOutputStream(new File("tmp/邀请码_04-29_严谨.xls"))); // 将工作簿对象写到磁盘文件
+            wb.write(new FileOutputStream(new File("tmp/邀请码_05-12_张曼玲.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1389,10 +1390,10 @@ public class RunTest<T> {
             String batch = x.get("batch").toString();
             String status = x.get("status").toString();
             String mobile = x.get("mobile").toString();
-            buff.append("SET invitecode = '"+invitecode+"' ,");
-            buff.append(" batch = '"+batch+"' ,");
-            buff.append(" status = "+status+" ");
-            buff.append("WHERE mobile = '"+mobile+"';"+"\n");
+            buff.append("SET invitecode = '" + invitecode + "' ,");
+            buff.append(" batch = '" + batch + "' ,");
+            buff.append(" status = " + status + " ");
+            buff.append("WHERE mobile = '" + mobile + "';" + "\n");
         });
 //        System.out.println(buff);
         // 问卷更新sql
@@ -1414,9 +1415,9 @@ public class RunTest<T> {
             String userid = x.get("userid").toString();
 //            String userno = x.get("userno").toString();
 //            String mobile = x.get("mobile").toString();
-            buff.append("SET healthvalue = "+100+"  ");
+            buff.append("SET healthvalue = " + 100 + "  ");
 //            buff.append(" mobile = '"+mobile+"'  ");
-            buff.append("WHERE userid = "+userid+";"+"\n");
+            buff.append("WHERE userid = " + userid + ";" + "\n");
         });
 //        System.out.println(buff);
         // 更新sql
@@ -1436,6 +1437,108 @@ public class RunTest<T> {
 
         return buf.toString();
     }
+
+    //读取商家信息
+    @Test
+    public void readmerchant() {
+        StringBuffer buff = new StringBuffer();
+        String[] FIELDS = {"merchantname", "", "merchantnameen", "merchantalias", "merchantgovurl", "creditcode", "businesscode", "teamsize", "operationstatus",
+                "businessstart", "businessend", "behalfuser", "mobile", "email", "registration", "capital", "zone", "address", "introduction", "", "merchantid"};
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\编辑数据\\商家信息.xlsx"), FIELDS);
+        list.remove(0);//去除多余的行首
+        list.remove(0);//去除多余的行首
+        list.forEach(x -> {
+            Object merchantname = x.get("merchantname").toString().trim();
+            Object merchantnameen = x.get("merchantnameen").toString().trim();
+            Object merchantalias = x.get("merchantalias").toString().trim();
+            Object merchantgovurl = x.get("merchantgovurl").toString().trim();
+            Object creditcode = x.get("creditcode").toString().trim();
+            Object businesscode = x.get("businesscode").toString().trim();
+            Object teamsize = x.get("teamsize").toString().trim();
+            Object operationstatus = x.get("operationstatus").toString().trim();
+            Object businessstart = x.get("businessstart").toString().trim();
+            Object businessend = x.get("businessend").toString().trim();
+            Object behalfuser = x.get("behalfuser").toString().trim();
+            Object mobile = x.get("mobile").toString().trim();
+            Object email = x.get("email").toString().trim();
+            Object registration = x.get("registration").toString().trim();
+            Object capital = x.get("capital").toString().trim();
+            Object zone = x.get("zone").toString().trim();
+            Object address = x.get("address").toString().trim();
+            Object introduction = x.get("introduction").toString().trim();
+            Object merchantid = x.get("merchantid").toString().trim();
+            buff.append("UPDATE `v09x_platf_core`.`merchantinfo` ");
+            buff.append("SET merchantname = \"" + merchantname + "\",  ");
+            buff.append("merchantnameen = \"" + merchantnameen + "\",  ");
+            buff.append("merchantalias = \"" + merchantalias + "\",  ");
+            buff.append("merchantgovurl = \"" + merchantgovurl + "\",  ");
+            buff.append("creditcode = \"" + creditcode + "\",  ");
+            buff.append("businesscode = \"" + businesscode + "\",  ");
+            buff.append("teamsize = \"" + teamsize + "\",  ");
+            buff.append("operationstatus = \"" + operationstatus + "\",  ");
+            buff.append("businessstart = \"" + businessstart + "\",  ");
+            buff.append("businessend = \"" + businessend + "\",  ");
+            buff.append("behalfuser = \"" + behalfuser + "\",  ");
+            buff.append("mobile = \"" + mobile + "\",  ");
+            buff.append("email = \"" + email + "\",  ");
+            buff.append("registration = \"" + registration + "\",  ");
+            buff.append("capital = \"" + capital + "\",  ");
+            buff.append("zone = \"" + zone + "\",  ");
+            buff.append("address = \"" + address + "\",  ");
+            buff.append("introduction = \"" + introduction + "\"  ");
+            buff.append("WHERE merchantid = " + merchantid + ";" + "\n");
+        });
+        // 更新sql
+        FileKit.strToFile(buff.toString(), new File("target/厂商数据更新.sql"));
+
+    }
+
+    //读取商家图片信息
+    @Test
+    public void readpicture() {
+//        File file = new File();
+        //添加文件路径
+//        getFiles("C:\\Users\\wh\\Desktop\\编辑数据\\商家图标汇总\\");
+        ArrayList<String> files = new ArrayList<String>();
+        File file = new File("C:\\Users\\wh\\Desktop\\编辑数据\\图标汇总\\");
+        File[] tempLists = file.listFiles();
+        StringBuffer buff = new StringBuffer();
+        for (int i = 0; i < tempLists.length; i++) {
+            buff.append("UPDATE `v09x_platf_core`.`merchantinfo` ");
+            if (tempLists[i].isFile()) {
+                String name = tempLists[i].getName().trim();
+                String id = tempLists[i].getName().substring(0, name.lastIndexOf("."));
+//                files.add(tempLists[i].getName().substring(0,name.lastIndexOf(".")));
+                buff.append("SET merchantlogo = '"+"http://aimg.woaihaoyouxi.com/app/merchant/logo/" + name + "'  ");
+                buff.append("WHERE merchantid = " + id + ";" + "\n");
+
+            }
+        }
+        FileKit.strToFile(buff.toString(), new File("target/商家logo更新.sql"));
+
+//        for (int i = 0; i < files.size(); i++) {
+//            System.out.println(files.get(i));
+//        }
+    }
+
+
+//    public static ArrayList<String> getFiles(String filepath) {
+//        ArrayList<String> files = new ArrayList<String>();
+//        File file = new File(filepath);
+//        File[] tempLists = file.listFiles();
+//        for (int i = 0; i < tempLists.length; i++) {
+//            if (tempLists[i].isFile()) {
+//                files.add(tempLists[i].toString());
+//            }
+//        }
+//
+//        for (int i = 0; i < files.size(); i++) {
+//            System.out.println(files.get(i));
+//        }
+//        return files;
+//    }
+
+
 }
 
 
