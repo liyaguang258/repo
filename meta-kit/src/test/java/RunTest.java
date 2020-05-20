@@ -1257,8 +1257,8 @@ public class RunTest<T> {
 //        String time = sdf.format(current);
 //        System.out.println(time);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String start = "2020-04-28 00:00:00";
-        String end = "2020-05-13 17:50:00";
+        String start = "2020-05-20 00:00:00";
+        String end = "2020-04-16 17:50:00";
         //1587657600000
         //1587744000000
 //得到毫秒数
@@ -1326,7 +1326,8 @@ public class RunTest<T> {
 //                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 2)
 //                    Kv.of("userid", 11047).set("name", "姜文洁").set("n", 200)
 //                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 3)
-                    Kv.of("userid", 11042).set("name", "墨菲").set("n", 3)
+//                    Kv.of("userid", 11042).set("name", "墨菲").set("n", 3)
+//                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 87)
             );
 
         }
@@ -1364,12 +1365,12 @@ public class RunTest<T> {
         buf.delete(buf.length() - 1, buf.length() + 1);
         buf.append(";");
         // 入库邀请码
-        FileKit.strToFile(buf.toString(), new File("tmp/邀请码_05-12_张曼玲.sql"));
+        FileKit.strToFile(buf.toString(), new File("tmp/邀请码_05-20_严谨.sql"));
 
         // 创建文件
         Workbook wb = ExcelKit.exportExcels(sheets);
         try {
-            wb.write(new FileOutputStream(new File("tmp/邀请码_05-12_张曼玲.xls"))); // 将工作簿对象写到磁盘文件
+            wb.write(new FileOutputStream(new File("tmp/邀请码_05-20_严谨.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1509,7 +1510,7 @@ public class RunTest<T> {
                 String name = tempLists[i].getName().trim();
                 String id = tempLists[i].getName().substring(0, name.lastIndexOf("."));
 //                files.add(tempLists[i].getName().substring(0,name.lastIndexOf(".")));
-                buff.append("SET merchantlogo = '"+"http://aimg.woaihaoyouxi.com/app/merchant/logo/" + name + "'  ");
+                buff.append("SET merchantlogo = '" + "http://aimg.woaihaoyouxi.com/app/merchant/logo/" + name + "'  ");
                 buff.append("WHERE merchantid = " + id + ";" + "\n");
 
             }
@@ -1521,23 +1522,47 @@ public class RunTest<T> {
 //        }
     }
 
+    //查询数据库表及表数据量
+    @Test
+    public void readMysql() {
+        String[] database = {"v09x_platf_core","platf_im","platf_oss","platf_oth","platf_pay","platf_questx","platf_stat","platf_warband"};
+        List<Map<String, Object>> l = new ArrayList<>();
 
-//    public static ArrayList<String> getFiles(String filepath) {
-//        ArrayList<String> files = new ArrayList<String>();
-//        File file = new File(filepath);
-//        File[] tempLists = file.listFiles();
-//        for (int i = 0; i < tempLists.length; i++) {
-//            if (tempLists[i].isFile()) {
-//                files.add(tempLists[i].toString());
-//            }
-//        }
-//
-//        for (int i = 0; i < files.size(); i++) {
-//            System.out.println(files.get(i));
-//        }
-//        return files;
-//    }
+        List<Map> list = new ArrayList<>();
 
+        for (String s : database) {
+
+            String sql = "SELECT table_schema,TABLE_NAME,CONCAT(truncate(data_length/1024/1024,2),'MB') as data_size,table_rows rs,TABLE_COMMENT" +
+                    " FROM information_schema.`TABLES` WHERE TABLE_SCHEMA = '" + s +
+                    "' ORDER BY rs DESC";
+
+            List<Map> list1 = findList(sql);
+            Kv sheet1 = Kv.of();
+            List<Kv> kvs = new ArrayList<>();
+            for (int i = 0; i < list1.size(); i++) {
+                kvs.add(Kv.of("TABLE_SCHEMA", list1.get(i).get("TABLE_SCHEMA"))
+                        .set("TABLE_NAME", list1.get(i).get("TABLE_NAME"))
+                .set("data_size",list1.get(i).get("data_size"))
+                .set("rs",list1.get(i).get("rs"))
+                .set("TABLE_COMMENT",list1.get(i).get("TABLE_COMMENT")));
+            }
+
+            sheet1.set("data", kvs);
+            sheet1.set("sheetName",s);
+            sheet1.set("hdNames", new String[]{"数据库名", "表名","表数据大小","表数据数量","表注释"});
+            sheet1.set("hds", new String[]{"TABLE_SCHEMA", "TABLE_NAME", "data_size", "rs", "TABLE_COMMENT"});
+            l.add(sheet1);
+
+        }
+
+        Workbook wb = ExcelKit.exportExcels(l);
+        try {
+            wb.write(new FileOutputStream(new File("target/数据库信息.xls"))); // 将工作簿对象写到磁盘文件
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 }
 
