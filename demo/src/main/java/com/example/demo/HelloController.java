@@ -17,7 +17,7 @@ public class HelloController {
 
     @RequestMapping("/")
     public String index(Model model){
-        model.addAttribute("msg","like");
+        model.addAttribute("msg","likeasfd");
         return "index";
     }
 

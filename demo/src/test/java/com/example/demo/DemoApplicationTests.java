@@ -34,8 +34,11 @@ class DemoApplicationTests {
         List<Map<String, Object>> usersId = userService.getUsersId();
         System.out.println(usersId.size());
         for (Map<String, Object> map : usersId) {
-            System.out.println(map.values());
+            System.out.println(map);
         }
+//        for (Map<String, Object> map : usersId) {
+//            System.out.println(map.values());
+//        }
 
     }
 }

@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<Map<String, Object>> getUsersId() {
-        List<Map<String, Object>> list = jdbcTemplate.queryForList("select userid from userdetail");
+        List<Map<String, Object>> list = jdbcTemplate.queryForList("select userid,username,gender,age,mobile,userno,regtime from userdetail");
         return list;
     }
 
