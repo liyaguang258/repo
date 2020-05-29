@@ -18,14 +18,13 @@
 <script type="text/javascript">
 
 
-
-        /*日期组件*/
-        layui.use('laydate', function () {
-            var laydate = layui.laydate;
-            laydate.render({
-                elem: '#regtime'
-            });
+    /*日期组件*/
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+        laydate.render({
+            elem: '#regtime'
         });
+    });
 
     layui.use('table', function () {
         var table = layui.table;
@@ -47,18 +46,19 @@
                 , {field: 'regtime', title: '注册日期', width: '30%', minWidth: 50}
             ]]
             , page: true
-           /* ,parseData: function (res) { //将原始数据解析成 table 组件所规定的数据
-                return {
-                    "code": res.code, //解析接口状态
-                    "msg": res.msg, //解析提示文本
-                    "count": res.count, //解析数据长度
-                    "data": res.data //解析数据列表
-                };
-            }*/
+            /* ,parseData: function (res) { //将原始数据解析成 table 组件所规定的数据
+                 return {
+                     "code": res.code, //解析接口状态
+                     "msg": res.msg, //解析提示文本
+                     "count": res.count, //解析数据长度
+                     "data": res.data //解析数据列表
+                 };
+             }*/
 
         });
     });
-    function showTime(tempDate){
+
+    function showTime(tempDate) {
         var d = new Date(tempDate);
         var year = d.getFullYear();
         var month = d.getMonth();
@@ -68,12 +68,12 @@
 
         var minutes = d.getMinutes();
         var seconds = d.getSeconds();
-        month = month<10 ? "0"+month:month;
-        day = day<10 ? "0"+day:day;
-        hours = hours<10 ? "0"+hours:hours;
-        minutes = minutes<10 ? "0"+minutes:minutes;
-        seconds = seconds<10 ? "0"+seconds:seconds;
-        var time = year+"-"+month+"-"+day;
+        month = month < 10 ? "0" + month : month;
+        day = day < 10 ? "0" + day : day;
+        hours = hours < 10 ? "0" + hours : hours;
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+        var time = year + "-" + month + "-" + day;
         return time;
     }
 </script>
