@@ -1586,7 +1586,7 @@ public class RunTest<T> {
         //上周时间区间
 
         //本周活跃用户
-        String sql = "SELECT userid FROM `userloginrecord` WHERE  createtime >= "+starttime+" AND createtime <= "+endtime+" ; ";
+        String sql = "SELECT userid FROM `userloginrecord` WHERE  createtime >= " + starttime + " AND createtime <= " + endtime + " ; ";
         List<Map> list = dbKit.findList(sql, Map.class);
         HashSet<Integer> set = new HashSet<>();
         list.forEach(x -> set.add((Integer) x.get("userid")));
@@ -1616,25 +1616,59 @@ public class RunTest<T> {
         System.out.println("次留周百分数：" + nt.format(a));
 
         //本周注册用户数
-        String usersql = "SELECT userid FROM v09x_platf_core.`userdetail` WHERE regtime >= "+starttime+" AND regtime <= "+endtime+" AND status=10 ; ";
+        String usersql = "SELECT userid FROM v09x_platf_core.`userdetail` WHERE regtime >= " + starttime + " AND regtime <= " + endtime + " AND status=10 ; ";
         List<Map> users = dbKit.findList(usersql, Map.class);
         System.out.println("本周注册用户数：" + users.size());
 
         //本周新增贴数
-        String articlesql = "SELECT articleid FROM v09x_platf_core.articleinfo WHERE  createtime >= "+starttime+" AND createtime <= "+endtime+" and status !=80 ; ";
+        String articlesql = "SELECT articleid FROM v09x_platf_core.articleinfo WHERE  createtime >= " + starttime + " AND createtime <= " + endtime + " and status !=80 ; ";
         List<Map> articles = dbKit.findList(articlesql, Map.class);
         System.out.println("本周新增贴数：" + articles.size());
 
+        //本周新增推广员人数
+        String promotersql = "SELECT * FROM platf_oth.promoterrecord  WHERE  createtime >= " + starttime + " AND createtime <= " + endtime + " and status = 10 ; ";
+        List<Map> promoters = dbKit.findList(promotersql, Map.class);
+        System.out.println("本周新增推广员人数：" + promoters.size());
+
         //本周活动参与用户数
-        String activitysql = "SELECT userid FROM platf_oth.articleactivity WHERE  createtime >= "+starttime+" AND createtime <= "+endtime+" ; ";
+        String activitysql = "SELECT userid FROM platf_oth.articleactivity WHERE  createtime >= " + starttime + " AND createtime <= " + endtime + " ; ";
         List<Map> activitys = dbKit.findList(activitysql, Map.class);
         HashSet<Integer> activityset = new HashSet<>();
-        activitys.forEach(x->activityset.add((Integer) x.get("userid")));
+        activitys.forEach(x -> activityset.add((Integer) x.get("userid")));
         System.out.println("本周活动参与用户数：" + activityset.size());
         //六一活动参与用户通过获取徽章查询
-        String sixsql = "SELECT userid FROM platf_questx.userbadge WHERE badgeid = 26 AND createtime >= "+starttime+" AND createtime <= "+endtime+" ; ";
+        String sixsql = "SELECT userid FROM platf_questx.userbadge WHERE badgeid = 26 AND createtime >= " + starttime + " AND createtime <= " + endtime + " ; ";
         List<Map> six = dbKit.findList(sixsql, Map.class);
         System.out.println("儿童节活动参与用户数：" + six.size());
+
+        //本周新增会员数  取值逻辑有待确定
+        String vipsql = "SELECT * FROM v09x_platf_core.vippayrecord  WHERE  createtime >= " + starttime + " AND createtime <= " + endtime + " and status = 10 ; ";
+        List<Map> vips = dbKit.findList(vipsql, Map.class);
+        System.out.println("本周新增会员数：" + vips.size());
+
+
+        List<Map<String, Object>> l = new ArrayList<>();
+        Kv sheet1 = Kv.of();
+        List<Kv> kvs = new ArrayList<>();
+        kvs.add(Kv.of("name", "本周注册用户数").set("num", users.size()));
+        kvs.add(Kv.of("name", "次留周百分数").set("num", nt.format(a)));
+        kvs.add(Kv.of("name", "本周DAU用户数").set("num", set.size()));
+        kvs.add(Kv.of("name", "本周新增贴数").set("num", articles.size()));
+        kvs.add(Kv.of("name", "本周新增推广员人数").set("num", promoters.size()));
+        kvs.add(Kv.of("name", "本周活动参与用户数").set("num", activityset.size() + six.size()));
+        kvs.add(Kv.of("name", "本周新增会员数").set("num", vips.size()));
+        sheet1.set("data", kvs);
+        sheet1.set("sheetName", "运营数据");
+        sheet1.set("hdNames", new String[]{"名称", "数量"});
+        sheet1.set("hds", new String[]{"name", "num"});
+        l.add(sheet1);
+        Workbook wb = ExcelKit.exportExcels(l);
+        try {
+            wb.write(new FileOutputStream(new File("target/运营数据.xls"))); // 将工作簿对象写到磁盘文件
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }
