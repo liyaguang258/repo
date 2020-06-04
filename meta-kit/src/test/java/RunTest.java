@@ -19,7 +19,10 @@ import org.redkale.util.TypeToken;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.security.Timestamp;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -1257,8 +1260,8 @@ public class RunTest<T> {
 //        String time = sdf.format(current);
 //        System.out.println(time);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String start = "2020-05-20 00:00:00";
-        String end = "2020-04-16 17:50:00";
+        String start = "2020-04-20 00:00:00";
+        String end = "2020-04-27 00:00:00";
         //1587657600000
         //1587744000000
 //得到毫秒数
@@ -1525,7 +1528,7 @@ public class RunTest<T> {
     //查询数据库表及表数据量
     @Test
     public void readMysql() {
-        String[] database = {"v09x_platf_core","platf_im","platf_oss","platf_oth","platf_pay","platf_questx","platf_stat","platf_warband"};
+        String[] database = {"v09x_platf_core", "platf_im", "platf_oss", "platf_oth", "platf_pay", "platf_questx", "platf_stat", "platf_warband"};
         List<Map<String, Object>> l = new ArrayList<>();
 
         List<Map> list = new ArrayList<>();
@@ -1542,15 +1545,15 @@ public class RunTest<T> {
             for (int i = 0; i < list1.size(); i++) {
                 kvs.add(Kv.of("TABLE_SCHEMA", list1.get(i).get("TABLE_SCHEMA"))
                         .set("TABLE_NAME", list1.get(i).get("TABLE_NAME"))
-                .set("data_size",list1.get(i).get("data_size"))
-                .set("rs",list1.get(i).get("rs"))
-                .set("TABLE_COMMENT",list1.get(i).get("TABLE_COMMENT")));
+                        .set("data_size", list1.get(i).get("data_size"))
+                        .set("rs", list1.get(i).get("rs"))
+                        .set("TABLE_COMMENT", list1.get(i).get("TABLE_COMMENT")));
             }
-            
+
 
             sheet1.set("data", kvs);
-            sheet1.set("sheetName",s);
-            sheet1.set("hdNames", new String[]{"数据库名", "表名","表数据大小","表数据数量","表注释"});
+            sheet1.set("sheetName", s);
+            sheet1.set("hdNames", new String[]{"数据库名", "表名", "表数据大小", "表数据数量", "表注释"});
             sheet1.set("hds", new String[]{"TABLE_SCHEMA", "TABLE_NAME", "data_size", "rs", "TABLE_COMMENT"});
             l.add(sheet1);
 
@@ -1563,6 +1566,75 @@ public class RunTest<T> {
             e.printStackTrace();
         }
 
+    }
+
+    @Test
+    public void getdata() {
+        DbAccount dbAccount = new DbAccount();
+        dbAccount.setCate("mysql");
+//        dbAccount.setUrl("jdbc:mysql://47.111.150.118:6063");
+        dbAccount.setUrl("jdbc:mysql://122.112.180.156:6033/v09x_platf_core");
+        dbAccount.setUser("root");
+//        dbAccount.setPwd("*Zhong123098!");
+        dbAccount.setPwd("*Hello@27.com!");
+        DbKit dbKit = new DbKit(dbAccount, "");
+
+        //本周时间区间
+        long starttime = 1587916800000l;
+        long endtime = 1588521600000l;
+
+        //上周时间区间
+
+        //本周活跃用户
+        String sql = "SELECT userid FROM `userloginrecord` WHERE  createtime >= "+starttime+" AND createtime <= "+endtime+" ; ";
+        List<Map> list = dbKit.findList(sql, Map.class);
+        HashSet<Integer> set = new HashSet<>();
+        list.forEach(x -> set.add((Integer) x.get("userid")));
+        System.out.println("本周DAU用户数：" + set.size());
+        //上周注册用户
+        String sql1 = "SELECT userid  FROM v09x_platf_core.`userdetail`  WHERE  regtime >= 1587312000000 AND regtime <= 1587916800000 and status = 10 ; ";
+        List<Map> list1 = dbKit.findList(sql1, Map.class);
+        HashSet<Integer> set1 = new HashSet<>();
+        list1.forEach(x -> set1.add((Integer) x.get("userid")));
+        System.out.println("上周注册用户数：" + set1.size());
+        //上周注册用户与本周活跃用户比对
+        HashSet<Integer> set2 = new HashSet<>();
+        list.forEach(x -> {
+            list1.forEach(y -> {
+                if (x.get("userid").equals(y.get("userid"))) {
+                    set2.add((Integer) x.get("userid"));
+                }
+            });
+        });
+        System.out.println("上周注册用户在本周活跃人数：" + set2.size());
+        double a = (double) set2.size() / (double) set1.size();
+        //获取格式化对象
+        NumberFormat nt = NumberFormat.getPercentInstance();
+        //设置百分数精确度2即保留两位小数
+        nt.setMinimumFractionDigits(2);
+        //最后格式化并输出
+        System.out.println("次留周百分数：" + nt.format(a));
+
+        //本周注册用户数
+        String usersql = "SELECT userid FROM v09x_platf_core.`userdetail` WHERE regtime >= "+starttime+" AND regtime <= "+endtime+" AND status=10 ; ";
+        List<Map> users = dbKit.findList(usersql, Map.class);
+        System.out.println("本周注册用户数：" + users.size());
+
+        //本周新增贴数
+        String articlesql = "SELECT articleid FROM v09x_platf_core.articleinfo WHERE  createtime >= "+starttime+" AND createtime <= "+endtime+" and status !=80 ; ";
+        List<Map> articles = dbKit.findList(articlesql, Map.class);
+        System.out.println("本周新增贴数：" + articles.size());
+
+        //本周活动参与用户数
+        String activitysql = "SELECT userid FROM platf_oth.articleactivity WHERE  createtime >= "+starttime+" AND createtime <= "+endtime+" ; ";
+        List<Map> activitys = dbKit.findList(activitysql, Map.class);
+        HashSet<Integer> activityset = new HashSet<>();
+        activitys.forEach(x->activityset.add((Integer) x.get("userid")));
+        System.out.println("本周活动参与用户数：" + activityset.size());
+        //六一活动参与用户通过获取徽章查询
+        String sixsql = "SELECT userid FROM platf_questx.userbadge WHERE badgeid = 26 AND createtime >= "+starttime+" AND createtime <= "+endtime+" ; ";
+        List<Map> six = dbKit.findList(sixsql, Map.class);
+        System.out.println("儿童节活动参与用户数：" + six.size());
     }
 
 }
