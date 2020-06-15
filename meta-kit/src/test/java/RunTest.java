@@ -1568,6 +1568,51 @@ public class RunTest<T> {
 
     }
 
+    //查询数据库表及表字段属性
+    @Test
+    public void attribute() {
+        String[] database = {"v09x_platf_core", "platf_im", "platf_oss", "platf_oth", "platf_pay", "platf_questx", "platf_stat", "platf_warband"};
+        List<Map<String, Object>> l = new ArrayList<>();
+        Kv kv = Kv.of();
+        for (String s : database) {
+            String sql = "SELECT table_schema,TABLE_NAME" +
+                    " FROM information_schema.`TABLES` WHERE TABLE_SCHEMA = '" + s +
+                    "' ";
+            String sql2 = "desc ";
+            List<Map> list1 = findList(sql);
+            for (int i = 0; i < list1.size(); i++) {
+                Object table_schema = list1.get(i).get("TABLE_SCHEMA");
+                String table_name = (String) list1.get(i).get("TABLE_NAME");
+                Map map = list1.get(i);
+                List<Map> list = findList(sql2 + table_schema + "." + table_name);
+                list.forEach(x -> {
+                    if (x.get("Default") == null) {
+                        x.putAll(map);
+                        l.add(x);
+                    }
+
+                });
+
+            }
+        }
+        
+        kv.set("TABLE_NAME", "表名");
+        kv.set("Field", "字段名");
+        kv.set("Type", "类型");
+        kv.set("Null", "是否为空");
+        kv.set("Key", "主键");
+        kv.set("Default", "默认值");
+        kv.set("Extra", "其他");
+
+        try {
+            Workbook workbook = ExcelKit.exportExcel(l, kv);
+            workbook.write(new FileOutputStream(new File("target/表字段默认值为null信息.xls"))); // 将工作簿对象写到磁盘文件
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     @Test
     public void getdata() {
         DbAccount dbAccount = new DbAccount();
@@ -1580,8 +1625,10 @@ public class RunTest<T> {
         DbKit dbKit = new DbKit(dbAccount, "");
 
         //本周时间区间
-        long starttime = 1587916800000l;
-        long endtime = 1588521600000l;
+        long starttime = 1591545600000l;
+//        long starttime = 1590940800000l;
+        long endtime = 1592150400000l;
+//        long endtime = 1591545600000l;
 
         //上周时间区间
 
@@ -1591,8 +1638,8 @@ public class RunTest<T> {
         HashSet<Integer> set = new HashSet<>();
         list.forEach(x -> set.add((Integer) x.get("userid")));
         System.out.println("本周DAU用户数：" + set.size());
-        //上周注册用户
-        String sql1 = "SELECT userid  FROM v09x_platf_core.`userdetail`  WHERE  regtime >= 1587312000000 AND regtime <= 1587916800000 and status = 10 ; ";
+        //上周注册用户1590940800000
+        String sql1 = "SELECT userid  FROM v09x_platf_core.`userdetail`  WHERE  regtime >= 1590940800000 AND regtime <= 1591545600000 and status = 10 ; ";
         List<Map> list1 = dbKit.findList(sql1, Map.class);
         HashSet<Integer> set1 = new HashSet<>();
         list1.forEach(x -> set1.add((Integer) x.get("userid")));
@@ -1664,11 +1711,10 @@ public class RunTest<T> {
         l.add(sheet1);
         Workbook wb = ExcelKit.exportExcels(l);
         try {
-            wb.write(new FileOutputStream(new File("target/运营数据.xls"))); // 将工作簿对象写到磁盘文件
+            wb.write(new FileOutputStream(new File("target/运营数据2.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
 }
