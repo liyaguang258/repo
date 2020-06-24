@@ -760,12 +760,12 @@ public class RunTest<T> {
     public List<Map> findList(String sql) {
         DbAccount dbAccount = new DbAccount();
         dbAccount.setCate("mysql");
-//        dbAccount.setUrl("jdbc:mysql://47.111.150.118:6063/v09x_platf_core");
-        dbAccount.setUrl("jdbc:mysql://122.112.180.156:6033/v09x_platf_core");
+        dbAccount.setUrl("jdbc:mysql://47.111.150.118:6063/v09x_platf_core");
+//        dbAccount.setUrl("jdbc:mysql://122.112.180.156:6033/v09x_platf_core");
         dbAccount.setUser("root");
-//        dbAccount.setPwd("*Zhong123098!");
+        dbAccount.setPwd("*Zhong123098!");
 
-        dbAccount.setPwd("*Hello@27.com!");
+//        dbAccount.setPwd("*Hello@27.com!");
 
 
         DbKit dbKit = new DbKit(dbAccount, "v09x_platf_core");
@@ -1531,8 +1531,6 @@ public class RunTest<T> {
         String[] database = {"v09x_platf_core", "platf_im", "platf_oss", "platf_oth", "platf_pay", "platf_questx", "platf_stat", "platf_warband"};
         List<Map<String, Object>> l = new ArrayList<>();
 
-        List<Map> list = new ArrayList<>();
-
         for (String s : database) {
 
             String sql = "SELECT table_schema,TABLE_NAME,CONCAT(truncate(data_length/1024/1024,2),'MB') as data_size,table_rows rs,TABLE_COMMENT" +
@@ -1570,40 +1568,129 @@ public class RunTest<T> {
 
     //查询数据库表及表字段属性
     @Test
-    public void attribute() {
-        String[] database = {"v09x_platf_core", "platf_im", "platf_oss", "platf_oth", "platf_pay", "platf_questx", "platf_stat", "platf_warband"};
+    public void getMySql() {
+        String[] database = {"official_core", "official_ipci", "official_oss", "v09x_platf_core", "platf_im", "platf_oss", "platf_oth", "platf_pay", "platf_quest", "platf_questx", "platf_stat", "platf_warband"};
         List<Map<String, Object>> l = new ArrayList<>();
-        Kv kv = Kv.of();
+
         for (String s : database) {
+
             String sql = "SELECT table_schema,TABLE_NAME" +
                     " FROM information_schema.`TABLES` WHERE TABLE_SCHEMA = '" + s +
                     "' ";
-            String sql2 = "desc ";
+            List<Map> list1 = findList(sql);
+
+            Kv sheet1 = Kv.of();
+            List<Kv> kvs = new ArrayList<>();
+
+            for (int i = 0; i < list1.size(); i++) {
+                Object table_schema = list1.get(i).get("TABLE_SCHEMA");
+                String table_name = (String) list1.get(i).get("TABLE_NAME");
+                String sql2 = "SELECT TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME,COLUMN_DEFAULT,IS_NULLABLE,COLUMN_TYPE,COLUMN_COMMENT FROM information_schema.COLUMNS WHERE table_name = '" + table_name + "' and table_schema = '" + table_schema + "'; ";
+
+
+                List<Map> list = findList(sql2);
+
+                list.forEach(x -> {
+                    if (x.get("COLUMN_DEFAULT") == null || x.get("IS_NULLABLE").equals("YES")) {
+                        kvs.add(Kv.of("TABLE_SCHEMA", x.get("TABLE_SCHEMA"))
+                                .set("TABLE_NAME", x.get("TABLE_NAME"))
+                                .set("COLUMN_NAME", x.get("COLUMN_NAME"))
+                                .set("COLUMN_DEFAULT", x.get("COLUMN_DEFAULT"))
+                                .set("IS_NULLABLE", x.get("IS_NULLABLE"))
+                                .set("COLUMN_TYPE", x.get("COLUMN_TYPE"))
+                                .set("COLUMN_COMMENT", x.get("COLUMN_COMMENT"))
+                        );
+
+                    }
+
+                });
+
+            }
+            sheet1.set("data", kvs);
+            sheet1.set("sheetName", s);
+            sheet1.set("hdNames", new String[]{"数据库名", "表名", "字段名", "字段类型", "默认值", "是否为空", "字段注释"});
+            sheet1.set("hds", new String[]{"TABLE_SCHEMA", "TABLE_NAME", "COLUMN_NAME", "COLUMN_TYPE", "COLUMN_DEFAULT", "IS_NULLABLE", "COLUMN_COMMENT"});
+            l.add(sheet1);
+        }
+
+        Workbook wb = ExcelKit.exportExcels(l);
+        try {
+            wb.write(new FileOutputStream(new File("target/数据库表字段属性默认值信息.xls"))); // 将工作簿对象写到磁盘文件
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    //查询数据库表及表字段属性
+    @Test
+    public void attribute() {
+        String[] database = {"official_core", "official_ipci", "official_oss", "v09x_platf_core", "platf_im", "platf_oss", "platf_oth", "platf_pay", "platf_quest", "platf_questx", "platf_stat", "platf_warband"};
+        List<Map<String, Object>> l = new ArrayList<>();
+        Kv kv = Kv.of();
+        StringBuffer buff = new StringBuffer();
+        StringBuffer buff2 = new StringBuffer();
+        for (String s : database) {
+
+            String sql = "SELECT table_schema,TABLE_NAME" +
+                    " FROM information_schema.`TABLES` WHERE TABLE_SCHEMA = '" + s +
+                    "' ";
             List<Map> list1 = findList(sql);
             for (int i = 0; i < list1.size(); i++) {
                 Object table_schema = list1.get(i).get("TABLE_SCHEMA");
                 String table_name = (String) list1.get(i).get("TABLE_NAME");
+                String sql2 = "SELECT TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME,COLUMN_DEFAULT,IS_NULLABLE,COLUMN_TYPE,COLUMN_COMMENT FROM information_schema.COLUMNS WHERE table_name = '" + table_name + "' and table_schema = '" + table_schema + "'; ";
                 Map map = list1.get(i);
-                List<Map> list = findList(sql2 + table_schema + "." + table_name);
+                List<Map> list = findList(sql2);
                 list.forEach(x -> {
-                    if (x.get("Default") == null) {
+                    if (x.get("COLUMN_DEFAULT") == null || x.get("IS_NULLABLE").equals("YES")) {
                         x.putAll(map);
                         l.add(x);
+                        if (x.get("COLUMN_DEFAULT") == null) {
+                            buff.append("ALTER TABLE " + table_schema + "." + table_name + " MODIFY COLUMN " + x.get("COLUMN_NAME") + " " + x.get("COLUMN_TYPE"));
+                            if (x.get("COLUMN_TYPE").toString().startsWith("v")) {
+                                buff.append(" NOT NULL DEFAULT '' " );
+                            } else if (x.get("COLUMN_TYPE").toString().startsWith("s") || x.get("COLUMN_TYPE").toString().startsWith("b") || x.get("COLUMN_TYPE").toString().startsWith("i")) {
+                                buff.append(" NOT NULL DEFAULT 0 " );
+                            } else if (x.get("COLUMN_TYPE").toString().startsWith("t") || x.get("COLUMN_TYPE").toString().startsWith("m")) {
+                                buff.append(" CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL " );
+                                //CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+                            }
+                            buff.append(" COMMENT '"+x.get("COLUMN_COMMENT")+"' ;"+"\n");
+                        }
+                        if (x.get("IS_NULLABLE").equals("YES") && x.get("COLUMN_DEFAULT") != null) {
+//                            buff2.append("UPDATE " + table_name + " SET " + x.get("Field") + " = " + x.get("Default") + " WHERE " + x.get("Field") + " IS NULL;" + "\n");
+                            buff.append("ALTER TABLE " + table_schema + "." + table_name + " MODIFY COLUMN " + x.get("COLUMN_NAME") + " " + x.get("COLUMN_TYPE") + " NOT NULL " );
+                            buff.append(" COMMENT '"+x.get("COLUMN_COMMENT")+"' ;"+"\n");
+                        }
+                        if (x.get("IS_NULLABLE").equals("YES")) {
+                            buff2.append("UPDATE " + table_schema + "." + table_name + " SET " + x.get("COLUMN_NAME") + " = ");
+                            if (x.get("COLUMN_TYPE").toString().startsWith("v") || x.get("COLUMN_TYPE").toString().startsWith("t") || x.get("COLUMN_TYPE").toString().startsWith("m")) {
+                                buff2.append("''");
+                            } else if (x.get("COLUMN_TYPE").toString().startsWith("s") || x.get("COLUMN_TYPE").toString().startsWith("b") || x.get("COLUMN_TYPE").toString().startsWith("i")) {
+                                buff2.append(0);
+                            }
+//                            else if (x.get("Type").toString().startsWith("t") || x.get("Type").toString().startsWith("m")) {
+//                                buff2.append(" CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL ;" + "\n");
+//                            }
+                            buff2.append(" WHERE " + x.get("COLUMN_NAME") + " IS NULL ;" + "\n");
+                        }
+
                     }
 
                 });
 
             }
         }
-        
+        kv.set("TABLE_SCHEMA", "数据库名");
         kv.set("TABLE_NAME", "表名");
-        kv.set("Field", "字段名");
-        kv.set("Type", "类型");
-        kv.set("Null", "是否为空");
-        kv.set("Key", "主键");
-        kv.set("Default", "默认值");
-        kv.set("Extra", "其他");
-
+        kv.set("COLUMN_NAME", "字段名");
+        kv.set("COLUMN_TYPE", "类型");
+        kv.set("IS_NULLABLE", "是否为空");
+        kv.set("COLUMN_COMMENT", "注释");
+        kv.set("COLUMN_DEFAULT", "默认值");
+        FileKit.strToFile(buff.toString(), new File("target/表字段默认值更新.sql"));
+        FileKit.strToFile(buff2.toString(), new File("target/表字段值为Null更新.sql"));
         try {
             Workbook workbook = ExcelKit.exportExcel(l, kv);
             workbook.write(new FileOutputStream(new File("target/表字段默认值为null信息.xls"))); // 将工作簿对象写到磁盘文件
@@ -1625,9 +1712,9 @@ public class RunTest<T> {
         DbKit dbKit = new DbKit(dbAccount, "");
 
         //本周时间区间
-        long starttime = 1591545600000l;
+        long starttime = 1592150400000l;
 //        long starttime = 1590940800000l;
-        long endtime = 1592150400000l;
+        long endtime = 1592755200000l;
 //        long endtime = 1591545600000l;
 
         //上周时间区间
@@ -1639,7 +1726,7 @@ public class RunTest<T> {
         list.forEach(x -> set.add((Integer) x.get("userid")));
         System.out.println("本周DAU用户数：" + set.size());
         //上周注册用户1590940800000
-        String sql1 = "SELECT userid  FROM v09x_platf_core.`userdetail`  WHERE  regtime >= 1590940800000 AND regtime <= 1591545600000 and status = 10 ; ";
+        String sql1 = "SELECT userid  FROM v09x_platf_core.`userdetail`  WHERE  regtime >= 1591545600000 AND regtime <= 1592150400000 and status = 10 ; ";
         List<Map> list1 = dbKit.findList(sql1, Map.class);
         HashSet<Integer> set1 = new HashSet<>();
         list1.forEach(x -> set1.add((Integer) x.get("userid")));
