@@ -1707,20 +1707,17 @@ public class RunTest<T> {
     public void getdata() {
         DbAccount dbAccount = new DbAccount();
         dbAccount.setCate("mysql");
-//        dbAccount.setUrl("jdbc:mysql://47.111.150.118:6063");
         dbAccount.setUrl("jdbc:mysql://122.112.180.156:6033/v09x_platf_core");
         dbAccount.setUser("root");
-//        dbAccount.setPwd("*Zhong123098!");
         dbAccount.setPwd("*Hello@27.com!");
         DbKit dbKit = new DbKit(dbAccount, "");
 
         //本周时间区间
         long starttime = 1592755200000l;
         long endtime = 1593360000000l;
-//        long endtime = 1591545600000l;
-
         //上周时间区间
-
+        long laststart = starttime-7*24*3600000;
+        long lastend = endtime-7*24*3600000;
         //本周活跃用户
         String sql = "SELECT userid FROM `userloginrecord` WHERE  createtime >= " + starttime + " AND createtime <= " + endtime + " ; ";
         List<Map> list = dbKit.findList(sql, Map.class);
@@ -1728,7 +1725,7 @@ public class RunTest<T> {
         list.forEach(x -> set.add((Integer) x.get("userid")));
         System.out.println("本周DAU用户数：" + set.size());
         //上周注册用户1590940800000
-        String sql1 = "SELECT userid  FROM v09x_platf_core.`userdetail`  WHERE  regtime >= 1592150400000 AND regtime <= 1592755200000 and status = 10 ; ";
+        String sql1 = "SELECT userid  FROM v09x_platf_core.`userdetail`  WHERE  regtime >= " + laststart + " AND regtime <= " + lastend + " and status = 10 ; ";
         List<Map> list1 = dbKit.findList(sql1, Map.class);
         HashSet<Integer> set1 = new HashSet<>();
         list1.forEach(x -> set1.add((Integer) x.get("userid")));

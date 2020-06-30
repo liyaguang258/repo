@@ -17,7 +17,7 @@ public class TplKit {
 	private static SqlKit kit = null;
 	private static boolean hadParse = false;// 标记 是否已经解析
 
-	public static TplKit use() {
+	public static TplKit use(String s, boolean b) {
 		return use(false);
 	}
 
