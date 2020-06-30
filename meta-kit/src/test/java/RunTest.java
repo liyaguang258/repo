@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.redkale.convert.json.JsonConvert;
 import org.redkale.source.CacheMemorySource;
 import org.redkale.util.TypeToken;
+import org.redkale.util.Utility;
 
 import java.io.*;
 import java.lang.reflect.Array;
@@ -760,12 +761,12 @@ public class RunTest<T> {
     public List<Map> findList(String sql) {
         DbAccount dbAccount = new DbAccount();
         dbAccount.setCate("mysql");
-        dbAccount.setUrl("jdbc:mysql://47.111.150.118:6063/v09x_platf_core");
-//        dbAccount.setUrl("jdbc:mysql://122.112.180.156:6033/v09x_platf_core");
+//        dbAccount.setUrl("jdbc:mysql://47.111.150.118:6063/platf_quest");
+        dbAccount.setUrl("jdbc:mysql://122.112.180.156:6033/v09x_platf_core");
         dbAccount.setUser("root");
-        dbAccount.setPwd("*Zhong123098!");
+//        dbAccount.setPwd("*Zhong123098!");
 
-//        dbAccount.setPwd("*Hello@27.com!");
+        dbAccount.setPwd("*Hello@27.com!");
 
 
         DbKit dbKit = new DbKit(dbAccount, "v09x_platf_core");
@@ -1331,12 +1332,13 @@ public class RunTest<T> {
 //                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 3)
 //                    Kv.of("userid", 11042).set("name", "墨菲").set("n", 3)
 //                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 87)
+                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 20)
             );
 
         }
         //生成邀请码,
         List<Map<String, Object>> sheets = new ArrayList<>();
-        StringBuilder buf = new StringBuilder("INSERT INTO `v09x_platf_core`.`userinvitecode` (`invitecode`,`userid`,`createtime`) VALUES \n");
+        StringBuilder buf = new StringBuilder("INSERT INTO `platf_quest`.`userinvitecode` (`invitecode`,`userid`,`createtime`) VALUES \n");
         for (Kv x : users) {
             Map<String, Object> sheet = new HashMap<>();
             sheet.put("sheetName", x.get("name"));
@@ -1368,12 +1370,12 @@ public class RunTest<T> {
         buf.delete(buf.length() - 1, buf.length() + 1);
         buf.append(";");
         // 入库邀请码
-        FileKit.strToFile(buf.toString(), new File("tmp/邀请码_05-20_严谨.sql"));
+        FileKit.strToFile(buf.toString(), new File("tmp/邀请码_06-28_汪志.sql"));
 
         // 创建文件
         Workbook wb = ExcelKit.exportExcels(sheets);
         try {
-            wb.write(new FileOutputStream(new File("tmp/邀请码_05-20_严谨.xls"))); // 将工作簿对象写到磁盘文件
+            wb.write(new FileOutputStream(new File("tmp/邀请码_06-28_汪志.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1649,19 +1651,19 @@ public class RunTest<T> {
                         if (x.get("COLUMN_DEFAULT") == null) {
                             buff.append("ALTER TABLE " + table_schema + "." + table_name + " MODIFY COLUMN " + x.get("COLUMN_NAME") + " " + x.get("COLUMN_TYPE"));
                             if (x.get("COLUMN_TYPE").toString().startsWith("v")) {
-                                buff.append(" NOT NULL DEFAULT '' " );
+                                buff.append(" NOT NULL DEFAULT '' ");
                             } else if (x.get("COLUMN_TYPE").toString().startsWith("s") || x.get("COLUMN_TYPE").toString().startsWith("b") || x.get("COLUMN_TYPE").toString().startsWith("i")) {
-                                buff.append(" NOT NULL DEFAULT 0 " );
+                                buff.append(" NOT NULL DEFAULT 0 ");
                             } else if (x.get("COLUMN_TYPE").toString().startsWith("t") || x.get("COLUMN_TYPE").toString().startsWith("m")) {
-                                buff.append(" CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL " );
+                                buff.append(" CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL ");
                                 //CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
                             }
-                            buff.append(" COMMENT '"+x.get("COLUMN_COMMENT")+"' ;"+"\n");
+                            buff.append(" COMMENT '" + x.get("COLUMN_COMMENT") + "' ;" + "\n");
                         }
                         if (x.get("IS_NULLABLE").equals("YES") && x.get("COLUMN_DEFAULT") != null) {
 //                            buff2.append("UPDATE " + table_name + " SET " + x.get("Field") + " = " + x.get("Default") + " WHERE " + x.get("Field") + " IS NULL;" + "\n");
-                            buff.append("ALTER TABLE " + table_schema + "." + table_name + " MODIFY COLUMN " + x.get("COLUMN_NAME") + " " + x.get("COLUMN_TYPE") + " NOT NULL " );
-                            buff.append(" COMMENT '"+x.get("COLUMN_COMMENT")+"' ;"+"\n");
+                            buff.append("ALTER TABLE " + table_schema + "." + table_name + " MODIFY COLUMN " + x.get("COLUMN_NAME") + " " + x.get("COLUMN_TYPE") + " NOT NULL ");
+                            buff.append(" COMMENT '" + x.get("COLUMN_COMMENT") + "' ;" + "\n");
                         }
                         if (x.get("IS_NULLABLE").equals("YES")) {
                             buff2.append("UPDATE " + table_schema + "." + table_name + " SET " + x.get("COLUMN_NAME") + " = ");
@@ -1700,6 +1702,7 @@ public class RunTest<T> {
 
     }
 
+    //运营数据统计
     @Test
     public void getdata() {
         DbAccount dbAccount = new DbAccount();
@@ -1712,9 +1715,8 @@ public class RunTest<T> {
         DbKit dbKit = new DbKit(dbAccount, "");
 
         //本周时间区间
-        long starttime = 1592150400000l;
-//        long starttime = 1590940800000l;
-        long endtime = 1592755200000l;
+        long starttime = 1592755200000l;
+        long endtime = 1593360000000l;
 //        long endtime = 1591545600000l;
 
         //上周时间区间
@@ -1726,7 +1728,7 @@ public class RunTest<T> {
         list.forEach(x -> set.add((Integer) x.get("userid")));
         System.out.println("本周DAU用户数：" + set.size());
         //上周注册用户1590940800000
-        String sql1 = "SELECT userid  FROM v09x_platf_core.`userdetail`  WHERE  regtime >= 1591545600000 AND regtime <= 1592150400000 and status = 10 ; ";
+        String sql1 = "SELECT userid  FROM v09x_platf_core.`userdetail`  WHERE  regtime >= 1592150400000 AND regtime <= 1592755200000 and status = 10 ; ";
         List<Map> list1 = dbKit.findList(sql1, Map.class);
         HashSet<Integer> set1 = new HashSet<>();
         list1.forEach(x -> set1.add((Integer) x.get("userid")));
@@ -1804,6 +1806,134 @@ public class RunTest<T> {
         }
     }
 
+    //评论数据insert语句；
+    @Test
+    public void insertgamecomment() throws FileNotFoundException {
+        StringBuffer buff = new StringBuffer();
+        String[] FIELDS = {"gameid", "", "userid", "commentcontent","",""};
+
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\评论录入-1.xlsx"), FIELDS);
+        list.remove(0);//去除多余的行首
+        HashSet<Object> set = new HashSet<>();
+        list.forEach(x -> set.add(x.get("userid")));
+        set.remove("用户ID");
+        String sql = "SELECT userno,userid FROM userdetail WHERE userno IN (" + set.toString().replace("[", "").replace("]", "").trim() + ");";
+        List<Map> list1 = findList(sql);
+        Map<Object, Object> map = new HashMap<>();
+        list1.forEach(x -> {
+            map.put(x.get("userno").toString(), x.get("userid"));
+        });
+        System.out.println(map.size());
+
+        buff.append("INSERT INTO `v09x_platf_core`.`gamecomment`(`commentid`, `userid`, `gameid`, `versionid`, `commentcontent`,`createtime`) VALUES  \n");
+        Random random = new Random();
+        //所有评论发表时间在5月20日——6月29日之间随机  1589904000000   1593446400000
+
+        list.forEach(x -> {
+            long createtime = 1589904000000l + (long) (Math.random() * (1593446400000l - 1589904000000l));
+            String userid = x.get("userid").toString();
+            String gameid = x.get("gameid").toString();
+            String commentcontent = x.get("commentcontent").toString();
+
+            buff.append(String.format("('%s',%s,'%s','%s','%s',%s),\n", map.get(userid) + "-" + Utility.format36time(createtime), map.get(userid), gameid, gameid + "-0", commentcontent, createtime));
+        });
+
+        buff.delete(buff.length() - 2, buff.length() + 1);
+        buff.append(";");
+        // 入库数据
+        FileKit.strToFile(buff.toString(), new File("tmp/游戏评论数据.sql"));
+
+    }
+
+    //编辑用户insert语句；
+    @Test
+    public void insertUserinfo() {
+        StringBuffer buff = new StringBuffer();
+        StringBuffer buff2 = new StringBuffer();
+        StringBuffer buff3 = new StringBuffer();
+        StringBuffer buff4 = new StringBuffer();
+        StringBuffer buff5 = new StringBuffer();
+        String[] FIELDS = {"username", "mobile", "regtime"};
+        int userid = 5090;
+        int userno = 9300;
+        int face = 1;
+        int count = 1;
+
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\名字.xlsx"), FIELDS);
+        buff.append("INSERT INTO `v09x_platf_core`.`userdetail` (`userid`,userno,`username`,mobile,gender,usertype,regtime,face) VALUES  \n");
+       /* list.forEach(x -> {
+            String username = x.get("username").toString().trim();
+            String mobile = x.get("mobile").toString().trim();
+            String regtime = x.get("regtime").toString().trim();
+            int gender = 2;
+            if (mobile.endsWith("1") || mobile.endsWith("3") || mobile.endsWith("5") || mobile.endsWith("7") || mobile.endsWith("9")) {
+                gender = 4;
+            }
+
+            buff.append(String.format("(%s,%s,'%s','%s',%s,%s,%s),\n", userid, userno, username, mobile, gender, 21,regtime));
+        });*/
+        for (Map x : list) {
+            String username = x.get("username").toString().trim();
+            String mobile = x.get("mobile").toString().trim();
+            String regtime = x.get("regtime").toString().trim();
+            int gender = 2;
+            if (mobile.endsWith("1") || mobile.endsWith("3") || mobile.endsWith("5") || mobile.endsWith("7") || mobile.endsWith("9")) {
+                gender = 4;
+            }
+            buff.append(String.format("(%s,%s,'%s','%s',%s,%s,%s,'%s'),\n", userid, userno, username, mobile, gender, 21, regtime, "http://aimg.woaihaoyouxi.com/app/zimg/face0628/timg" + face + ".jpg"));
+            if (count <= 100) {
+                buff2.append(userid + ",");
+            }
+            if (100 < count && count <= 200) {
+                buff3.append(userid + ",");
+            }
+            if (200 < count && count <= 300) {
+                buff4.append(userid + ",");
+            }
+            if (300 < count && count <= 400) {
+                buff5.append(userid + ",");
+            }
+            userid++;
+            userno++;
+            face++;
+            count++;
+        }
+
+        buff.delete(buff.length() - 2, buff.length() + 1);
+        buff.append(";");
+        System.out.println(buff2);
+        System.out.println(buff3);
+        System.out.println(buff4);
+        System.out.println(buff5);
+        // 入库
+        FileKit.strToFile(buff.toString(), new File("tmp/编辑批量入库数据.sql"));
+
+    }
+
+    //处理每日点赞数据
+    @Test
+    public void insertsupport() throws FileNotFoundException {
+        StringBuffer buff = new StringBuffer();
+        String[] FIELDS = {"articleid", "supportcount"};
+
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\点赞数增加0630.xlsx"), FIELDS);
+        list.remove(0);//去除多余的行首
+
+        list.forEach(x -> {
+            buff.append("UPDATE `v09x_platf_core`.`articleinfo` SET `supportcount` = supportcount + ");
+            String articleid = x.get("articleid").toString();
+            String supportcount = x.get("supportcount").toString();
+            buff.append(supportcount + " WHERE `articleid` = '");
+            buff.append(articleid + "' ;" + "\n");
+//            buff.append(String.format("('%s',%s,'%s','%s','%s',%s),\n", map.get(userid) + "-" + Utility.format36time(createtime), map.get(userid), gameid, gameid + "-0", commentcontent, createtime));
+        });
+
+        buff.delete(buff.length() - 2, buff.length() + 1);
+        buff.append(";");
+        // 入库数据
+        FileKit.strToFile(buff.toString(), new File("tmp/点赞数据0630.sql"));
+
+    }
 }
 
 
