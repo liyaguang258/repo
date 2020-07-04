@@ -1,3 +1,6 @@
+import lombok.Getter;
+import lombok.Setter;
+import net.sf.json.JSONObject;
 import net.tccn.base.*;
 import net.tccn.base.dbq.fbean.FBean;
 import net.tccn.base.dbq.jdbc.api.DbAccount;
@@ -21,6 +24,12 @@ import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.security.Timestamp;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -268,7 +277,7 @@ public class RunTest<T> {
         System.out.println(metaTables.size());
     }
 
-    TplKit tplKit = TplKit.use();
+    TplKit tplKit = TplKit.use("", true);
 
     // @Test
     public void buildMethod() {
@@ -1679,7 +1688,6 @@ public class RunTest<T> {
                         }
 
                     }
-
                 });
 
             }
@@ -1713,32 +1721,36 @@ public class RunTest<T> {
         DbKit dbKit = new DbKit(dbAccount, "");
 
         //本周时间区间
-        long starttime = 1592755200000l;
-        long endtime = 1593360000000l;
+        long starttime = 1590336000000l;
+        long endtime = 1590940800000l;
+
         //上周时间区间
-        long laststart = starttime-7*24*3600000;
-        long lastend = endtime-7*24*3600000;
+        long laststart = starttime - 7 * 24 * 3600000;
+        long lastend = endtime - 7 * 24 * 3600000;
         //本周活跃用户
-        String sql = "SELECT userid FROM `userloginrecord` WHERE  createtime >= " + starttime + " AND createtime <= " + endtime + " ; ";
-        List<Map> list = dbKit.findList(sql, Map.class);
-        HashSet<Integer> set = new HashSet<>();
-        list.forEach(x -> set.add((Integer) x.get("userid")));
-        System.out.println("本周DAU用户数：" + set.size());
+        String esResult = readFileAsString("C:\\Users\\wh\\Desktop\\yunying\\esResult.txt");
+        SearchResult<SearchVisLogRecord> temp = JsonConvert.root().convertFrom((new TypeToken<SearchResult<SearchVisLogRecord>>() {
+        }).getType(), esResult);
+        Collection<SearchVisLogRecord> esResultList = temp.getSheet().getRows();
+
+        System.out.println("本周DAU用户数：" + esResultList.size());
+
         //上周注册用户1590940800000
-        String sql1 = "SELECT userid  FROM v09x_platf_core.`userdetail`  WHERE  regtime >= " + laststart + " AND regtime <= " + lastend + " and status = 10 ; ";
+        String sql1 = "SELECT userid  FROM v09x_platf_core.`userdetail`  WHERE  regtime >= " + laststart + " AND regtime <= " + lastend + " and status = 10 and usertype != 21 ; ";
+//        String sql1 = "SELECT userid  FROM v09x_platf_core.`userdetail`  WHERE  regtime >= 1592150400000 AND regtime <= 1592755200000 and status = 10 ; ";
         List<Map> list1 = dbKit.findList(sql1, Map.class);
         HashSet<Integer> set1 = new HashSet<>();
         list1.forEach(x -> set1.add((Integer) x.get("userid")));
         System.out.println("上周注册用户数：" + set1.size());
+
         //上周注册用户与本周活跃用户比对
         HashSet<Integer> set2 = new HashSet<>();
-        list.forEach(x -> {
-            list1.forEach(y -> {
-                if (x.get("userid").equals(y.get("userid"))) {
-                    set2.add((Integer) x.get("userid"));
-                }
-            });
+        esResultList.forEach(x -> {
+            if (set1.contains(x.getUserid())) {
+                set2.add(x.getUserid());
+            }
         });
+
         System.out.println("上周注册用户在本周活跃人数：" + set2.size());
         double a = (double) set2.size() / (double) set1.size();
         //获取格式化对象
@@ -1749,7 +1761,7 @@ public class RunTest<T> {
         System.out.println("次留周百分数：" + nt.format(a));
 
         //本周注册用户数
-        String usersql = "SELECT userid FROM v09x_platf_core.`userdetail` WHERE regtime >= " + starttime + " AND regtime <= " + endtime + " AND status=10 ; ";
+        String usersql = "SELECT userid FROM v09x_platf_core.`userdetail` WHERE regtime >= " + starttime + " AND regtime <= " + endtime + " AND status=10 and usertype != 21 ; ";
         List<Map> users = dbKit.findList(usersql, Map.class);
         System.out.println("本周注册用户数：" + users.size());
 
@@ -1779,13 +1791,12 @@ public class RunTest<T> {
         List<Map> vips = dbKit.findList(vipsql, Map.class);
         System.out.println("本周新增会员数：" + vips.size());
 
-
         List<Map<String, Object>> l = new ArrayList<>();
         Kv sheet1 = Kv.of();
         List<Kv> kvs = new ArrayList<>();
         kvs.add(Kv.of("name", "本周注册用户数").set("num", users.size()));
         kvs.add(Kv.of("name", "次留周百分数").set("num", nt.format(a)));
-        kvs.add(Kv.of("name", "本周DAU用户数").set("num", set.size()));
+        kvs.add(Kv.of("name", "本周DAU用户数").set("num", esResultList.size()));
         kvs.add(Kv.of("name", "本周新增贴数").set("num", articles.size()));
         kvs.add(Kv.of("name", "本周新增推广员人数").set("num", promoters.size()));
         kvs.add(Kv.of("name", "本周活动参与用户数").set("num", activityset.size() + six.size()));
@@ -1803,43 +1814,198 @@ public class RunTest<T> {
         }
     }
 
+    public static List<Map<String, Object>> stringToObject(String str) {
+        return JsonConvert.root().convertFrom((new TypeToken<ArrayList<Map<String, Object>>>() {
+        }).getType(), str);
+    }
+
+    //文件读取成String
+    public static String readFileAsString(String path) {
+        File file = new File(path, "");
+        if (!file.exists()) return "";
+
+        StringBuffer b = new StringBuffer();
+        try {
+            BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+            while (true) {
+                int ch = r.read();
+                if (ch == -1) {
+                    break;
+                }
+                b.append((char) ch);
+            }
+            r.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return b.toString();
+    }
+
     //评论数据insert语句；
     @Test
     public void insertgamecomment() throws FileNotFoundException {
         StringBuffer buff = new StringBuffer();
-        String[] FIELDS = {"gameid", "", "userid", "commentcontent","",""};
+        String[] FIELDS = {"gameid", "", "userno", "commentcontent", "score", "supportcount"};
 
-        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\评论录入-1.xlsx"), FIELDS);
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\评论录入-3.xlsx"), FIELDS);
         list.remove(0);//去除多余的行首
         HashSet<Object> set = new HashSet<>();
-        list.forEach(x -> set.add(x.get("userid")));
+        list.forEach(x -> set.add(x.get("userno")));
         set.remove("用户ID");
         String sql = "SELECT userno,userid FROM userdetail WHERE userno IN (" + set.toString().replace("[", "").replace("]", "").trim() + ");";
         List<Map> list1 = findList(sql);
         Map<Object, Object> map = new HashMap<>();
         list1.forEach(x -> {
-            map.put(x.get("userno").toString(), x.get("userid"));
+            map.put(Integer.parseInt(x.get("userno").toString()), x.get("userid"));
         });
         System.out.println(map.size());
 
-        buff.append("INSERT INTO `v09x_platf_core`.`gamecomment`(`commentid`, `userid`, `gameid`, `versionid`, `commentcontent`,`createtime`) VALUES  \n");
+        buff.append("INSERT INTO `v09x_platf_core`.`gamecomment`(`commentid`, `userid`, `gameid`, `versionid`, `commentcontent`,`supportcount`,`createtime`) VALUES  \n");
         Random random = new Random();
         //所有评论发表时间在5月20日——6月29日之间随机  1589904000000   1593446400000
+        List<Map<String, Object>> l = new ArrayList<>();
+        Kv kv = Kv.of();
 
         list.forEach(x -> {
+            HashMap<String, Object> map1 = new HashMap<>();
             long createtime = 1589904000000l + (long) (Math.random() * (1593446400000l - 1589904000000l));
-            String userid = x.get("userid").toString();
-            String gameid = x.get("gameid").toString();
+            int userid = (int) Float.parseFloat(x.get("userno").toString());
+            int gameid = (int) Float.parseFloat(x.get("gameid").toString());
             String commentcontent = x.get("commentcontent").toString();
 
-            buff.append(String.format("('%s',%s,'%s','%s','%s',%s),\n", map.get(userid) + "-" + Utility.format36time(createtime), map.get(userid), gameid, gameid + "-0", commentcontent, createtime));
+            int supportcount = (int) Float.parseFloat(x.get("supportcount").toString());
+            String score = x.get("score").toString();
+            String commentid = map.get(userid) + "-" + Utility.format36time(createtime);
+
+            buff.append(String.format("('%s',%s,'%s','%s','%s',%s,%s),\n", commentid, map.get(userid), gameid, gameid + "-0", commentcontent, supportcount, createtime));
+
+
+            map1.put("commentid", commentid);
+            map1.put("userid", map.get(userid));
+            map1.put("gameid", gameid);
+            map1.put("commentcontent", commentcontent);
+            map1.put("createtime", createtime);
+            map1.put("supportcount", supportcount);
+            map1.put("score", score);
+            l.add(map1);
+
         });
+        kv.set("commentid", "评论ID");
+        kv.set("userid", "用户id");
+        kv.set("gameid", "游戏id");
+        kv.set("commentcontent", "评论内容");
+        kv.set("createtime", "创建时间");
+        kv.set("supportcount", "点赞数");
+        kv.set("score", "评分");
 
         buff.delete(buff.length() - 2, buff.length() + 1);
         buff.append(";");
         // 入库数据
-        FileKit.strToFile(buff.toString(), new File("tmp/游戏评论数据.sql"));
+        FileKit.strToFile(buff.toString(), new File("tmp/游戏评论数据0630.sql"));
+        try {
+            Workbook workbook = ExcelKit.exportExcel(l, kv);
+            workbook.write(new FileOutputStream(new File("target/编辑评论录入数据0701.xls"))); // 将工作簿对象写到磁盘文件
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    //评论数据insert语句；
+    @Test
+    public void gamecomment() throws IOException, InterruptedException {
+        StringBuffer buff = new StringBuffer();
+        String[] FIELDS = {"gameid", "", "userno", "commentcontent", "score", "supportcount"};
+
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\评论录入-3.xlsx"), FIELDS);
+        list.remove(0);//去除多余的行首
+        HashSet<Object> set = new HashSet<>();
+        list.forEach(x -> set.add(x.get("userno")));
+
+        String sql = "SELECT userno,userid FROM userdetail WHERE userno IN (" + set.toString().replace("[", "").replace("]", "").trim() + ");";
+        List<Map> list1 = findList(sql);
+        Map<Integer, Integer> map = new HashMap<>();
+        list1.forEach(x -> {
+            map.put(Integer.parseInt(x.get("userno").toString()), Integer.parseInt(x.get("userid").toString()));
+        });
+        System.out.println(map.size());
+
+        Random random = new Random();
+        //所有评论发表时间在5月20日——6月29日之间随机  1589904000000   1593446400000
+        List<Map<String, Object>> l = new ArrayList<>();
+        Kv kv = Kv.of();
+        HttpClient client = HttpClient.newBuilder().build();
+
+        String encode1 = URLEncoder.encode("{mobile:15697177873,vercode:20422}", "UTF-8");
+        HttpRequest request1 = HttpRequest.newBuilder()
+                .uri(URI.create("https://api.1216.top/account/login?bean=" + encode1))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(""))
+                .build();
+        HttpResponse<String> response1 = null;
+        response1 = client.send(request1, HttpResponse.BodyHandlers.ofString());
+        JSONObject jsonResule = JSONObject.fromObject(response1.body());
+        JSONObject attachJSON = jsonResule.getJSONObject("attach");
+        String jsessionid = attachJSON.getString("sessionid");
+
+        list.forEach(x -> {
+            HashMap<String, Object> map1 = new HashMap<>();
+            long createtime = 1589904000000l + (long) (Math.random() * (1593446400000l - 1589904000000l));
+            int userno = (int) Float.parseFloat(x.get("userno").toString());
+            int userid = map.get(userno);
+//            int i = Integer.parseInt(o.toString());
+            String gameid = ((Number) (int) Float.parseFloat(x.get("gameid").toString())).toString();
+            String commentcontent = x.get("commentcontent").toString();
+            int supportcount = (int) Float.parseFloat(x.get("supportcount").toString());
+            float score = Float.parseFloat(x.get("score").toString());
+
+            //=============================================
+            String encode = null;
+            try {
+                encode = URLEncoder.encode("{gameid:'" + gameid + "',commentcontent:'" + commentcontent + "',experience:" + score + "}", "UTF-8");
+                System.out.println("{gameid:'" + gameid + "',commentcontent:'" + commentcontent + "',experience:" + score + "}&targetid=" + userid);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://api.1216.top/game/comment_create_tmp?bean=" + encode + "&targetid=" + userid))
+                    .header("Content-Type", "application/json")
+                    .header("jsessionid", jsessionid)
+                    .POST(HttpRequest.BodyPublishers.ofString(""))
+                    .build();
+
+            HttpResponse<String> response = null;
+            try {
+                response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                System.out.println(response.body());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            //==================================================
+
+            map1.put("userid", userid);
+            map1.put("gameid", gameid);
+            map1.put("commentcontent", commentcontent);
+            map1.put("createtime", createtime);
+            map1.put("supportcount", supportcount);
+            map1.put("score", score);
+            l.add(map1);
+
+        });
+        kv.set("userid", "用户id");
+        kv.set("gameid", "游戏id");
+        kv.set("commentcontent", "评论内容");
+        kv.set("createtime", "创建时间");
+        kv.set("supportcount", "点赞数");
+        kv.set("score", "评分");
+        try {
+            Workbook workbook = ExcelKit.exportExcel(l, kv);
+            workbook.write(new FileOutputStream(new File("target/编辑评论录入数据070444.xls"))); // 将工作簿对象写到磁盘文件
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     //编辑用户insert语句；
@@ -1911,16 +2077,19 @@ public class RunTest<T> {
     @Test
     public void insertsupport() throws FileNotFoundException {
         StringBuffer buff = new StringBuffer();
-        String[] FIELDS = {"articleid", "supportcount"};
+        String[] FIELDS = {"articleid", "supportcount","readcount"};
 
-        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\点赞数增加0630.xlsx"), FIELDS);
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\点赞数增加0704.xlsx"), FIELDS);
         list.remove(0);//去除多余的行首
 
         list.forEach(x -> {
             buff.append("UPDATE `v09x_platf_core`.`articleinfo` SET `supportcount` = supportcount + ");
             String articleid = x.get("articleid").toString();
-            String supportcount = x.get("supportcount").toString();
-            buff.append(supportcount + " WHERE `articleid` = '");
+            int supportcount = (int) Float.parseFloat(x.get("supportcount").toString());
+            int readcount = (int) Float.parseFloat(x.get("readcount").toString());
+            buff.append(supportcount + " , `readcount` = readcount + ");
+            buff.append(readcount + " WHERE `articleid` = '");
+//            buff.append(supportcount + " WHERE `articleid` = '");
             buff.append(articleid + "' ;" + "\n");
 //            buff.append(String.format("('%s',%s,'%s','%s','%s',%s),\n", map.get(userid) + "-" + Utility.format36time(createtime), map.get(userid), gameid, gameid + "-0", commentcontent, createtime));
         });
@@ -1928,9 +2097,18 @@ public class RunTest<T> {
         buff.delete(buff.length() - 2, buff.length() + 1);
         buff.append(";");
         // 入库数据
-        FileKit.strToFile(buff.toString(), new File("tmp/点赞数据0630.sql"));
+        FileKit.strToFile(buff.toString(), new File("tmp/点赞数据0704.sql"));
 
     }
+
+    @Getter
+    @Setter
+    public static class RetResult<T> {
+        protected int retcode;
+        protected Map<String, String> attach;
+        protected T result;
+    }
+
 }
 
 
