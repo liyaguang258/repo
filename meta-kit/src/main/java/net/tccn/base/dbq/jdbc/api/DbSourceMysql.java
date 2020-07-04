@@ -60,10 +60,9 @@ public class DbSourceMysql implements DbSource {
             PreparedStatement ps = connection.prepareStatement(sql);
             ResultSet rs = ps.executeQuery()) {
             List list = new ArrayList();
+            ResultSetMetaData metaData = rs.getMetaData();
+            int count = metaData.getColumnCount();
             while (rs.next()) {
-                ResultSetMetaData metaData = rs.getMetaData();
-                int count = metaData.getColumnCount();
-
                 Map row = new HashMap();
                 for (int i = 1; i <= count; i++) {
                     String columnTypeName = metaData.getColumnTypeName(i);
@@ -87,6 +86,7 @@ public class DbSourceMysql implements DbSource {
 
             return list;
         } catch (SQLException e) {
+            System.out.println("sql :"+ sql);
             e.printStackTrace();
             return null;
         } finally {

@@ -20,11 +20,13 @@ public class MetaListenter implements ApplicationListener {
     @Resource(name = "property.dataPath")
     private String dataPath;
 
+    public static ResourceFactory resourceFactory;
 
     @Override
     public void preStart(Application application) {
         CompletableFuture.runAsync(()-> {
             ResourceFactory rf = application.getResourceFactory();
+            resourceFactory = rf;
             rf.inject(this);
 
             MetaKit.dcate = dcate;

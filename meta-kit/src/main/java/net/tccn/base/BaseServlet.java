@@ -1,23 +1,21 @@
 package net.tccn.base;
 
-import com.arangodb.ArangoDBException;
-import net.tccn.base.arango.ArangoSource;
 import net.tccn.user.User;
 import net.tccn.user.UserService;
 import org.redkale.net.http.HttpRequest;
 import org.redkale.net.http.HttpResponse;
 import org.redkale.net.http.HttpServlet;
+import org.redkale.net.http.HttpUserType;
 
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * @author: liangxianyou at 2018/11/8 17:05.
  */
+@HttpUserType(User.class)
 public class BaseServlet extends HttpServlet {
 
     @Resource(name = "SERVER_ROOT")
@@ -26,6 +24,7 @@ public class BaseServlet extends HttpServlet {
     private UserService userService;
 
     public Logger logger = Logger.getLogger(this.getClass().getSimpleName());
+    public static final boolean winos = System.getProperty("os.name").contains("Window");
 
     @Override
     protected void preExecute(HttpRequest request, HttpResponse response) throws IOException {
@@ -40,6 +39,11 @@ public class BaseServlet extends HttpServlet {
         if (sessionid != null) {
             User user = userService.current(sessionid);
             request.setCurrentUser(user);
+        }
+        String uri = request.getRequestURI();
+        if (uri.endsWith(".html")){
+            response.finish(new File(webroot + uri));
+            return;
         }
 
         super.preExecute(request, response);
@@ -67,9 +71,6 @@ public class BaseServlet extends HttpServlet {
         try {
             // logger.log(Level.INFO, String.format("%s : %s", new Date(), request.getRequestURI()));
             super.execute(request, response);
-        } catch (ArangoDBException e) {
-            logger.log(Level.INFO, "arangodb init!", e);
-            ArangoSource.use();
         } catch (UnsupportedOperationException e) {
             e.printStackTrace();
             response.finish(JBean.by(-1, e.getMessage()));
@@ -80,20 +81,5 @@ public class BaseServlet extends HttpServlet {
             System.out.println("-------------------------------------------");
             response.finish(JBean.by(-1, e.getMessage()));
         }
-    }
-
-    public Kv getParams(HttpRequest request, String... key) {
-        Kv kv = Kv.of();
-        for (String k : key) {
-            if (k.contains("=")) {   //如果没有值使用默认值
-                kv.put(k.split("=")[0], request.getParameter(k.split("=")[0], k.split("=")[1]));
-                continue;
-            } else if (k.contains("<")) {  //强制使用"<"右侧的值
-                kv.put(k.split("<")[0], k.split("<")[1]);
-                continue;
-            }
-            kv.put(k, request.getParameter(k));
-        }
-        return kv;
     }
 }

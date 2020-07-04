@@ -1,6 +1,6 @@
 package net.tccn.base.dbq.jdbc.api;
 
-import net.tccn.base.X;
+import net.tccn.base.Utils;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -31,7 +31,7 @@ public class DbKit implements DbSource{
         this.catalog = catalog;
 
         try {
-            DbSource dbSource = X.getDbSource(DbSource.class, dbAccount.getCate());
+            DbSource dbSource = Utils.getDbSource(DbSource.class, dbAccount.getCate());
             dbSource.setDbAccount(dbAccount);
             dbSource.setCatalog(catalog);
 

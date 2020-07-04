@@ -6,7 +6,6 @@ import net.tccn.meta.MetaLink;
 import net.tccn.meta.MetaService;
 import net.tccn.meta.MetaTable;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -64,20 +63,20 @@ public class ParseMysql implements Parser {
         if (sameDbFun.test(tables) || true) {
             // where 1=1 and xx=xx
             StringBuffer bufWhere = new StringBuffer();
-            if (!X.isEmpty(filters)) {
+            if (!Utils.isEmpty(filters)) {
                 bufWhere.append(Filter.filter(filters, DbType.MYSQL));
             }
 
             //select a.x, b.y, c.z
             StringBuffer bufSelect = new StringBuffer();
             bufSelect.append("select ");
-            if ("export".equals(fBean.getType()) && !X.isEmpty(exports)) {
+            if ("export".equals(fBean.getType()) && !Utils.isEmpty(exports)) {
                 exports.forEach(x -> {
                     bufSelect.append(x.get("col")).append(" as ").append("'").append(x.get("col")).append("',");
                 });
                 bufSelect.deleteCharAt(bufSelect.length() - 1);
             }
-            else if ("list".equals(fBean.getType()) && !X.isEmpty(shows)) {
+            else if ("list".equals(fBean.getType()) && !Utils.isEmpty(shows)) {
                 shows.forEach(x -> {
                     bufSelect.append(x.get("col")).append(" as ").append("'").append(x.get("col")).append("',");
                 });
@@ -88,13 +87,13 @@ public class ParseMysql implements Parser {
 
             //from
             StringBuilder bufFrom = new StringBuilder();
-            bufFrom.append(" from ").append(metaTable.getCatalog()).append(".`").append(metaTable.getName()).append("` ").append(metaTable.getAlias());
+            bufFrom.append(" from ").append(metaTable.getCatalog()).append(".`").append(metaTable.getName()).append("` `").append(metaTable.getAlias()).append("`");
             //left join
-            if (!X.isEmpty(links)) {
+            if (!Utils.isEmpty(links)) {
                 links.forEach(x -> {
                     MetaTable rightTable = tables.get(metaTable.getAlias().equals(x.getTables()[0]) ? x.getTables()[1] : x.getTables()[0]);
                     if (rightTable != null) {
-                        bufFrom.append(" left join ").append(rightTable.getCatalog()).append(".").append(rightTable.getName()).append(" ").append(rightTable.getAlias()).append(" on ");
+                        bufFrom.append(" left join ").append(rightTable.getCatalog()).append(".").append(rightTable.getName()).append(" `").append(rightTable.getAlias()).append("` on ");
                         int tag = bufFrom.length();
                         x.getLink().forEach((k, v) -> {
                             if (bufFrom.length() > tag) {
@@ -108,7 +107,7 @@ public class ParseMysql implements Parser {
 
             StringBuffer bufOth = new StringBuffer();
             //order by
-            if (!X.isEmpty(orders)) {
+            if (!Utils.isEmpty(orders)) {
                 bufOth.append(" ").append(Order.order(orders, DbType.MYSQL));
             }
             //limit
@@ -168,18 +167,18 @@ public class ParseMysql implements Parser {
         List<String> keys = data.keySet()
                 .stream()
                 .filter(x ->
-                        x.startsWith(alias + ".") || !X.isEmpty(data.get(alias + "." + x))
+                        x.startsWith(alias + ".") || !Utils.isEmpty(data.get(alias + "." + x))
                 ).collect(Collectors.toList());
         if (pks.length == 0) {
             throw new CfgException("保存数据失败，检查业务主表[%s-%S]主键配置", mainTable.getName(), mainTable.getComment());
         } else if (keys.size() == 0) {
-            throw new CfgException("保存数据失败，提交数据不能改空");
+            throw new CfgException("保存数据失败,提交数据不能改空");
         }
 
 
         //单主键
         String pv = data.get(alias + "." + pks[0]);
-        if (X.isEmpty(pv)) { //新增
+        if (Utils.isEmpty(pv)) { //新增
             String sqlTpl = "INSERT INTO `%s` (%s) VALUES %s;"; // para: table、 ks、 vs
             StringBuffer ks = new StringBuffer();// `k1`,`k2`,`k3`, ...
             StringBuffer vs = new StringBuffer();// `v1`,`v2`,`v3`, ...

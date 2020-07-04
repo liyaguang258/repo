@@ -3,7 +3,7 @@ import org.redkale.util.TypeToken;
 public enum SearchEnum {
 
 
-    VISLOG("vislog", "vislog.find", "vislog.update", new TypeToken<SearchResult<SearchVisLogRecord>>() {
+    VISLOG("vislog", "vislog.7DaysActiveCount", "vislog.update", new TypeToken<SearchResult<SearchVisLogRecord>>() {
     });
 
     public final String esIndex;

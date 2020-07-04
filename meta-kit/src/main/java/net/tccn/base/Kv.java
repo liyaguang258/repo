@@ -15,27 +15,27 @@ import java.util.stream.Stream;
 /**
  * Created by liangxianyou@eversec.cn at 2018/3/12 14:17.
  */
-public class Kv<K,V> extends LinkedHashMap<K,V> {
-    public static Kv of(){
+public class Kv<K, V> extends LinkedHashMap<K, V> {
+    public static Kv of() {
         return new Kv();
     }
 
-    public static Kv of(Object k, Object v){
-        return new Kv().set(k,v);
+    public static Kv of(Object k, Object v) {
+        return new Kv().set(k, v);
     }
 
-    public Kv<K, V> set(K k, V v){
+    public Kv<K, V> set(K k, V v) {
         put(k, v);
         return this;
     }
 
-    public Kv<K,V> putAll(Kv<K,V> kv) {
-        kv.forEach((k,v) -> put(k, v));
+    public Kv<K, V> putAll(Kv<K, V> kv) {
+        kv.forEach((k, v) -> put(k, v));
         return this;
     }
 
     //  将obj 属性映射到Kv 中
-    public static Kv toKv(Object m, String ... fields) {
+    public static Kv toKv(Object m, String... fields) {
         Kv kv = Kv.of();
         Stream.of(fields).forEach(field -> {
             String filedT = field;
@@ -45,10 +45,10 @@ public class Kv<K,V> extends LinkedHashMap<K,V> {
                 if (field.contains("=")) {
                     String[] arr = field.split("=");
                     filedT = arr[0];
-                    filedS= arr[1];
+                    filedS = arr[1];
                 }
 
-                Method method = m.getClass().getDeclaredMethod("get" + X.toUpperCaseFirst(filedS));
+                Method method = m.getClass().getDeclaredMethod("get" + Utils.toUpperCaseFirst(filedS));
                 if (method != null) {
                     kv.set(filedT, method.invoke(m));
                 }
@@ -108,87 +108,57 @@ public class Kv<K,V> extends LinkedHashMap<K,V> {
             return null;
         } else if (v.getClass() == clazz) {
             return (T) v;
-        } else if (clazz ==  String.class) {
+        } else if (clazz == String.class) {
             return (T) String.valueOf(v);
         }
 
-        Object v1 = null;
+        Object v1 = v;
         try {
+
             if (v.getClass() == Long.class) {//多种数值类型的处理: Long => x
                 switch (clazz.getSimpleName()) {
-                    case "int":
-                    case "Integer": v1 = (int)(long) v; break;
-                    case "short":
-                    case "Short": v1 = (short)(long) v; break;
-                    case "float":
-                    case "Float": v1 = (float)(long) v; break;
-                    case "byte":
-                    case "Byte": v1 = (byte)(long) v; break;
-                    default: v1 = v;
+                    case "int", "Integer" -> v1 = (int) (long) v;
+                    case "short", "Short" -> v1 = (short) (long) v;
+                    case "float", "Float" -> v1 = (float) (long) v;
+                    case "byte", "Byte" -> v1 = (byte) (long) v;
                 }
             } else if (v.getClass() == Double.class) {
                 if (isNumber.test(clazz)) {
                     switch (clazz.getSimpleName()) {
-                        case "long":
-                        case "Long": v1 = (long)(double) v; break;
-                        case "int":
-                        case "Integer": v1 = (int)(double) v; break;
-                        case "short":
-                        case "Short": v1 = (short)(double) v; break;
-                        case "float":
-                        case "Float": v1 = (float)(double) v; break;
-                        case "byte":
-                        case "Byte": v1 = (byte)(double) v; break;
-                        default: v1 = v;
+                        case "long", "Long" -> v1 = (long) (double) v;
+                        case "int", "Integer" -> v1 = (int) (double) v;
+                        case "short", "Short" -> v1 = (short) (double) v;
+                        case "float", "Float" -> v1 = (float) (double) v;
+                        case "byte", "Byte" -> v1 = (byte) (double) v;
                     }
-                } else if (clazz == String.class){
+                } else if (clazz == String.class) {
                     v1 = String.valueOf(v);
                 }
             } else if (v.getClass() == String.class) {
                 switch (clazz.getSimpleName()) {
-                    case "Date":
-                        v1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse((String) v); break;
-                    case "short":
-                    case "Short": v1 = (short)Double.parseDouble((String) v); break;
-                    case "float":
-                    case "Float": v1 = (float)Double.parseDouble((String) v); break;
-                    case "int":
-                    case "Integer": v1 = (int)Double.parseDouble((String) v); break;
-                    case "long":
-                    case "Long": v1 = (long)Double.parseDouble((String) v); break;
-                    case "double":
-                    case "Double": v1 = Double.parseDouble((String) v); break;
-                    case "byte":
-                    case "Byte": v1 = Byte.parseByte((String) v); break;
-                    default: v1 = v;
+                    case "Date" -> v1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse((String) v);
+                    case "short", "Short" -> v1 = (short) Double.parseDouble((String) v);
+                    case "float", "Float" -> v1 = (float) Double.parseDouble((String) v);
+                    case "int", "Integer" -> v1 = (int) Double.parseDouble((String) v);
+                    case "long", "Long" -> v1 = (long) Double.parseDouble((String) v);
+                    case "double", "Double" -> v1 = Double.parseDouble((String) v);
+                    case "byte", "Byte" -> v1 = Byte.parseByte((String) v);
                 }
             } else if (v.getClass() == Integer.class) {
                 switch (clazz.getSimpleName()) {
-                    case "long":
-                    case "Long": v1 = (long) (int) v; break;
-                    case "short":
-                    case "Short": v1 = (short) (int) v; break;
-                    case "float":
-                    case "Float": v1 = (float) (int) v; break;
-                    case "byte":
-                    case "Byte": v1 = (byte)(int) v; break;
-                    default: v1 = v;
+                    case "long", "Long" -> v1 = (long) (int) v;
+                    case "short", "Short" -> v1 = (short) (int) v;
+                    case "float", "Float" -> v1 = (float) (int) v;
+                    case "byte", "Byte" -> v1 = (byte) (int) v;
                 }
             } else if (v.getClass() == Float.class) {
                 switch (clazz.getSimpleName()) {
-                    case "long":
-                    case "Long": v1 = (long) (float) v; break;
-                    case "int":
-                    case "Integer": v1 = (int) (float)v; break;
-                    case "short":
-                    case "Short": v1 = (short) (float) v; break;
-                    case "byte":
-                    case "Byte": v1 = (byte)(float) v; break;
-                    default: v1 = v;
+                    case "long", "Long" -> v1 = (long) (float) v;
+                    case "int", "Integer" -> v1 = (int) (float) v;
+                    case "short", "Short" -> v1 = (short) (float) v;
+                    case "byte", "Byte" -> v1 = (byte) (float) v;
                 }
-            }
-
-            else {
+            } else {
                 v1 = v;
             }
         } catch (ParseException e) {
@@ -198,7 +168,7 @@ public class Kv<K,V> extends LinkedHashMap<K,V> {
     }
 
     public static <T> T toBean(Map map, Class<T> clazz) {
-        //按照方法名 + 类型寻找，
+        //按照方法名 + 类型寻找,
         //按照方法名 寻找
         //+
         Object obj = null;
@@ -208,10 +178,9 @@ public class Kv<K,V> extends LinkedHashMap<K,V> {
             new IllegalArgumentException("创建对象实列失败", e); // 检查clazz是否有无参构造
         }
 
-        for (String k : (Set<String>)map.keySet()) {
+        for (String k : (Set<String>) map.keySet()) {
             Object v = map.get(k);
             if (v == null) continue;
-            //寻找method
             try {
                 String methodName = "set" + upFirst.apply(k);
                 Class tClazz = null;
@@ -243,7 +212,7 @@ public class Kv<K,V> extends LinkedHashMap<K,V> {
                     method.invoke(obj, toAs(v, tClazz));
                 }
 
-                //没有方法，找属性注解
+                //没有方法,找属性注解
                 if (method == null) {
                     Field field = null;
                     Field[] fields = clazz.getDeclaredFields();
@@ -268,7 +237,6 @@ public class Kv<K,V> extends LinkedHashMap<K,V> {
 
         return (T) obj;
     }
-
 
 
 }

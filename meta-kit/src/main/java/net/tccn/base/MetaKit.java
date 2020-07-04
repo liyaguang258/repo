@@ -483,7 +483,7 @@ public final class MetaKit {
         Set<String> allAlias;
 
         if (!all) {
-            allAlias = X.concat(
+            allAlias = Utils.concat(
                     metaService.getFilters().stream().map(f -> {
                         String col = (String) f.getName();
                         String alias = col.split("[.]")[0];

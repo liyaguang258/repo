@@ -1,10 +1,13 @@
 package net.tccn.base.dbq.fbean;
 
+import lombok.Data;
+
 import java.util.List;
 
 /**
  * Created by liangxianyou at 2018/12/14 15:36.
  */
+@Data
 public class Order {
     private String col;
     private int desc;//1 or -1

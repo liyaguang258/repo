@@ -231,7 +231,6 @@ public abstract class Doc<T extends Doc> {
         } catch (ArangoDBException e) {
             System.out.println(aql);
             e.printStackTrace();
-            ArangoSource.use();
         }
         return db.query(aql, clazz).asListRemaining();
     }
@@ -241,7 +240,6 @@ public abstract class Doc<T extends Doc> {
         } catch (ArangoDBException e) {
             System.out.println(aql);
             e.printStackTrace();
-            ArangoSource.use();
         }
         return db.query(aql, clazz).first();
     }

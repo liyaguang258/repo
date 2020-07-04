@@ -304,7 +304,7 @@ public class ExcelKit {
                 }
 
                 if (cell.getCellType() == CellType.NUMERIC) {
-                    map.put(fields[j], (long) cell.getNumericCellValue() + "");
+                    map.put(fields[j], cell.getNumericCellValue() + "");
                 } else {
                     map.put(fields[j], cell.getStringCellValue());
                 }
@@ -346,7 +346,7 @@ public class ExcelKit {
                 }
 
                 if (cell.getCellType() == CellType.NUMERIC) {
-                    map.put(field, (long) cell.getNumericCellValue() + "");
+                    map.put(field, cell.getNumericCellValue() + "");
                 } else {
                     map.put(field, cell.getStringCellValue());
                 }

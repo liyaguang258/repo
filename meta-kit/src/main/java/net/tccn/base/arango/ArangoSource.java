@@ -7,9 +7,10 @@ import com.arangodb.Function;
 import com.arangodb.entity.DocumentCreateEntity;
 import com.arangodb.entity.DocumentDeleteEntity;
 import com.arangodb.entity.MultiDocumentEntity;
-import net.tccn.base.PropKit;
-import net.tccn.base.X;
+import net.tccn.base.MetaListenter;
+import net.tccn.base.Utils;
 
+import javax.annotation.Resource;
 import javax.persistence.Table;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,40 +27,35 @@ import static java.util.Arrays.asList;
  */
 public class ArangoSource {
 
+    @Resource(name = "property.arango.host")
+    private String host = "127.0.0.1";
+    @Resource(name = "property.arango.user")
+    private String user = "root";
+    @Resource(name = "property.arango.password")
+    private String password = "123456";
+    @Resource(name = "property.arango.port")
+    private int port = 8529;
+
     public Logger logger = Logger.getLogger(this.getClass().getSimpleName());
     private ArangoDB arangoDb;
 
-    private static Map<String, ArangoSource> sources = new HashMap();
+    private static Map<String, ArangoSource> sourceMap = new HashMap();
+
+    private ArangoSource() {
+        MetaListenter.resourceFactory.inject(this);
+
+        arangoDb = new ArangoDB.Builder().host(host, port).user(user).password(password).build();
+    }
 
     private ArangoSource(ArangoDB arangoDb) {
+        MetaListenter.resourceFactory.inject(this);
+
         this.arangoDb = arangoDb;
     }
 
-    public static ArangoSource use() {
-        return use("main");
-    }
-
     public static ArangoSource use(String unit) {
-        if (unit == null || unit.isEmpty() || "main".equals(unit)) {
-            unit = "";
-        } else {
-            unit = "." + unit;
-        }
-
-        ArangoSource source = sources.get(unit);
-        if (source == null) {
-            String host = PropKit.getProperty("arango.host" + unit);
-            int port = Integer.parseInt(PropKit.getProperty("arango.port" + unit, "8529"));
-            String user = PropKit.getProperty("arango.user" + unit);
-            String password = PropKit.getProperty("arango.passwd" + unit);
-
-            source = new ArangoSource(new ArangoDB.Builder().host(host, port).user(user).password(password).build());
-        }
-        return source;
-    }
-
-    public ArangoDB arangoDB() {
-        return arangoDb;
+        ArangoSource arangoSource = new ArangoSource();
+        return arangoSource;
     }
 
     public ArangoDatabase db(String db) {
@@ -137,7 +133,7 @@ public class ArangoSource {
     private Function<Doc, StringBuilder> orderBuilder = (t) -> {
         StringBuilder buf = new StringBuilder();
         Map<String, Integer> order = t.getOrder();
-        if (X.isEmpty(order)) {
+        if (Utils.isEmpty(order)) {
             return buf.append(" sort d._key desc");
         }
         buf.append(" sort ");
@@ -151,7 +147,7 @@ public class ArangoSource {
     private Function<Doc, StringBuilder> returnBuilder = (t) -> {
         StringBuilder buf = new StringBuilder();
 
-        if (X.isEmpty(t.get_Shows())) {
+        if (Utils.isEmpty(t.get_Shows())) {
             return buf.append(" return d");
         }
 

@@ -1,7 +1,7 @@
 package net.tccn.base.dbq.fbean;
 
 import net.tccn.base.Kv;
-import net.tccn.base.X;
+import net.tccn.base.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ public enum FilterType {
 
     //不同的条件构建过滤语句
     public static String buildSql(Filter filter) {
-        if (X.isEmpty(filter.getValue()) && X.isEmpty(filter.getValues())) {
+        if (Utils.isEmpty(filter.getValue()) && Utils.isEmpty(filter.getValues())) {
             return "";
         }
         FilterType filterType = getFilterType(filter.getType());

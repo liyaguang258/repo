@@ -14,6 +14,7 @@ public class Field {
     private String inType;
     private String inExt;
     private Boolean pk; // 是否主键
+    private Boolean notNull; // 是否主键
 
     public Field() {}
 

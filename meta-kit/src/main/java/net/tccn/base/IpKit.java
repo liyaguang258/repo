@@ -258,6 +258,14 @@ public class IpKit {
         }
         return arr;
     };
+    /*private static Function<String, List<Integer>> _toIntSlice = (str) -> {
+        String[] strArr = str.trim().split("");
+        List<Integer> arr = new ArrayList<>(strArr.length);
+        for (int i = 0; i < strArr.length; i++) {
+            arr.add(Integer.parseInt(strArr[i]));
+        }
+        return arr;
+    };*/
 
     /**
      * 任意两个大小正整数相减
@@ -349,4 +357,35 @@ public class IpKit {
         }
         return _ip;
     }
+
+    // 任意两个小数相加 x: 0.1213, y: 0.981
+    /*private static String _add(String x, String y) {
+        List<Integer> xArr = _toIntSlice.apply(x.substring(2));
+        List<Integer> yArr = _toIntSlice.apply(y.substring(2));
+
+
+        String v = "";
+        int len = xArr.size() > yArr.size() ? xArr.size() : yArr.size();
+        int carry = 0;
+        for (int i = 0; i < len; i++) {
+            int a = xArr.size() > (len - i - 1) ? xArr.get(len - i - 1) : 0;
+            int b = yArr.size() > (len - i - 1) ? yArr.get(len - i - 1) : 0;
+            int _v = a + b + carry;
+
+            carry = _v / 10;
+            v = _v % 10 + v;
+        }
+        v = carry + v;
+        StringBuffer buf = new StringBuffer(v).insert(v.length() - len, ".");
+
+        return buf.toString();
+    }
+
+    // 任意两个数相加
+    public static String addx(String x, String y) {
+        String str = _add(x, y);
+        System.out.printf("%s + %s = %s \n", x, y, str);
+
+        return str;
+    }*/
 }
