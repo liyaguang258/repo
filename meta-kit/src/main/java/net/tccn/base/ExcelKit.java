@@ -306,6 +306,8 @@ public class ExcelKit {
                 if (cell.getCellType() == CellType.NUMERIC) {
                     map.put(fields[j], cell.getNumericCellValue() + "");
                 } else {
+
+                    cell.setCellType(CellType.STRING);
                     map.put(fields[j], cell.getStringCellValue());
                 }
             }
