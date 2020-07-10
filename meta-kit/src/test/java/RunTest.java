@@ -1724,8 +1724,8 @@ public class RunTest<T> {
         DbKit dbKit = new DbKit(dbAccount, "");
 
         //本周时间区间
-        long starttime = 1590336000000l;
-        long endtime = 1590940800000l;
+        long starttime = 1593532800000l;
+        long endtime = 1593964800000l;
 
         //上周时间区间
         long laststart = starttime - 7 * 24 * 3600000;
@@ -1918,9 +1918,9 @@ public class RunTest<T> {
     public void gamecomment() throws IOException, InterruptedException {
         StringBuffer buff = new StringBuffer();
 //        String[] FIELDS = {"gameid", "", "userno", "commentcontent", "score", "supportcount"};
-        String[] FIELDS = {"gameid", "", "userno", "commentcontent", "score"};
+        String[] FIELDS = {"gameid", "", "userno", "commentcontent", "score", "supportcount"};
 
-        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\评论录入-1.xlsx"), FIELDS);
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\评论录入0709—95分.xlsx"), FIELDS);
         list.remove(0);//去除多余的行首
         HashSet<Object> set = new HashSet<>();
         list.forEach(x -> {
@@ -1941,21 +1941,6 @@ public class RunTest<T> {
         List<Map<String, Object>> l = new ArrayList<>();
         List<Map<String, Object>> l1 = new ArrayList<>();
         Kv kv = Kv.of();
-//
-       /* HttpClient client = HttpClient.newBuilder().build();
-        String encode1 = URLEncoder.encode("{mobile:15697177873,vercode:20422}", "UTF-8");
-        HttpRequest request1 = HttpRequest.newBuilder()
-                .uri(URI.create("https://api-qc.1216.top/account/login?bean=" + encode1))
-//                .uri(URI.create("https://api.woaihaoyouxi.com/account/login?bean=" + encode1))
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(""))
-                .build();
-        HttpResponse<String> response1 = null;
-        response1 = client.send(request1, HttpResponse.BodyHandlers.ofString());
-        System.out.println(response1.body());
-        JSONObject jsonResule = JSONObject.fromObject(response1.body());
-        JSONObject attachJSON = jsonResule.getJSONObject("attach");
-        String jsessionid = attachJSON.getString("sessionid");*/
         //======================================================
         StringBuffer buffer1 = new StringBuffer();
         buffer1.append("{mobile:15697177873,vercode:159753}");
@@ -1986,7 +1971,7 @@ public class RunTest<T> {
             }
             String gameid = ((Number) (int) Float.parseFloat(x.get("gameid").toString())).toString();
             String commentcontent = x.get("commentcontent").toString();
-//            int supportcount = (int) Float.parseFloat(x.get("supportcount").toString());
+            int supportcount = (int) Float.parseFloat(x.get("supportcount").toString());
             float score = Float.parseFloat(x.get("score").toString());
 
             int s1 = new Random().nextInt(50);
@@ -2024,29 +2009,6 @@ public class RunTest<T> {
 //            buffer.append(encode);
             buffer.append("commentcontent");
             buffer.append("',experience:" + score + " ,frame:" + score1 + " ,music:" + score2 + ",operation:" + score3 + " ,fluent:" + score4 + " ,original:" + score5 + "}");
-          /*  HttpRequest request = HttpRequest.newBuilder()
-//                    .uri(URI.create("http://api.1216.top/game/comment_create_tmp?bean=" + buffer.toString().replace("{", "%7b").replace("}", "%7d").replace(" ", "%20") + "&targetid=" + userid))
-                    .uri(URI.create("https://api-qc.1216.top/game/comment_create_tmp?bean=" + buffer.toString().replace("{", "%7b").replace("}", "%7d").replace(" ", "%20") + "&targetid=" + userid))
-                    .header("Content-Type", "application/json")
-                    .header("jsessionid", jsessionid)
-                    .POST(HttpRequest.BodyPublishers.ofString(""))
-                    .timeout(Duration.ofMinutes(2))
-                    .build();
-
-            System.out.println(request.uri());
-            HttpResponse<String> response = null;
-            HttpClient client1 = HttpClient.newBuilder().build();
-
-            try {
-                response = client1.send(request, HttpResponse.BodyHandlers.ofString());
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            System.out.println("body:" + response.body());
-            JSONObject resule = JSONObject.fromObject(response.body());
-            int retcode = (int) resule.get("retcode");*/
 
             //==================================
             String url = "https://api.woaihaoyouxi.com/game/comment_create_tmp";
@@ -2078,18 +2040,18 @@ public class RunTest<T> {
                     map2.put("gameid", gameid);
                     map2.put("commentcontent", commentcontent);
                     map2.put("createtime", createtime);
-//                    map2.put("supportcount", supportcount);
+                    map2.put("supportcount", supportcount);
                     map2.put("score", score);
                     l1.add(map2);
                 }
 
             } else {
-                System.out.println("gameid + userno:"+gameid + userno);
+                System.out.println("gameid + userno:" + gameid + userno);
             }
 
 
             try {
-                Thread.currentThread().sleep(5000);
+                Thread.currentThread().sleep(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -2099,7 +2061,7 @@ public class RunTest<T> {
             map1.put("gameid", gameid);
             map1.put("commentcontent", commentcontent);
             map1.put("createtime", createtime);
-//            map1.put("supportcount", supportcount);
+            map1.put("supportcount", supportcount);
             map1.put("score", score);
             l.add(map1);
 
@@ -2115,8 +2077,8 @@ public class RunTest<T> {
         try {
             Workbook workbook = ExcelKit.exportExcel(l, kv);
             Workbook workbook1 = ExcelKit.exportExcel(l1, kv);
-            workbook.write(new FileOutputStream(new File("target/编辑评论录入数据0707ce.xls"))); // 将工作簿对象写到磁盘文件
-            workbook1.write(new FileOutputStream(new File("target/编辑评论录入数据0707cuowu.xls"))); // 将工作簿对象写到磁盘文件
+            workbook.write(new FileOutputStream(new File("target/编辑评论录入数据0709ce.xls"))); // 将工作簿对象写到磁盘文件
+            workbook1.write(new FileOutputStream(new File("target/编辑评论录入数据0709cuowu.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -2129,9 +2091,9 @@ public class RunTest<T> {
         StringBuffer buff1 = new StringBuffer();
         StringBuffer buff2 = new StringBuffer();
         StringBuffer buff3 = new StringBuffer();
-        String[] FIELDS = {"", "userid", "gameid", "", "createtime","supportcount"};
+        String[] FIELDS = {"userid", "gameid", "", "createtime", "supportcount"};
 
-        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\编辑评论录入数据0630.xls"), FIELDS);
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\编辑评论录入数据0709ce.xls"), FIELDS);
         list.remove(0);//去除多余的行首
 
         list.forEach(x -> {
@@ -2140,9 +2102,9 @@ public class RunTest<T> {
             buff2.append("UPDATE  `v09x_platf_core`.`gamecomment` SET `createtime` = ");
             buff3.append("UPDATE  `v09x_platf_core`.`gamescore` SET `createtime` =  ");
             int userid = (int) Float.parseFloat(x.get("userid").toString());
-            int gameid =  (int) Float.parseFloat(x.get("gameid").toString());
+            int gameid = (int) Float.parseFloat(x.get("gameid").toString());
             long createtime = (long) Float.parseFloat(x.get("createtime").toString());
-            int supportcount =  (int) Float.parseFloat(x.get("supportcount").toString());
+            int supportcount = (int) Float.parseFloat(x.get("supportcount").toString());
             buff.append(gameid + "' AND userid = ");
             buff1.append(gameid + "' AND userid = ");
             buff2.append(createtime + " , supportcount = ");
@@ -2158,10 +2120,10 @@ public class RunTest<T> {
         buff.delete(buff.length() - 2, buff.length() + 1);
         buff.append(";");
         // 入库数据
-        FileKit.strToFile(buff.toString(), new File("tmp/删除0630评论录入数据.sql"));
-        FileKit.strToFile(buff1.toString(), new File("tmp/删除0630评分录入数据.sql"));
-        FileKit.strToFile(buff2.toString(), new File("tmp/修改0630评论录入时间数据.sql"));
-        FileKit.strToFile(buff3.toString(), new File("tmp/修改0630评分录入时间数据.sql"));
+        FileKit.strToFile(buff.toString(), new File("tmp/删除0709评论录入数据.sql"));
+        FileKit.strToFile(buff1.toString(), new File("tmp/删除0709评分录入数据.sql"));
+        FileKit.strToFile(buff2.toString(), new File("tmp/修改0709评论录入时间数据.sql"));
+        FileKit.strToFile(buff3.toString(), new File("tmp/修改0709评分录入时间数据.sql"));
 
     }
 
@@ -2236,7 +2198,7 @@ public class RunTest<T> {
         StringBuffer buff = new StringBuffer();
         String[] FIELDS = {"articleid", "supportcount", "readcount"};
 
-        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\点赞数增加0709.xlsx"), FIELDS);
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\点赞数增加0710.xlsx"), FIELDS);
         list.remove(0);//去除多余的行首
 
         list.forEach(x -> {
@@ -2254,7 +2216,7 @@ public class RunTest<T> {
         buff.delete(buff.length() - 2, buff.length() + 1);
         buff.append(";");
         // 入库数据
-        FileKit.strToFile(buff.toString(), new File("tmp/点赞数据0709.sql"));
+        FileKit.strToFile(buff.toString(), new File("tmp/点赞数据0710.sql"));
 
     }
 
