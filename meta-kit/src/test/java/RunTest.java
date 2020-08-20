@@ -20,25 +20,19 @@ import org.redkale.source.CacheMemorySource;
 import org.redkale.util.TypeToken;
 import org.redkale.util.Utility;
 
-import javax.persistence.Table;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
-import java.math.BigDecimal;
-import java.net.URI;
 import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.security.Timestamp;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.Executor;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
@@ -774,6 +768,7 @@ public class RunTest<T> {
         DbAccount dbAccount = new DbAccount();
         dbAccount.setCate("mysql");
 //        dbAccount.setUrl("jdbc:mysql://47.111.150.118:6063/platf_quest");
+//        dbAccount.setUrl("jdbc:mysql://121.196.17.55:6063/platf_quest");
         dbAccount.setUrl("jdbc:mysql://122.112.180.156:6033/v09x_platf_core");
         dbAccount.setUser("root");
 //        dbAccount.setPwd("*Zhong123098!");
@@ -1437,8 +1432,6 @@ public class RunTest<T> {
 //            buff.append(" mobile = '"+mobile+"'  ");
             buff.append("WHERE userid = " + userid + ";" + "\n");
         });
-//        System.out.println(buff);
-        // 更新sql
         FileKit.strToFile(buff.toString(), new File("tmp/员工健康值更新.sql"));
 
     }
@@ -1583,7 +1576,7 @@ public class RunTest<T> {
     //查询数据库表及表字段属性
     @Test
     public void getMySql() {
-        String[] database = {"official_core", "official_ipci", "official_oss", "v09x_platf_core", "platf_im", "platf_oss", "platf_oth", "platf_pay", "platf_quest", "platf_questx", "platf_stat", "platf_warband"};
+        String[] database = {"official_core", "official_ipci", "official_oss", "v09x_platf_core", "platf_im", "platf_sdk", "platf_live", "platf_oss", "platf_oth", "platf_pay", "platf_quest", "platf_questx", "platf_stat", "platf_warband"};
         List<Map<String, Object>> l = new ArrayList<>();
 
         for (String s : database) {
@@ -1606,6 +1599,9 @@ public class RunTest<T> {
 
                 list.forEach(x -> {
                     if (x.get("COLUMN_DEFAULT") == null || x.get("IS_NULLABLE").equals("YES")) {
+                        if (x.get("COLUMN_TYPE").equals("mediumtext") || x.get("COLUMN_TYPE").equals("text")) {
+                            return;
+                        }
                         kvs.add(Kv.of("TABLE_SCHEMA", x.get("TABLE_SCHEMA"))
                                 .set("TABLE_NAME", x.get("TABLE_NAME"))
                                 .set("COLUMN_NAME", x.get("COLUMN_NAME"))
@@ -1629,7 +1625,7 @@ public class RunTest<T> {
 
         Workbook wb = ExcelKit.exportExcels(l);
         try {
-            wb.write(new FileOutputStream(new File("target/数据库表字段属性默认值信息.xls"))); // 将工作簿对象写到磁盘文件
+            wb.write(new FileOutputStream(new File("target/数据库表字段属性默认值信息0818.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1639,7 +1635,7 @@ public class RunTest<T> {
     //查询数据库表及表字段属性
     @Test
     public void attribute() {
-        String[] database = {"official_core", "official_ipci", "official_oss", "v09x_platf_core", "platf_im", "platf_oss", "platf_oth", "platf_pay", "platf_quest", "platf_questx", "platf_stat", "platf_warband"};
+        String[] database = {"official_core", "official_ipci", "official_oss", "v09x_platf_core", "platf_im", "platf_sdk", "platf_live", "platf_oss", "platf_oth", "platf_pay", "platf_quest", "platf_questx", "platf_stat", "platf_warband"};
         List<Map<String, Object>> l = new ArrayList<>();
         Kv kv = Kv.of();
         StringBuffer buff = new StringBuffer();
@@ -1658,9 +1654,13 @@ public class RunTest<T> {
                 List<Map> list = findList(sql2);
                 list.forEach(x -> {
                     if (x.get("COLUMN_DEFAULT") == null || x.get("IS_NULLABLE").equals("YES")) {
+//                    if (  x.get("IS_NULLABLE").equals("YES")&&x.get("COLUMN_DEFAULT") == null) {
                         x.putAll(map);
+
                         l.add(x);
-                        if (x.get("COLUMN_DEFAULT") == null) {
+                        Object column_default = x.get("COLUMN_DEFAULT");
+//                        if (x.get("COLUMN_DEFAULT") == null) {
+                        if (Utils.isEmpty(x.get("COLUMN_DEFAULT"))) {
                             buff.append("ALTER TABLE " + table_schema + "." + table_name + " MODIFY COLUMN " + x.get("COLUMN_NAME") + " " + x.get("COLUMN_TYPE"));
                             if (x.get("COLUMN_TYPE").toString().startsWith("v")) {
                                 buff.append(" NOT NULL DEFAULT '' ");
@@ -1668,14 +1668,33 @@ public class RunTest<T> {
                                 buff.append(" NOT NULL DEFAULT 0 ");
                             } else if (x.get("COLUMN_TYPE").toString().startsWith("t") || x.get("COLUMN_TYPE").toString().startsWith("m")) {
                                 buff.append(" CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL ");
-                                //CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+                            } else if (x.get("COLUMN_TYPE").toString().startsWith("f") || x.get("COLUMN_TYPE").toString().startsWith("d")) {
+                                buff.append(" NOT NULL DEFAULT 0.00 ");
                             }
-                            buff.append(" COMMENT '" + x.get("COLUMN_COMMENT") + "' ;" + "\n");
+                            String comment = x.get("COLUMN_COMMENT").toString();
+                            if (comment.contains("-")) {
+                                String[] split = comment.split("-");
+                                if (split[0].endsWith("'")) {
+                                    String s1 = split[0].replace("'", "‘");
+                                    String s2 = split[1].replace("'", "’");
+                                    comment = s1 + "-" + s2;
+                                }
+                            }
+                            buff.append(" COMMENT '" + comment + "' ;" + "\n");
                         }
-                        if (x.get("IS_NULLABLE").equals("YES") && x.get("COLUMN_DEFAULT") != null) {
-//                            buff2.append("UPDATE " + table_name + " SET " + x.get("Field") + " = " + x.get("Default") + " WHERE " + x.get("Field") + " IS NULL;" + "\n");
+//                        if (x.get("IS_NULLABLE").equals("YES") && x.get("COLUMN_DEFAULT") != null) {
+                        if (x.get("IS_NULLABLE").equals("YES") && !Utils.isEmpty(x.get("COLUMN_DEFAULT"))) {
                             buff.append("ALTER TABLE " + table_schema + "." + table_name + " MODIFY COLUMN " + x.get("COLUMN_NAME") + " " + x.get("COLUMN_TYPE") + " NOT NULL ");
-                            buff.append(" COMMENT '" + x.get("COLUMN_COMMENT") + "' ;" + "\n");
+                            String comment = x.get("COLUMN_COMMENT").toString();
+                            if (comment.contains("-")) {
+                                String[] split = comment.split("-");
+                                if (split[0].endsWith("'")) {
+                                    String s1 = split[0].replace("'", "‘");
+                                    String s2 = split[1].replace("'", "’");
+                                    comment = s1 + s2;
+                                }
+                            }
+                            buff.append(" COMMENT '" + comment + "' ;" + "\n");
                         }
                         if (x.get("IS_NULLABLE").equals("YES")) {
                             buff2.append("UPDATE " + table_schema + "." + table_name + " SET " + x.get("COLUMN_NAME") + " = ");
@@ -1683,6 +1702,8 @@ public class RunTest<T> {
                                 buff2.append("''");
                             } else if (x.get("COLUMN_TYPE").toString().startsWith("s") || x.get("COLUMN_TYPE").toString().startsWith("b") || x.get("COLUMN_TYPE").toString().startsWith("i")) {
                                 buff2.append(0);
+                            } else if (x.get("COLUMN_TYPE").toString().startsWith("f") || x.get("COLUMN_TYPE").toString().startsWith("d")) {
+                                buff2.append(0.00);
                             }
 //                            else if (x.get("Type").toString().startsWith("t") || x.get("Type").toString().startsWith("m")) {
 //                                buff2.append(" CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL ;" + "\n");
@@ -1702,11 +1723,11 @@ public class RunTest<T> {
         kv.set("IS_NULLABLE", "是否为空");
         kv.set("COLUMN_COMMENT", "注释");
         kv.set("COLUMN_DEFAULT", "默认值");
-        FileKit.strToFile(buff.toString(), new File("target/表字段默认值更新.sql"));
-        FileKit.strToFile(buff2.toString(), new File("target/表字段值为Null更新.sql"));
+        FileKit.strToFile(buff.toString(), new File("target/表字段默认值更新0820.sql"));
+        FileKit.strToFile(buff2.toString(), new File("target/表字段值为Null更新0820.sql"));
         try {
             Workbook workbook = ExcelKit.exportExcel(l, kv);
-            workbook.write(new FileOutputStream(new File("target/表字段默认值为null信息.xls"))); // 将工作簿对象写到磁盘文件
+            workbook.write(new FileOutputStream(new File("target/表字段默认值为null信息0820.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1724,8 +1745,8 @@ public class RunTest<T> {
         DbKit dbKit = new DbKit(dbAccount, "");
 
         //本周时间区间
-        long starttime = 1593532800000l;
-        long endtime = 1593964800000l;
+        long starttime = 1596816000000l;
+        long endtime = 1597420800000l;
 
         //上周时间区间
         long laststart = starttime - 7 * 24 * 3600000;
@@ -1811,7 +1832,7 @@ public class RunTest<T> {
         l.add(sheet1);
         Workbook wb = ExcelKit.exportExcels(l);
         try {
-            wb.write(new FileOutputStream(new File("target/运营数据2.xls"))); // 将工作簿对象写到磁盘文件
+            wb.write(new FileOutputStream(new File("target/运营数据0808.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1850,7 +1871,7 @@ public class RunTest<T> {
         StringBuffer buff = new StringBuffer();
         String[] FIELDS = {"gameid", "", "userno", "commentcontent", "score", "supportcount"};
 
-        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\评论录入-3.xlsx"), FIELDS);
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\评论0717.xlsx"), FIELDS);
         list.remove(0);//去除多余的行首
         HashSet<Object> set = new HashSet<>();
         list.forEach(x -> set.add(x.get("userno")));
@@ -1870,6 +1891,10 @@ public class RunTest<T> {
         Kv kv = Kv.of();
 
         list.forEach(x -> {
+            if (x.get("gameid").toString() == "" || x.get("commentcontent").toString() == "" || x.get("supportcount").toString() == "" || x.get("score").toString() == "") {
+                return;
+            }
+
             HashMap<String, Object> map1 = new HashMap<>();
             long createtime = 1589904000000l + (long) (Math.random() * (1593446400000l - 1589904000000l));
             int userid = (int) Float.parseFloat(x.get("userno").toString());
@@ -1904,10 +1929,10 @@ public class RunTest<T> {
         buff.delete(buff.length() - 2, buff.length() + 1);
         buff.append(";");
         // 入库数据
-        FileKit.strToFile(buff.toString(), new File("tmp/游戏评论数据0630.sql"));
+        FileKit.strToFile(buff.toString(), new File("tmp/游戏评论数据0717.sql"));
         try {
             Workbook workbook = ExcelKit.exportExcel(l, kv);
-            workbook.write(new FileOutputStream(new File("target/编辑评论录入数据0701.xls"))); // 将工作簿对象写到磁盘文件
+            workbook.write(new FileOutputStream(new File("target/编辑评论录入数据0717.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1918,25 +1943,25 @@ public class RunTest<T> {
     public void gamecomment() throws IOException, InterruptedException {
         StringBuffer buff = new StringBuffer();
 //        String[] FIELDS = {"gameid", "", "userno", "commentcontent", "score", "supportcount"};
-        String[] FIELDS = {"gameid", "", "userno", "commentcontent", "score", "supportcount"};
+        String[] FIELDS = {"gameid", "", "userid", "commentcontent", "score", "supportcount"};
 
-        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\评论录入0709—95分.xlsx"), FIELDS);
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\DNF评论150-0814.xlsx"), FIELDS);
         list.remove(0);//去除多余的行首
-        HashSet<Object> set = new HashSet<>();
+       /* HashSet<Object> set = new HashSet<>();
         list.forEach(x -> {
             if (x.get("userno").toString() != "") {
 
                 set.add((int) Float.parseFloat(x.get("userno").toString()));
             }
-        });
+        });*/
 
-        String sql = "SELECT userno,userid FROM userdetail WHERE userno IN (" + set.toString().replace("[", "").replace("]", "").trim() + ");";
+       /* String sql = "SELECT userno,userid FROM userdetail WHERE userno IN (" + set.toString().replace("[", "").replace("]", "").trim() + ");";
         List<Map> list1 = findList(sql);
         Map<Integer, Integer> map = new HashMap<>();
         list1.forEach(x -> {
             map.put(Integer.parseInt(x.get("userno").toString()), Integer.parseInt(x.get("userid").toString()));
         });
-        System.out.println(map.size());
+        System.out.println(map.size());*/
 
         List<Map<String, Object>> l = new ArrayList<>();
         List<Map<String, Object>> l1 = new ArrayList<>();
@@ -1956,10 +1981,15 @@ public class RunTest<T> {
 
         int count = 0;
         list.forEach(x -> {
+            if (x.get("gameid").toString() == "" || x.get("commentcontent").toString() == "" || x.get("supportcount").toString() == "" || x.get("score").toString() == "") {
+                return;
+            }
             HashMap<String, Object> map1 = new HashMap<>();
             HashMap<String, Object> map2 = new HashMap<>();
-            long createtime = 1589904000000l + (long) (Math.random() * (1593446400000l - 1589904000000l));
-            int userno = 0;
+//            long createtime = 1589904000000l + (long) (Math.random() * (1593446400000l - 1589904000000l));
+            //评论的时间区间
+            long createtime = 1596769776000l + (long) (Math.random() * (1597376612186l - 1596769776000l));
+            /*int userno = 0;
             int userid = 0;
             if (x.get("userno").toString() != "") {
 
@@ -1968,7 +1998,8 @@ public class RunTest<T> {
             if (map.get(userno) != null) {
 
                 userid = map.get(userno);
-            }
+            }*/
+            int userid = (int) Float.parseFloat(x.get("userid").toString());
             String gameid = ((Number) (int) Float.parseFloat(x.get("gameid").toString())).toString();
             String commentcontent = x.get("commentcontent").toString();
             int supportcount = (int) Float.parseFloat(x.get("supportcount").toString());
@@ -1978,26 +2009,36 @@ public class RunTest<T> {
             float score1 = score + s1 / 10f;
             if (score1 >= 100) {
                 score1 = 100f;
+            } else if (score1 < 50) {
+                score1 = score;
             }
             int s2 = new Random().nextInt(50);
             float score2 = score - s2 / 10f;
             if (score2 >= 100) {
                 score2 = 100f;
+            } else if (score2 < 50) {
+                score2 = score;
             }
             int s3 = new Random().nextInt(50);
             float score3 = score + s3 / 10f;
             if (score3 >= 100) {
                 score3 = 100f;
+            } else if (score3 < 50) {
+                score3 = score;
             }
             int s4 = new Random().nextInt(50);
             float score4 = score - s4 / 10f;
             if (score4 >= 100) {
                 score4 = 100f;
+            } else if (score4 < 50) {
+                score4 = score;
             }
             int s5 = new Random().nextInt(50);
             float score5 = score + s5 / 10f;
             if (score5 >= 100) {
                 score5 = 100f;
+            } else if (score5 < 50) {
+                score5 = score;
             }
 
 
@@ -2030,6 +2071,7 @@ public class RunTest<T> {
 
             HttpResponse<String> httpResponse = HttpUtils.send(url, mapx, HttpUtils.HttpMethod.POST_X, headers);
             System.out.println("body:" + httpResponse.body());
+            System.out.println("gameid:" + gameid + "--userid" + userid);
 
             if (httpResponse.body().startsWith("{")) {
                 JSONObject resule = JSONObject.fromObject(httpResponse.body());
@@ -2046,7 +2088,7 @@ public class RunTest<T> {
                 }
 
             } else {
-                System.out.println("gameid + userno:" + gameid + userno);
+                System.out.println("gameid + userno:" + gameid + userid);
             }
 
 
@@ -2077,8 +2119,8 @@ public class RunTest<T> {
         try {
             Workbook workbook = ExcelKit.exportExcel(l, kv);
             Workbook workbook1 = ExcelKit.exportExcel(l1, kv);
-            workbook.write(new FileOutputStream(new File("target/编辑评论录入数据0709ce.xls"))); // 将工作簿对象写到磁盘文件
-            workbook1.write(new FileOutputStream(new File("target/编辑评论录入数据0709cuowu.xls"))); // 将工作簿对象写到磁盘文件
+            workbook.write(new FileOutputStream(new File("target/编辑评论录入数据0814-1ce.xls"))); // 将工作簿对象写到磁盘文件
+            workbook1.write(new FileOutputStream(new File("target/编辑评论录入数据0814-1cuowu.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -2093,23 +2135,27 @@ public class RunTest<T> {
         StringBuffer buff3 = new StringBuffer();
         String[] FIELDS = {"userid", "gameid", "", "createtime", "supportcount"};
 
-        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\编辑评论录入数据0709ce.xls"), FIELDS);
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\编辑评论录入数据0814-1ce.xls"), FIELDS);
         list.remove(0);//去除多余的行首
 
         list.forEach(x -> {
+            if (x.get("gameid").toString() == "" || x.get("createtime").toString() == "" || x.get("supportcount").toString() == "" || x.get("userid").toString() == "") {
+                return;
+            }
+
             buff.append("DELETE FROM `v09x_platf_core`.`gamecomment` WHERE gameid = '");
             buff1.append("DELETE FROM `v09x_platf_core`.`gamescore` WHERE gameid = '");
             buff2.append("UPDATE  `v09x_platf_core`.`gamecomment` SET `createtime` = ");
             buff3.append("UPDATE  `v09x_platf_core`.`gamescore` SET `createtime` =  ");
             int userid = (int) Float.parseFloat(x.get("userid").toString());
-            int gameid = (int) Float.parseFloat(x.get("gameid").toString());
+            String gameid = x.get("gameid").toString();
             long createtime = (long) Float.parseFloat(x.get("createtime").toString());
             int supportcount = (int) Float.parseFloat(x.get("supportcount").toString());
             buff.append(gameid + "' AND userid = ");
             buff1.append(gameid + "' AND userid = ");
             buff2.append(createtime + " , supportcount = ");
-            buff2.append(supportcount + " WHERE gameid = ");
-            buff2.append(gameid + " AND userid = ");
+            buff2.append(supportcount + " WHERE gameid = '");
+            buff2.append(gameid + "' AND userid = ");
             buff3.append(createtime + " WHERE gameid = ");
             buff3.append(gameid + " AND userid = ");
             buff.append(userid + " ;\n");
@@ -2120,10 +2166,10 @@ public class RunTest<T> {
         buff.delete(buff.length() - 2, buff.length() + 1);
         buff.append(";");
         // 入库数据
-        FileKit.strToFile(buff.toString(), new File("tmp/删除0709评论录入数据.sql"));
-        FileKit.strToFile(buff1.toString(), new File("tmp/删除0709评分录入数据.sql"));
-        FileKit.strToFile(buff2.toString(), new File("tmp/修改0709评论录入时间数据.sql"));
-        FileKit.strToFile(buff3.toString(), new File("tmp/修改0709评分录入时间数据.sql"));
+        FileKit.strToFile(buff.toString(), new File("tmp/删除0814评论录入数据.sql"));
+        FileKit.strToFile(buff1.toString(), new File("tmp/删除0814评分录入数据.sql"));
+        FileKit.strToFile(buff2.toString(), new File("tmp/修改0814评论录入时间数据.sql"));
+        FileKit.strToFile(buff3.toString(), new File("tmp/修改0814评分录入时间数据.sql"));
 
     }
 
@@ -2198,7 +2244,7 @@ public class RunTest<T> {
         StringBuffer buff = new StringBuffer();
         String[] FIELDS = {"articleid", "supportcount", "readcount"};
 
-        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\点赞数增加0710.xlsx"), FIELDS);
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\点赞数增加0716.xlsx"), FIELDS);
         list.remove(0);//去除多余的行首
 
         list.forEach(x -> {
@@ -2216,7 +2262,7 @@ public class RunTest<T> {
         buff.delete(buff.length() - 2, buff.length() + 1);
         buff.append(";");
         // 入库数据
-        FileKit.strToFile(buff.toString(), new File("tmp/点赞数据0710.sql"));
+        FileKit.strToFile(buff.toString(), new File("tmp/点赞数据0716.sql"));
 
     }
 
@@ -2230,9 +2276,34 @@ public class RunTest<T> {
 
     @Test
     public void sss() {
-        int i = new Random().nextInt(50);
+      /*  int i = new Random().nextInt(50);
         float v = i / 10f;
-        System.out.println(v);
+        System.out.println(v);*/
+       /* for (int i = 0; i < 86; i++) {
+            long createtime = 1594742400000l + (long) (Math.random() * (1594944000000l - 1594742400000l));
+            System.out.println(createtime);
+        }*/
+      /*  long starttime = 1593619200000l;
+        starttime = starttime + 1 * 24 * 3600 * 1000;
+        System.out.println(starttime);
+        long endtime = starttime + (1) * 24 * 3600 * 1000;
+        System.out.println(endtime);*/
+      /*  System.out.println(Utility.todayYYMMDDHHmm());
+        long l = System.currentTimeMillis();*/
+       /* switch (1) {
+            case 1:
+                System.out.println("aaaaa");
+                break;
+            case 2:
+                System.out.println("bbbbbbbbbbbbbb");
+                break;
+
+        }*/
+//        String DateNow = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        LocalDateTime now = LocalDateTime.now();
+        // 当前日期和时间
+        System.out.println(now);
+
     }
 
     //读取文件夹信息
@@ -2265,6 +2336,14 @@ public class RunTest<T> {
         FileKit.strToFile(buff.toString(), new File("tmp/游戏封面处理0708.sql"));
     }
 
+    @Test
+    public void siii() {
+
+        LocalDateTime dateTime = LocalDateTime.ofEpochSecond(1596708077809l / 1000L, 0, ZoneOffset.ofHours(8));
+        String time = dateTime.format(DateTimeFormatter.ofPattern("yy-MM-dd"));
+        System.out.println(time);
+
+    }
 }
 
 
