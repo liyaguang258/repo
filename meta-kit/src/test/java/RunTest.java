@@ -29,8 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -767,7 +766,7 @@ public class RunTest<T> {
     public List<Map> findList(String sql) {
         DbAccount dbAccount = new DbAccount();
         dbAccount.setCate("mysql");
-//        dbAccount.setUrl("jdbc:mysql://47.111.150.118:6063/platf_quest");
+        dbAccount.setUrl("jdbc:mysql://47.111.150.118:6063/platf_quest");
 //        dbAccount.setUrl("jdbc:mysql://121.196.17.55:6063/platf_quest");
         dbAccount.setUrl("jdbc:mysql://122.112.180.156:6033/v09x_platf_core");
         dbAccount.setUser("root");
@@ -777,6 +776,7 @@ public class RunTest<T> {
 
 
         DbKit dbKit = new DbKit(dbAccount, "v09x_platf_core");
+
 
         //dbKit.exetute("UPDATE articleinfo SET gameids=NULL WHERE gameids =',';");
 
@@ -1723,11 +1723,11 @@ public class RunTest<T> {
         kv.set("IS_NULLABLE", "是否为空");
         kv.set("COLUMN_COMMENT", "注释");
         kv.set("COLUMN_DEFAULT", "默认值");
-        FileKit.strToFile(buff.toString(), new File("target/表字段默认值更新0820.sql"));
-        FileKit.strToFile(buff2.toString(), new File("target/表字段值为Null更新0820.sql"));
+        FileKit.strToFile(buff.toString(), new File("target/表字段默认值更新0822.sql"));
+        FileKit.strToFile(buff2.toString(), new File("target/表字段值为Null更新0822.sql"));
         try {
             Workbook workbook = ExcelKit.exportExcel(l, kv);
-            workbook.write(new FileOutputStream(new File("target/表字段默认值为null信息0820.xls"))); // 将工作簿对象写到磁盘文件
+            workbook.write(new FileOutputStream(new File("target/表字段默认值为null信息0822.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1745,12 +1745,12 @@ public class RunTest<T> {
         DbKit dbKit = new DbKit(dbAccount, "");
 
         //本周时间区间
-        long starttime = 1596816000000l;
-        long endtime = 1597420800000l;
+        long starttime = 1599321600000l;
+        long endtime = 1599753600000l;
 
         //上周时间区间
-        long laststart = starttime - 7 * 24 * 3600000;
-        long lastend = endtime - 7 * 24 * 3600000;
+        long laststart = starttime - 5 * 24 * 3600000;
+        long lastend = endtime - 5 * 24 * 3600000;
         //本周活跃用户
         String esResult = readFileAsString("C:\\Users\\wh\\Desktop\\yunying\\esResult.txt");
         SearchResult<SearchVisLogRecord> temp = JsonConvert.root().convertFrom((new TypeToken<SearchResult<SearchVisLogRecord>>() {
@@ -1832,10 +1832,395 @@ public class RunTest<T> {
         l.add(sheet1);
         Workbook wb = ExcelKit.exportExcels(l);
         try {
-            wb.write(new FileOutputStream(new File("target/运营数据0808.xls"))); // 将工作簿对象写到磁盘文件
+            wb.write(new FileOutputStream(new File("target/运营数据0828.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    //摆摊数据统计
+    @Test
+    public void getStall() {
+        DbAccount dbAccount = new DbAccount();
+        dbAccount.setCate("mysql");
+        dbAccount.setUrl("jdbc:mysql://122.112.180.156:6033/v09x_platf_core");
+        dbAccount.setUser("root");
+        dbAccount.setPwd("*Hello@27.com!");
+        DbKit dbKit = new DbKit(dbAccount, "");
+
+        //本周时间区间
+        long starttime = 1598198400000l;
+        long endtime = 1598803200000l;
+
+        //上周时间区间
+        long laststart = starttime - 7 * 24 * 3600000;
+        long lastend = endtime - 7 * 24 * 3600000;
+
+        //本周摊位的用户记录(包括前一天)
+        String esResult = readFileAsString("C:\\Users\\wh\\Desktop\\yunying\\esResult.txt");
+        SearchResult<SearchVisLogRecord> temp = JsonConvert.root().convertFrom((new TypeToken<SearchResult<SearchVisLogRecord>>() {
+        }).getType(), esResult);
+
+
+        Collection<SearchVisLogRecord> esResultList = temp.getSheet().getRows();
+        //上周日访问用户
+        HashSet<Integer> lastdayset = new HashSet<>();
+        //周一访问用户
+        HashSet<Integer> mondayset = new HashSet<>();
+        //周二访问用户
+        HashSet<Integer> tuesdayset = new HashSet<>();
+        //周三访问用户
+        HashSet<Integer> wednesdayset = new HashSet<>();
+        //周四访问用户
+        HashSet<Integer> thursdayset = new HashSet<>();
+        //周五访问用户
+        HashSet<Integer> fridayset = new HashSet<>();
+        //周六访问用户
+        HashSet<Integer> saturdayset = new HashSet<>();
+        //周日访问用户
+        HashSet<Integer> sundayset = new HashSet<>();
+        esResultList.forEach(x -> {
+            long createtime = x.getCreatetime();
+            if (createtime >= starttime && createtime <= starttime + 24 * 3600000) {
+                mondayset.add(x.getUserid());
+            } else if (createtime >= starttime + 24 * 3600000 && createtime <= starttime + 2 * 24 * 3600000) {
+                tuesdayset.add(x.getUserid());
+            } else if (createtime >= starttime + 2 * 24 * 3600000 && createtime <= starttime + 3 * 24 * 3600000) {
+                wednesdayset.add(x.getUserid());
+            } else if (createtime >= starttime + 3 * 24 * 3600000 && createtime <= starttime + 4 * 24 * 3600000) {
+                thursdayset.add(x.getUserid());
+            } else if (createtime >= starttime + 4 * 24 * 3600000 && createtime <= starttime + 5 * 24 * 3600000) {
+                fridayset.add(x.getUserid());
+            } else if (createtime >= starttime + 5 * 24 * 3600000 && createtime <= starttime + 6 * 24 * 3600000) {
+                saturdayset.add(x.getUserid());
+            } else if (createtime >= starttime + 6 * 24 * 3600000 && createtime <= starttime + 7 * 24 * 3600000) {
+                sundayset.add(x.getUserid());
+            } else if (createtime >= starttime - 24 * 3600000 && createtime <= starttime) {
+                lastdayset.add(x.getUserid());
+            }
+
+        });
+
+        //获取格式化对象
+        NumberFormat nt = NumberFormat.getPercentInstance();
+        //设置百分数精确度2即保留两位小数
+        nt.setMinimumFractionDigits(2);
+
+        //周一次留
+        HashSet<Integer> mondayset1 = new HashSet<>();
+        lastdayset.forEach(x -> {
+            if (mondayset.contains(x)) {
+                mondayset1.add(x);
+            }
+        });
+        double monday = lastdayset.size() > 0 ? (double) mondayset1.size() / (double) lastdayset.size() : 0;
+
+        //周二次留
+        HashSet<Integer> tuesdayset1 = new HashSet<>();
+        mondayset.forEach(x -> {
+            if (tuesdayset.contains(x)) {
+                tuesdayset1.add(x);
+            }
+        });
+        double tuesday = mondayset.size() > 0 ? (double) tuesdayset1.size() / (double) mondayset.size() : 0;
+
+        //周三次留
+        HashSet<Integer> wednesdayset1 = new HashSet<>();
+        tuesdayset.forEach(x -> {
+            if (wednesdayset.contains(x)) {
+                wednesdayset1.add(x);
+            }
+        });
+        double wednesday = tuesdayset.size() > 0 ? (double) wednesdayset1.size() / (double) tuesdayset.size() : 0;
+
+        //周四次留
+        HashSet<Integer> thursdayset1 = new HashSet<>();
+        wednesdayset.forEach(x -> {
+            if (thursdayset.contains(x)) {
+                thursdayset1.add(x);
+            }
+        });
+        double thursday = wednesdayset.size() > 0 ? (double) thursdayset1.size() / (double) wednesdayset.size() : 0;
+
+        //周五次留
+        HashSet<Integer> fridayset1 = new HashSet<>();
+        thursdayset.forEach(x -> {
+            if (fridayset.contains(x)) {
+                fridayset1.add(x);
+            }
+        });
+        double friday = thursdayset.size() > 0 ? (double) fridayset1.size() / (double) thursdayset.size() : 0;
+
+        //周六次留
+        HashSet<Integer> saturdayset1 = new HashSet<>();
+        fridayset.forEach(x -> {
+            if (saturdayset.contains(x)) {
+                saturdayset1.add(x);
+            }
+        });
+        double saturday = fridayset.size() > 0 ? (double) saturdayset1.size() / (double) fridayset.size() : 0;
+
+        //周日次留
+        HashSet<Integer> sundayset1 = new HashSet<>();
+        saturdayset.forEach(x -> {
+            if (sundayset.contains(x)) {
+                sundayset1.add(x);
+            }
+        });
+        double sunday = saturdayset.size() > 0 ? (double) sundayset1.size() / (double) saturdayset.size() : 0;
+        //最后格式化并输出
+        System.out.println("周一次留：" + nt.format(monday));
+        System.out.println("周二次留：" + nt.format(tuesday));
+        System.out.println("周三次留：" + nt.format(wednesday));
+        System.out.println("周四次留：" + nt.format(thursday));
+        System.out.println("周五次留：" + nt.format(friday));
+        System.out.println("周六次留：" + nt.format(saturday));
+        System.out.println("周日次留：" + nt.format(sunday));
+
+        //===================================================================================================
+
+        //分享率   stall在分享记录里的type=120     时间区间被分享总次数/时间区间访问摊位的总人数
+        // 分享数
+        String mondaysharesql = "SELECT userid FROM platf_quest.`sharerecord` WHERE createtime >= " + starttime + " AND createtime <= " + (starttime + 24 * 3600000) + " AND type=120 ; ";
+        String tuesdaysharesql = "SELECT userid FROM platf_quest.`sharerecord` WHERE createtime >= " + (starttime + 24 * 3600000) + " AND createtime <= " + (starttime + 2 * 24 * 3600000) + " AND type=120 ; ";
+        String wednesdaysharesql = "SELECT userid FROM platf_quest.`sharerecord` WHERE createtime >= " + (starttime + 2 * 24 * 3600000) + " AND createtime <= " + (starttime + 3 * 24 * 3600000) + " AND type=120 ; ";
+        String thursdaysharesql = "SELECT userid FROM platf_quest.`sharerecord` WHERE createtime >= " + (starttime + 3 * 24 * 3600000) + " AND createtime <= " + (starttime + 4 * 24 * 3600000) + " AND type=120 ; ";
+        String fridaysharesql = "SELECT userid FROM platf_quest.`sharerecord` WHERE createtime >= " + (starttime + 4 * 24 * 3600000) + " AND createtime <= " + (starttime + 5 * 24 * 3600000) + " AND type=120 ; ";
+        String saturdaysharesql = "SELECT userid FROM platf_quest.`sharerecord` WHERE createtime >= " + (starttime + 5 * 24 * 3600000) + " AND createtime <= " + (starttime + 6 * 24 * 3600000) + " AND type=120 ; ";
+        String sundaysharesql = "SELECT userid FROM platf_quest.`sharerecord` WHERE createtime >= " + (starttime + 6 * 24 * 3600000) + " AND createtime <= " + (starttime + 7 * 24 * 3600000) + " AND type=120 ; ";
+
+        List<Map> mondayshares = dbKit.findList(mondaysharesql, Map.class);
+        List<Map> tuesdayshares = dbKit.findList(tuesdaysharesql, Map.class);
+        List<Map> wednesdayshares = dbKit.findList(wednesdaysharesql, Map.class);
+        List<Map> thursdayshares = dbKit.findList(thursdaysharesql, Map.class);
+        List<Map> fridayshares = dbKit.findList(fridaysharesql, Map.class);
+        List<Map> saturdayshares = dbKit.findList(saturdaysharesql, Map.class);
+        List<Map> sundayshares = dbKit.findList(sundaysharesql, Map.class);
+
+        //分享率
+        double mondayshare = mondayset.size() > 0 ? (double) mondayshares.size() / (double) mondayset.size() : 0;
+        double tuesdayshare = tuesdayset.size() > 0 ? (double) tuesdayshares.size() / (double) tuesdayset.size() : 0;
+        double wednesdayshare = wednesdayset.size() > 0 ? (double) wednesdayshares.size() / (double) wednesdayset.size() : 0;
+        double thursdayshare = thursdayset.size() > 0 ? (double) thursdayshares.size() / (double) thursdayset.size() : 0;
+        double fridayshare = fridayset.size() > 0 ? (double) fridayshares.size() / (double) fridayset.size() : 0;
+        double saturdayshare = saturdayset.size() > 0 ? (double) saturdayshares.size() / (double) saturdayset.size() : 0;
+        double sundayshare = sundayset.size() > 0 ? (double) sundayshares.size() / (double) sundayset.size() : 0;
+
+        System.out.println("周一分享率：" + nt.format(mondayshare));
+        System.out.println("周二分享率：" + nt.format(tuesdayshare));
+        System.out.println("周三分享率：" + nt.format(wednesdayshare));
+        System.out.println("周四分享率：" + nt.format(thursdayshare));
+        System.out.println("周五分享率：" + nt.format(fridayshare));
+        System.out.println("周六分享率：" + nt.format(saturdayshare));
+        System.out.println("周日分享率：" + nt.format(sundayshare));
+        //===================================================================================================
+
+        //新增充值用户数据
+        String mondaysql = "SELECT userid FROM platf_oth.`promoterrecord` WHERE createtime >= " + starttime + " AND createtime <= " + (starttime + 24 * 3600000) + " AND status=10 ; ";
+        String tuesdaysql = "SELECT userid FROM platf_oth.`promoterrecord` WHERE createtime >= " + (starttime + 24 * 3600000) + " AND createtime <= " + (starttime + 2 * 24 * 3600000) + " AND status=10 ; ";
+        String wednesdaysql = "SELECT userid FROM platf_oth.`promoterrecord` WHERE createtime >= " + (starttime + 2 * 24 * 3600000) + " AND createtime <= " + (starttime + 3 * 24 * 3600000) + " AND status=10 ; ";
+        String thursdaysql = "SELECT userid FROM platf_oth.`promoterrecord` WHERE createtime >= " + (starttime + 3 * 24 * 3600000) + " AND createtime <= " + (starttime + 4 * 24 * 3600000) + " AND status=10 ; ";
+        String fridaysql = "SELECT userid FROM platf_oth.`promoterrecord` WHERE createtime >= " + (starttime + 4 * 24 * 3600000) + " AND createtime <= " + (starttime + 5 * 24 * 3600000) + " AND status=10 ; ";
+        String saturdaysql = "SELECT userid FROM platf_oth.`promoterrecord` WHERE createtime >= " + (starttime + 5 * 24 * 3600000) + " AND createtime <= " + (starttime + 6 * 24 * 3600000) + " AND status=10 ; ";
+        String sundaysql = "SELECT userid FROM platf_oth.`promoterrecord` WHERE createtime >= " + (starttime + 6 * 24 * 3600000) + " AND createtime <= " + (starttime + 7 * 24 * 3600000) + " AND status=10 ; ";
+        String stalls = "SELECT owner FROM platf_oth.`stallinfo` WHERE status=10 ; ";
+
+        List<Map> mondayusers = dbKit.findList(mondaysql, Map.class);
+        List<Map> tuesdayusers = dbKit.findList(tuesdaysql, Map.class);
+        List<Map> wednesdayusers = dbKit.findList(wednesdaysql, Map.class);
+        List<Map> thursdayusers = dbKit.findList(thursdaysql, Map.class);
+        List<Map> fridayusers = dbKit.findList(fridaysql, Map.class);
+        List<Map> saturdayusers = dbKit.findList(saturdaysql, Map.class);
+        List<Map> sundayusers = dbKit.findList(sundaysql, Map.class);
+        List<Map> stallusers = dbKit.findList(stalls, Map.class);
+        HashSet<Integer> mondayuserset = new HashSet<>();
+        HashSet<Integer> tuesdayuserset = new HashSet<>();
+        HashSet<Integer> wednesdayuserset = new HashSet<>();
+        HashSet<Integer> thursdayuserset = new HashSet<>();
+        HashSet<Integer> fridayuserset = new HashSet<>();
+        HashSet<Integer> saturdayuserset = new HashSet<>();
+        HashSet<Integer> sundayuserset = new HashSet<>();
+        HashSet<Integer> stalluserssset = new HashSet<>();
+        HashSet<Integer> mondayuserset1 = new HashSet<>();
+        HashSet<Integer> tuesdayuserset1 = new HashSet<>();
+        HashSet<Integer> wednesdayuserset1 = new HashSet<>();
+        HashSet<Integer> thursdayuserset1 = new HashSet<>();
+        HashSet<Integer> fridayuserset1 = new HashSet<>();
+        HashSet<Integer> saturdayuserset1 = new HashSet<>();
+        HashSet<Integer> sundayuserset1 = new HashSet<>();
+        mondayusers.forEach(x -> mondayuserset.add((Integer) x.get("userid")));
+        tuesdayusers.forEach(x -> tuesdayuserset.add((Integer) x.get("userid")));
+        wednesdayusers.forEach(x -> wednesdayuserset.add((Integer) x.get("userid")));
+        thursdayusers.forEach(x -> thursdayuserset.add((Integer) x.get("userid")));
+        fridayusers.forEach(x -> fridayuserset.add((Integer) x.get("userid")));
+        saturdayusers.forEach(x -> saturdayuserset.add((Integer) x.get("userid")));
+        sundayusers.forEach(x -> sundayuserset.add((Integer) x.get("userid")));
+        stallusers.forEach(x -> stalluserssset.add((Integer) x.get("owner")));
+
+        stalluserssset.forEach(x -> {
+            if (mondayuserset.contains(x)) {
+                mondayuserset1.add(x);
+            } else if (tuesdayuserset.contains(x)) {
+                tuesdayuserset1.add(x);
+            } else if (wednesdayuserset.contains(x)) {
+                wednesdayuserset1.add(x);
+            } else if (thursdayuserset.contains(x)) {
+                thursdayuserset1.add(x);
+            } else if (fridayuserset.contains(x)) {
+                fridayuserset1.add(x);
+            } else if (saturdayuserset.contains(x)) {
+                saturdayuserset1.add(x);
+            } else if (sundayuserset.contains(x)) {
+                sundayuserset1.add(x);
+            }
+        });
+
+        System.out.println("周一注册新增充值用户数据：" + mondayuserset1.size());
+        System.out.println("周二注册新增充值用户数据：" + tuesdayuserset1.size());
+        System.out.println("周三注册新增充值用户数据：" + wednesdayuserset1.size());
+        System.out.println("周四注册新增充值用户数据：" + thursdayuserset1.size());
+        System.out.println("周五注册新增充值用户数据：" + fridayuserset1.size());
+        System.out.println("周六注册新增充值用户数据：" + saturdayuserset1.size());
+        System.out.println("周日注册新增充值用户数据：" + sundayuserset1.size());
+
+        //===================================================================================================
+
+        //新增摆摊人数
+        String mondaysql1 = "SELECT owner FROM platf_oth.`stallinfo` WHERE createtime >= " + starttime + " AND createtime <= " + (starttime + 24 * 3600000) + " AND status=10 ; ";
+        String tuesdaysql1 = "SELECT owner FROM platf_oth.`stallinfo` WHERE createtime >= " + (starttime + 24 * 3600000) + " AND createtime <= " + (starttime + 2 * 24 * 3600000) + " AND status=10 ; ";
+        String wednesdaysql1 = "SELECT owner FROM platf_oth.`stallinfo` WHERE createtime >= " + (starttime + 2 * 24 * 3600000) + " AND createtime <= " + (starttime + 3 * 24 * 3600000) + " AND status=10 ; ";
+        String thursdaysql1 = "SELECT owner FROM platf_oth.`stallinfo` WHERE createtime >= " + (starttime + 3 * 24 * 3600000) + " AND createtime <= " + (starttime + 4 * 24 * 3600000) + " AND status=10 ; ";
+        String fridaysql1 = "SELECT owner FROM platf_oth.`stallinfo` WHERE createtime >= " + (starttime + 4 * 24 * 3600000) + " AND createtime <= " + (starttime + 5 * 24 * 3600000) + " AND status=10 ; ";
+        String saturdaysql1 = "SELECT owner FROM platf_oth.`stallinfo` WHERE createtime >= " + (starttime + 5 * 24 * 3600000) + " AND createtime <= " + (starttime + 6 * 24 * 3600000) + " AND status=10 ; ";
+        String sundaysql1 = "SELECT owner FROM platf_oth.`stallinfo` WHERE createtime >= " + (starttime + 6 * 24 * 3600000) + " AND createtime <= " + (starttime + 7 * 24 * 3600000) + " AND status=10 ; ";
+
+        List<Map> mondayusers1 = dbKit.findList(mondaysql1, Map.class);
+        List<Map> tuesdayusers1 = dbKit.findList(tuesdaysql1, Map.class);
+        List<Map> wednesdayusers1 = dbKit.findList(wednesdaysql1, Map.class);
+        List<Map> thursdayusers1 = dbKit.findList(thursdaysql1, Map.class);
+        List<Map> fridayusers1 = dbKit.findList(fridaysql1, Map.class);
+        List<Map> saturdayusers1 = dbKit.findList(saturdaysql1, Map.class);
+        List<Map> sundayusers1 = dbKit.findList(sundaysql1, Map.class);
+
+        System.out.println("周一注册新增摆摊用户数据：" + mondayusers1.size());
+        System.out.println("周二注册新增摆摊用户数据：" + tuesdayusers1.size());
+        System.out.println("周三注册新增摆摊用户数据：" + wednesdayusers1.size());
+        System.out.println("周四注册新增摆摊用户数据：" + thursdayusers1.size());
+        System.out.println("周五注册新增摆摊用户数据：" + fridayusers1.size());
+        System.out.println("周六注册新增摆摊用户数据：" + saturdayusers1.size());
+        System.out.println("周日注册新增摆摊用户数据：" + sundayusers1.size());
+
+
+        //===================================================================================================
+
+        //新增邀请人数  stalluserssset摆摊用户数据
+        String mondaysql2 = "SELECT userid FROM platf_quest.`userinviterecord` WHERE createtime >= " + starttime + " AND createtime <= " + (starttime + 24 * 3600000) + " AND finishstatus=10 OR finishstatus=20; ";
+        String tuesdaysql2 = "SELECT userid FROM platf_quest.`userinviterecord` WHERE createtime >= " + (starttime + 24 * 3600000) + " AND createtime <= " + (starttime + 2 * 24 * 3600000) + " AND finishstatus=10 OR finishstatus=20; ";
+        String wednesdaysql2 = "SELECT userid FROM platf_quest.`userinviterecord` WHERE createtime >= " + (starttime + 2 * 24 * 3600000) + " AND createtime <= " + (starttime + 3 * 24 * 3600000) + " AND finishstatus=10 OR finishstatus=20; ";
+        String thursdaysql2 = "SELECT userid FROM platf_quest.`userinviterecord` WHERE createtime >= " + (starttime + 3 * 24 * 3600000) + " AND createtime <= " + (starttime + 4 * 24 * 3600000) + " AND finishstatus=10 OR finishstatus=20; ";
+        String fridaysql2 = "SELECT userid FROM platf_quest.`userinviterecord` WHERE createtime >= " + (starttime + 4 * 24 * 3600000) + " AND createtime <= " + (starttime + 5 * 24 * 3600000) + " AND finishstatus=10 OR finishstatus=20; ";
+        String saturdaysql2 = "SELECT userid FROM platf_quest.`userinviterecord` WHERE createtime >= " + (starttime + 5 * 24 * 3600000) + " AND createtime <= " + (starttime + 6 * 24 * 3600000) + " AND finishstatus=10 OR finishstatus=20; ";
+        String sundaysql2 = "SELECT userid FROM platf_quest.`userinviterecord` WHERE createtime >= " + (starttime + 6 * 24 * 3600000) + " AND createtime <= " + (starttime + 7 * 24 * 3600000) + " AND finishstatus=10 OR finishstatus=20; ";
+
+        List<Map> mondayinvites = dbKit.findList(mondaysql2, Map.class);
+        List<Map> tuesdayuinvites = dbKit.findList(tuesdaysql2, Map.class);
+        List<Map> wednesdayinvites = dbKit.findList(wednesdaysql2, Map.class);
+        List<Map> thursdayuinvites = dbKit.findList(thursdaysql2, Map.class);
+        List<Map> fridayinvites = dbKit.findList(fridaysql2, Map.class);
+        List<Map> saturdayinvites = dbKit.findList(saturdaysql2, Map.class);
+        List<Map> sundayinvites = dbKit.findList(sundaysql2, Map.class);
+
+        ArrayList<Integer> mondayuserList = new ArrayList<>();
+        ArrayList<Integer> tuesdayuserList = new ArrayList<>();
+        ArrayList<Integer> wednesdayuserList = new ArrayList<>();
+        ArrayList<Integer> thursdayuserList = new ArrayList<>();
+        ArrayList<Integer> fridayuserList = new ArrayList<>();
+        ArrayList<Integer> saturdayuserList = new ArrayList<>();
+        ArrayList<Integer> sundayuserList = new ArrayList<>();
+
+        ArrayList<Integer> mondayuserList1 = new ArrayList<>();
+        ArrayList<Integer> tuesdayuserList1 = new ArrayList<>();
+        ArrayList<Integer> wednesdayuserList1 = new ArrayList<>();
+        ArrayList<Integer> thursdayuserList1 = new ArrayList<>();
+        ArrayList<Integer> fridayuserList1 = new ArrayList<>();
+        ArrayList<Integer> saturdayuserList1 = new ArrayList<>();
+        ArrayList<Integer> sundayuserList1 = new ArrayList<>();
+
+        mondayinvites.forEach(x -> mondayuserList.add((Integer) x.get("userid")));
+        tuesdayuinvites.forEach(x -> tuesdayuserList.add((Integer) x.get("userid")));
+        wednesdayinvites.forEach(x -> wednesdayuserList.add((Integer) x.get("userid")));
+        thursdayuinvites.forEach(x -> thursdayuserList.add((Integer) x.get("userid")));
+        fridayinvites.forEach(x -> fridayuserList.add((Integer) x.get("userid")));
+        saturdayinvites.forEach(x -> saturdayuserList.add((Integer) x.get("userid")));
+        sundayinvites.forEach(x -> sundayuserList.add((Integer) x.get("userid")));
+
+        mondayuserList.forEach(x -> {
+            if (stalluserssset.contains(x)) {
+                mondayuserList1.add(x);
+            }
+        });
+        tuesdayuserList.forEach(x -> {
+            if (stalluserssset.contains(x)) {
+                tuesdayuserList1.add(x);
+            }
+        });
+        wednesdayuserList.forEach(x -> {
+            if (stalluserssset.contains(x)) {
+                wednesdayuserList1.add(x);
+            }
+        });
+        thursdayuserList.forEach(x -> {
+            if (stalluserssset.contains(x)) {
+                thursdayuserList1.add(x);
+            }
+        });
+        fridayuserList.forEach(x -> {
+            if (stalluserssset.contains(x)) {
+                fridayuserList1.add(x);
+            }
+        });
+        saturdayuserList.forEach(x -> {
+            if (stalluserssset.contains(x)) {
+                saturdayuserList1.add(x);
+            }
+        });
+        sundayuserList.forEach(x -> {
+            if (stalluserssset.contains(x)) {
+                sundayuserList1.add(x);
+            }
+        });
+
+        System.out.println("周一新增邀请用户数据：" + mondayuserList1.size());
+        System.out.println("周二新增邀请用户数据：" + tuesdayuserList1.size());
+        System.out.println("周三新增邀请用户数据：" + wednesdayuserList1.size());
+        System.out.println("周四新增邀请用户数据：" + thursdayuserList1.size());
+        System.out.println("周五新增邀请用户数据：" + fridayuserList1.size());
+        System.out.println("周六新增邀请用户数据：" + saturdayuserList1.size());
+        System.out.println("周日新增邀请用户数据：" + sundayuserList1.size());
+
+
+
+       /* List<Map<String, Object>> l = new ArrayList<>();
+        Kv sheet1 = Kv.of();
+        List<Kv> kvs = new ArrayList<>();
+        kvs.add(Kv.of("name", "本周注册用户数").set("num", users.size()));
+        kvs.add(Kv.of("name", "次留周百分数").set("num", nt.format(a)));
+        kvs.add(Kv.of("name", "本周DAU用户数").set("num", esResultList.size()));
+        kvs.add(Kv.of("name", "本周新增贴数").set("num", articles.size()));
+        kvs.add(Kv.of("name", "本周新增推广员人数").set("num", promoters.size()));
+        kvs.add(Kv.of("name", "本周活动参与用户数").set("num", activityset.size() + six.size()));
+        kvs.add(Kv.of("name", "本周新增会员数").set("num", vips.size()));
+        sheet1.set("data", kvs);
+        sheet1.set("sheetName", "运营数据");
+        sheet1.set("hdNames", new String[]{"名称", "数量"});
+        sheet1.set("hds", new String[]{"name", "num"});
+        l.add(sheet1);
+        Workbook wb = ExcelKit.exportExcels(l);
+        try {
+            wb.write(new FileOutputStream(new File("target/运营数据0808.xls"))); // 将工作簿对象写到磁盘文件
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
     }
 
     public static List<Map<String, Object>> stringToObject(String str) {
@@ -1943,9 +2328,10 @@ public class RunTest<T> {
     public void gamecomment() throws IOException, InterruptedException {
         StringBuffer buff = new StringBuffer();
 //        String[] FIELDS = {"gameid", "", "userno", "commentcontent", "score", "supportcount"};
-        String[] FIELDS = {"gameid", "", "userid", "commentcontent", "score", "supportcount"};
+//        String[] FIELDS = {"gameid", "", "userid", "commentcontent", "score", "supportcount"};
+        String[] FIELDS = {"userid", "commentcontent", "score1", "score2", "score3", "score4", "score5", "score6"};
 
-        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\DNF评论150-0814.xlsx"), FIELDS);
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\评论.xls"), FIELDS);
         list.remove(0);//去除多余的行首
        /* HashSet<Object> set = new HashSet<>();
         list.forEach(x -> {
@@ -1981,14 +2367,17 @@ public class RunTest<T> {
 
         int count = 0;
         list.forEach(x -> {
-            if (x.get("gameid").toString() == "" || x.get("commentcontent").toString() == "" || x.get("supportcount").toString() == "" || x.get("score").toString() == "") {
+            /*if (x.get("gameid").toString() == "" || x.get("commentcontent").toString() == "" || x.get("supportcount").toString() == "" || x.get("score").toString() == "") {
+                return;
+            }*/
+            if (x.get("commentcontent").toString() == "") {
                 return;
             }
             HashMap<String, Object> map1 = new HashMap<>();
             HashMap<String, Object> map2 = new HashMap<>();
 //            long createtime = 1589904000000l + (long) (Math.random() * (1593446400000l - 1589904000000l));
             //评论的时间区间
-            long createtime = 1596769776000l + (long) (Math.random() * (1597376612186l - 1596769776000l));
+            long createtime = 1597939620000l + (long) (Math.random() * (1598199780000l - 1597939620000l));
             /*int userno = 0;
             int userid = 0;
             if (x.get("userno").toString() != "") {
@@ -2000,7 +2389,8 @@ public class RunTest<T> {
                 userid = map.get(userno);
             }*/
             int userid = (int) Float.parseFloat(x.get("userid").toString());
-            String gameid = ((Number) (int) Float.parseFloat(x.get("gameid").toString())).toString();
+//            String gameid = ((Number) (int) Float.parseFloat(x.get("gameid").toString())).toString();
+            String gameid = "23082";
             String commentcontent = x.get("commentcontent").toString();
             int supportcount = (int) Float.parseFloat(x.get("supportcount").toString());
             float score = Float.parseFloat(x.get("score").toString());
@@ -2133,13 +2523,14 @@ public class RunTest<T> {
         StringBuffer buff1 = new StringBuffer();
         StringBuffer buff2 = new StringBuffer();
         StringBuffer buff3 = new StringBuffer();
-        String[] FIELDS = {"userid", "gameid", "", "createtime", "supportcount"};
+//        String[] FIELDS = {"userid", "gameid", "", "createtime", "supportcount"};
+        String[] FIELDS = {"userid", "gameid", "", "createtime"};
 
-        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\编辑评论录入数据0814-1ce.xls"), FIELDS);
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\编辑评论录入数据0825-1ce.xls"), FIELDS);
         list.remove(0);//去除多余的行首
 
         list.forEach(x -> {
-            if (x.get("gameid").toString() == "" || x.get("createtime").toString() == "" || x.get("supportcount").toString() == "" || x.get("userid").toString() == "") {
+            if (x.get("gameid").toString() == "" || x.get("createtime").toString() == "" || x.get("userid").toString() == "") {
                 return;
             }
 
@@ -2150,11 +2541,12 @@ public class RunTest<T> {
             int userid = (int) Float.parseFloat(x.get("userid").toString());
             String gameid = x.get("gameid").toString();
             long createtime = (long) Float.parseFloat(x.get("createtime").toString());
-            int supportcount = (int) Float.parseFloat(x.get("supportcount").toString());
+//            int supportcount = (int) Float.parseFloat(x.get("supportcount").toString());
             buff.append(gameid + "' AND userid = ");
             buff1.append(gameid + "' AND userid = ");
-            buff2.append(createtime + " , supportcount = ");
-            buff2.append(supportcount + " WHERE gameid = '");
+//            buff2.append(createtime + " , supportcount = ");
+//            buff2.append(supportcount + " WHERE gameid = '");
+            buff2.append(createtime + " WHERE gameid = '");
             buff2.append(gameid + "' AND userid = ");
             buff3.append(createtime + " WHERE gameid = ");
             buff3.append(gameid + " AND userid = ");
@@ -2163,13 +2555,13 @@ public class RunTest<T> {
             buff2.append(userid + " ;\n");
             buff3.append(userid + " ;\n");
         });
-        buff.delete(buff.length() - 2, buff.length() + 1);
-        buff.append(";");
+      /*  buff.delete(buff.length() - 2, buff.length() + 1);
+        buff.append(";");*/
         // 入库数据
-        FileKit.strToFile(buff.toString(), new File("tmp/删除0814评论录入数据.sql"));
-        FileKit.strToFile(buff1.toString(), new File("tmp/删除0814评分录入数据.sql"));
-        FileKit.strToFile(buff2.toString(), new File("tmp/修改0814评论录入时间数据.sql"));
-        FileKit.strToFile(buff3.toString(), new File("tmp/修改0814评分录入时间数据.sql"));
+        /*FileKit.strToFile(buff.toString(), new File("tmp/删除0826评论录入数据.sql"));
+        FileKit.strToFile(buff1.toString(), new File("tmp/删除0826评分录入数据.sql"));*/
+        FileKit.strToFile(buff2.toString(), new File("tmp/修改0826评论录入时间数据.sql"));
+        FileKit.strToFile(buff3.toString(), new File("tmp/修改0826评分录入时间数据.sql"));
 
     }
 
@@ -2300,9 +2692,15 @@ public class RunTest<T> {
 
         }*/
 //        String DateNow = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        LocalDateTime now = LocalDateTime.now();
-        // 当前日期和时间
-        System.out.println(now);
+//        LocalDateTime now = LocalDateTime.now();
+        // 当前日期和时间.
+      /*  LocalDate date = LocalDate.parse("20200401", DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+        int day = date.getYear() * 10000 + date.getMonthValue() * 100 + date.getDayOfMonth();
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
+
+        System.out.println(format.format(1600150558259l));*/
+
 
     }
 
@@ -2337,11 +2735,373 @@ public class RunTest<T> {
     }
 
     @Test
-    public void siii() {
+    public void gameplatfinfo() {
+        //填写了批准文号或出版物号任一一个的统计表
+        String sql1 = "SELECT gameid , gamename ,approvalno,publicationno FROM gameinfo  WHERE approvalno !='' OR publicationno !='' AND gameid IN (SELECT gameid FROM gameplatformdetail WHERE platid = 501 OR platid = 502 " +
+                " GROUP BY gameid" +
+                " );";
 
-        LocalDateTime dateTime = LocalDateTime.ofEpochSecond(1596708077809l / 1000L, 0, ZoneOffset.ofHours(8));
-        String time = dateTime.format(DateTimeFormatter.ofPattern("yy-MM-dd"));
-        System.out.println(time);
+        //没有填写了批准文号或出版物号任一一个的统计表
+        String sql2 = "SELECT gameid , gamename ,approvalno,publicationno FROM gameinfo  WHERE approvalno ='' AND publicationno ='' AND gameid IN (SELECT gameid FROM gameplatformdetail WHERE platid = 501 OR platid = 502 " +
+                " GROUP BY gameid" +
+                " );";
+
+        //选择了安卓载体的游戏id
+        String sql3 = "SELECT gameid FROM gameplatformdetail WHERE platid = 502 ";
+
+        //选择了ios载体的游戏id
+        String sql4 = "SELECT gameid FROM gameplatformdetail WHERE platid = 501 ";
+
+        List<Map> list1 = findList(sql1);
+        List<Map> list2 = findList(sql2);
+        List<Map> list3 = findList(sql3);
+        List<Map> list4 = findList(sql4);
+        List<String> androids = list3.stream().map(x -> x.get("gameid").toString()).collect(Collectors.toList());
+        List<String> iosids = list4.stream().map(x -> x.get("gameid").toString()).collect(Collectors.toList());
+
+        list1.forEach(x -> {
+            String gameid = x.get("gameid").toString();
+            if (androids.contains(gameid)) {
+                x.put("android", "1");
+            } else {
+                x.put("android", "0");
+            }
+            if (iosids.contains(gameid)) {
+                x.put("ios", "1");
+            } else {
+                x.put("ios", "0");
+            }
+        });
+        list2.forEach(x -> {
+            String gameid = x.get("gameid").toString();
+            if (androids.contains(gameid)) {
+                x.put("android", "1");
+            } else {
+                x.put("android", "0");
+            }
+            if (iosids.contains(gameid)) {
+                x.put("ios", "1");
+            } else {
+                x.put("ios", "0");
+            }
+        });
+        Kv kv = Kv.of();
+        kv.set("gameid", "游戏ID");
+        kv.set("gamename", "游戏昵称");
+        kv.set("approvalno", "批准文号");
+        kv.set("publicationno", "出版物号");
+        kv.set("android", "是否选择安卓载体");
+        kv.set("ios", "是否选择ios载体");
+
+        try {
+            Workbook workbook = ExcelKit.exportExcel(list1, kv);
+            Workbook workbook1 = ExcelKit.exportExcel(list2, kv);
+            workbook.write(new FileOutputStream(new File("target/填写了批准文号或出版物号任一一个的统计表0827.xls"))); // 将工作簿对象写到磁盘文件
+            workbook1.write(new FileOutputStream(new File("target/没有填写了批准文号或出版物号任一一个的统计表0827.xls"))); // 将工作簿对象写到磁盘文件
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    @Test
+    public void gamecomments() throws IOException, InterruptedException {
+        StringBuffer buff = new StringBuffer();
+        String[] FIELDS = {"userid", "commentcontent", "score1", "score2", "score3", "score4", "score5", "score6"};
+
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\23010.xlsx"), FIELDS);
+        list.remove(0);
+
+        List<Map<String, Object>> l = new ArrayList<>();
+        List<Map<String, Object>> l1 = new ArrayList<>();
+        Kv kv = Kv.of();
+        //======================================================
+        StringBuffer buffer1 = new StringBuffer();
+        buffer1.append("{mobile:15697177873,vercode:159753}");
+        String login = "https://api.woaihaoyouxi.com/account/login";
+        HashMap<String, Object> loginmap = new HashMap<>();
+        loginmap.put("bean", buffer1.toString());
+        HttpResponse<String> httpResponse1 = HttpUtils.send(login, loginmap, HttpUtils.HttpMethod.GET);
+        JSONObject jsonResule = JSONObject.fromObject(httpResponse1.body());
+        System.out.println(httpResponse1.body());
+        System.out.println(httpResponse1.request().uri());
+        JSONObject attachJSON = jsonResule.getJSONObject("attach");
+        String jsessionid = attachJSON.getString("sessionid");
+
+        list.forEach(x -> {
+            if (x.get("commentcontent").toString() == "") {
+                return;
+            }
+            HashMap<String, Object> map1 = new HashMap<>();
+            HashMap<String, Object> map2 = new HashMap<>();
+            //评论的时间区间
+            long createtime = 1597852800000l + (long) (Math.random() * (1598371200000l - 1597852800000l));
+            int userid = (int) Float.parseFloat(x.get("userid").toString());
+            String gameid = "23010";
+            String commentcontent = x.get("commentcontent").toString();
+            float score1 = Float.parseFloat(x.get("score1").toString());
+            float score2 = Float.parseFloat(x.get("score2").toString());
+            float score3 = Float.parseFloat(x.get("score3").toString());
+            float score4 = Float.parseFloat(x.get("score4").toString());
+            float score5 = Float.parseFloat(x.get("score5").toString());
+            float score6 = Float.parseFloat(x.get("score6").toString());
+
+
+            //=============================================
+
+            StringBuffer buffer = new StringBuffer();
+            buffer.append("{gameid:'" + gameid + "',commentcontent:'");
+            buffer.append("commentcontent");
+            buffer.append("',experience:" + score1 + " ,frame:" + score2 + " ,music:" + score3 + ",operation:" + score4 + " ,fluent:" + score5 + " ,original:" + score6 + "}");
+
+            //==================================
+            String url = "https://api.woaihaoyouxi.com/game/comment_create_tmp";
+            HashMap<String, Object> mapx = new HashMap<>();
+            Map<String, Object> mmm = new HashMap<>();
+            mmm.put("gameid", gameid);
+            mmm.put("commentcontent", commentcontent);
+            mmm.put("experience", score1);
+            mmm.put("frame", score2);
+            mmm.put("music", score3);
+            mmm.put("fluent", score5);
+            mmm.put("original", score6);
+            mmm.put("operation", score4);
+            mapx.put("bean", mmm);
+            mapx.put("targetid", userid);
+
+            HashMap<String, String> headers = new HashMap<>();
+            headers.put("jsessionid", jsessionid);
+
+            HttpResponse<String> httpResponse = HttpUtils.send(url, mapx, HttpUtils.HttpMethod.POST_X, headers);
+            System.out.println("body:" + httpResponse.body());
+            System.out.println("gameid:" + gameid + "--userid:" + userid);
+
+            if (httpResponse.body().startsWith("{")) {
+                JSONObject resule = JSONObject.fromObject(httpResponse.body());
+                int retcode = (int) resule.get("retcode");
+
+                if (retcode > 0) {
+                    map2.put("userid", userid);
+                    map2.put("gameid", gameid);
+                    map2.put("commentcontent", commentcontent);
+                    map2.put("createtime", createtime);
+                    map2.put("score1", score1);
+                    map2.put("score2", score2);
+                    map2.put("score3", score3);
+                    map2.put("score4", score4);
+                    map2.put("score5", score5);
+                    map2.put("score6", score6);
+                    l1.add(map2);
+                }
+
+            } else {
+                System.out.println("gameid + userid:" + gameid + userid);
+            }
+
+
+            try {
+                Thread.currentThread().sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            //==================================================
+
+            map1.put("userid", userid);
+            map1.put("gameid", gameid);
+            map1.put("commentcontent", commentcontent);
+            map1.put("createtime", createtime);
+            map1.put("score1", score1);
+            map1.put("score2", score2);
+            map1.put("score3", score3);
+            map1.put("score4", score4);
+            map1.put("score5", score5);
+            map1.put("score6", score6);
+
+            l.add(map1);
+
+
+        });
+
+        kv.set("userid", "用户id");
+        kv.set("gameid", "游戏id");
+        kv.set("commentcontent", "评论内容");
+        kv.set("createtime", "创建时间");
+        kv.set("supportcount", "点赞数");
+        kv.set("score1", "体验感");
+        kv.set("score2", "画面感");
+        kv.set("score3", "音乐感");
+        kv.set("score4", "操作性");
+        kv.set("score5", "流畅性");
+        kv.set("score6", "原创性");
+        try {
+            Workbook workbook = ExcelKit.exportExcel(l, kv);
+            Workbook workbook1 = ExcelKit.exportExcel(l1, kv);
+            workbook.write(new FileOutputStream(new File("target/编辑评论录入数据0825-1ce.xls"))); // 将工作簿对象写到磁盘文件
+            workbook1.write(new FileOutputStream(new File("target/编辑评论录入数据0825-1cuowu.xls"))); // 将工作簿对象写到磁盘文件
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //游戏达人配置信息；
+    @Test
+    public void setGameV() throws IOException, InterruptedException {
+        StringBuffer buff = new StringBuffer();
+        String[] FIELDS = {"name", "company", "position", "mobile", "idnum"};
+
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\游戏达人2(1).xlsx"), FIELDS);
+        list.remove(0);//去除多余的行首
+
+
+        list.forEach(x -> {
+            String mobile = x.get("mobile").toString().trim();
+            if (Utils.isEmpty(mobile)) {
+                return;
+            }
+
+            String sql = "select mobile from platf_oth.cjrecord where mobile = " + mobile + ";";
+//            System.out.println(sql);
+            List<Map> tempList = findList(sql);
+            System.out.println(tempList.size());
+            if (tempList == null || tempList.size() == 0) {
+                insertCj(x);
+            }
+
+            String sql1 = "select userid from userdetail where mobile = " + mobile + ";";
+//            System.out.println(sql1);
+            List<Map> tempList2 = findList(sql1);
+            System.out.println(tempList2.size());
+            if (tempList2 == null || tempList2.size() == 0) {
+                accountlogin(x);
+            }
+
+        });
+
+    }
+
+    public void accountlogin(Map x) {
+        if (x.get("mobile").toString() == "") {
+            return;
+        }
+        String mobile = x.get("mobile").toString().trim();
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("{mobile:'" + mobile + "',vercode:159753}");
+        String login = "https://api.woaihaoyouxi.com/account/signup";
+//        String login = "https://api.1216.top/account/signup";
+        HashMap<String, Object> loginmap = new HashMap<>();
+        loginmap.put("bean", buffer.toString());
+        HttpResponse<String> httpResponsexx = HttpUtils.send(login, loginmap, HttpUtils.HttpMethod.GET);
+        System.out.println("body:" + httpResponsexx.body());
+        System.out.println("mobile" + mobile);
+
+        if (httpResponsexx.body().startsWith("{")) {
+            JSONObject resule = JSONObject.fromObject(httpResponsexx.body());
+        } else {
+            System.out.println("mobile:" + mobile);
+        }
+
+        try {
+            Thread.currentThread().sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void insertCj(Map x) {
+        if (x.get("name").toString() == "" || x.get("mobile").toString() == "" || x.get("company").toString() == "" || x.get("position").toString() == "" || x.get("idnum").toString() == "") {
+            return;
+        }
+
+        String name = x.get("name").toString();
+        String company = x.get("company").toString();
+        String position = x.get("position").toString();
+        String mobile = x.get("mobile").toString();
+        String idnum = x.get("idnum").toString();
+        //=============================================
+
+//        StringBuffer buffer = new StringBuffer();
+//        buffer.append("{name:'" + name + "',company:'" + company + "',position:'" + position + "',mobile:'" + mobile + "',idnum:'" + idnum);
+        //==================================
+        String url = "https://api.woaihaoyouxi.com/activity/cj_create";
+//        String url = "https://api.1216.top/activity/cj_create";
+        HashMap<String, Object> mapx = new HashMap<>();
+        Map<String, Object> mmm = new HashMap<>();
+        mmm.put("name", name);
+        mmm.put("company", company);
+        mmm.put("position", position);
+        mmm.put("mobile", mobile);
+        mmm.put("idnum", idnum);
+        mapx.put("bean", mmm);
+
+//        HashMap<String, String> headers = new HashMap<>();
+//        headers.put("jsessionid", jsessionid);
+
+        HttpResponse<String> httpResponse = HttpUtils.send(url, mapx, HttpUtils.HttpMethod.POST_X);
+        System.out.println("body:" + httpResponse.body());
+        System.out.println("name:" + name + "--mobile" + mobile);
+
+        if (httpResponse.body().startsWith("{")) {
+            JSONObject resule = JSONObject.fromObject(httpResponse.body());
+        } else {
+            System.out.println("name + mobile:" + name + mobile);
+        }
+
+        try {
+            Thread.currentThread().sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Test
+    public void checkGameV() throws IOException, InterruptedException {
+        StringBuffer buff = new StringBuffer();
+        String[] FIELDS = {"name", "company", "position", "mobile", "idnum"};
+
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\游戏达人2(1).xlsx"), FIELDS);
+        list.remove(0);//去除多余的行首
+
+
+        HashSet<String> mobileset = new HashSet<>();
+        ArrayList<String> list1 = new ArrayList<>();
+        list.forEach(x -> {
+            String mobile = x.get("mobile").toString().trim();
+            if (Utils.isEmpty(mobile)) {
+                return;
+            }
+            mobileset.add(mobile);
+            list1.add(mobile);
+        });
+        System.out.println("mobileset:" + mobileset.size());
+
+        String sql = "select mobile from platf_oth.cjrecord where mobile IN (" + mobileset.toString().replace("[", "").replace("]", "").trim() + ");";
+        System.out.println(sql);
+        List<Map> tempList = findList(sql);
+        System.out.println("tempList:" + tempList.size());
+
+        String sql1 = "select userid from userdetail where mobile IN (" + list1.toString().replace("[", "").replace("]", "").trim() + ");";
+        System.out.println(sql1);
+        List<Map> tempList2 = findList(sql1);
+        System.out.println("tempList2:" + tempList2.size());
+
+        HashSet<String> userset = new HashSet<>();
+        tempList2.forEach(x -> userset.add(x.get("userid").toString()));
+        System.out.println("userset:" + userset.size());
+
+        String sql2 = "select * from platf_quest.useridentity where userid IN (" + userset.toString().replace("[", "").replace("]", "").trim() + ");";
+        List<Map> tempList3 = findList(sql2);
+        System.out.println("tempList3:" + tempList3.size());
+
+        HashSet<String> userset1 = new HashSet<>();
+        tempList3.forEach(x -> userset1.add(x.get("userid").toString()));
+
+        userset.forEach(x -> {
+            if (!userset1.contains(x)) {
+                System.out.println(x);
+            }
+        });
 
     }
 }

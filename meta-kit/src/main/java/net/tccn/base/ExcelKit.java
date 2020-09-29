@@ -7,25 +7,26 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
-	下载示例
-	private static boolean downloadExcel(Workbook wb, String xlsName, HttpServletRequest request, HttpServletResponse response) throws IOException{
-			if(request.getHeader("user-agent").indexOf("MSIE") != -1) {
-				xlsName = java.net.URLEncoder.encode(xlsName,"utf-8") + ".xls";
-			} else {
-			    xlsName = new String(xlsName.getBytes("utf-8"),"iso-8859-1")+ ".xls";
-			}
-			OutputStream os = response.getOutputStream();
-			response.setContentType("application/vnd.ms-excel");
-			response.setHeader("Content-disposition", "attachment;filename="+xlsName);
-
-			wb.write(os);
-			return true;
-	}
-
+ * 下载示例
+ * private static boolean downloadExcel(Workbook wb, String xlsName, HttpServletRequest request, HttpServletResponse response) throws IOException{
+ * if(request.getHeader("user-agent").indexOf("MSIE") != -1) {
+ * xlsName = java.net.URLEncoder.encode(xlsName,"utf-8") + ".xls";
+ * } else {
+ * xlsName = new String(xlsName.getBytes("utf-8"),"iso-8859-1")+ ".xls";
+ * }
+ * OutputStream os = response.getOutputStream();
+ * response.setContentType("application/vnd.ms-excel");
+ * response.setHeader("Content-disposition", "attachment;filename="+xlsName);
+ * <p>
+ * wb.write(os);
+ * return true;
+ * }
+ * <p>
  * 使用poi报表导出工具类
  * 把poi的一个调用接口抽出来，便于导出功能的管理
  *
@@ -282,7 +283,8 @@ public class ExcelKit {
 
         List<Map> list = new ArrayList<>();
         int t = 0;
-        r:for (int i = 0; i <= lastRowNum; i++) {
+        r:
+        for (int i = 0; i <= lastRowNum; i++) {
             Row row = sheet.getRow(i);
             if (row == null) continue;
             short cellNum = row.getLastCellNum();
@@ -304,9 +306,10 @@ public class ExcelKit {
                 }
 
                 if (cell.getCellType() == CellType.NUMERIC) {
-                    map.put(fields[j], cell.getNumericCellValue() + "");
+                    DecimalFormat df = new DecimalFormat("#");
+                    String s = df.format(cell.getNumericCellValue());
+                    map.put(fields[j], s);
                 } else {
-
                     cell.setCellType(CellType.STRING);
                     map.put(fields[j], cell.getStringCellValue());
                 }
