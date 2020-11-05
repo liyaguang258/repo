@@ -23,6 +23,7 @@ import org.redkale.util.Utility;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
@@ -30,11 +31,11 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -2668,39 +2669,17 @@ public class RunTest<T> {
 
     @Test
     public void sss() {
-      /*  int i = new Random().nextInt(50);
-        float v = i / 10f;
-        System.out.println(v);*/
-       /* for (int i = 0; i < 86; i++) {
-            long createtime = 1594742400000l + (long) (Math.random() * (1594944000000l - 1594742400000l));
-            System.out.println(createtime);
-        }*/
-      /*  long starttime = 1593619200000l;
-        starttime = starttime + 1 * 24 * 3600 * 1000;
-        System.out.println(starttime);
-        long endtime = starttime + (1) * 24 * 3600 * 1000;
-        System.out.println(endtime);*/
-      /*  System.out.println(Utility.todayYYMMDDHHmm());
-        long l = System.currentTimeMillis();*/
-       /* switch (1) {
-            case 1:
-                System.out.println("aaaaa");
-                break;
-            case 2:
-                System.out.println("bbbbbbbbbbbbbb");
-                break;
 
-        }*/
-//        String DateNow = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-//        LocalDateTime now = LocalDateTime.now();
-        // 当前日期和时间.
-      /*  LocalDate date = LocalDate.parse("20200401", DateTimeFormatter.ofPattern("yyyyMMdd"));
-
-        int day = date.getYear() * 10000 + date.getMonthValue() * 100 + date.getDayOfMonth();
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-
-        System.out.println(format.format(1600150558259l));*/
-
+        List<Object> list1 = new ArrayList<>();
+        list1.add(1);
+        list1.add(2);
+        list1.add(3);
+        list1.add(4);
+        System.out.println(list1.subList(0, 1).size());
+        System.out.println(list1.subList(0, 2).size());
+        System.out.println(list1.subList(0, 3).size());
+        System.out.println(list1.subList(0, 4).size());
+        System.out.println(list1.subList(0, 5).size());
 
     }
 
@@ -2950,7 +2929,7 @@ public class RunTest<T> {
         StringBuffer buff = new StringBuffer();
         String[] FIELDS = {"name", "company", "position", "mobile", "idnum"};
 
-        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\游戏达人2(1).xlsx"), FIELDS);
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\游戏达人表格1031.xlsx"), FIELDS);
         list.remove(0);//去除多余的行首
 
 
@@ -2992,8 +2971,11 @@ public class RunTest<T> {
         HashMap<String, Object> loginmap = new HashMap<>();
         loginmap.put("bean", buffer.toString());
         HttpResponse<String> httpResponsexx = HttpUtils.send(login, loginmap, HttpUtils.HttpMethod.GET);
-        System.out.println("body:" + httpResponsexx.body());
-        System.out.println("mobile" + mobile);
+        String body = httpResponsexx.body();
+        if (body.contains("retinfo")) {
+            System.out.println("body:" + body);
+            System.out.println("mobile:" + mobile);
+        }
 
         if (httpResponsexx.body().startsWith("{")) {
             JSONObject resule = JSONObject.fromObject(httpResponsexx.body());
@@ -3038,8 +3020,12 @@ public class RunTest<T> {
 //        headers.put("jsessionid", jsessionid);
 
         HttpResponse<String> httpResponse = HttpUtils.send(url, mapx, HttpUtils.HttpMethod.POST_X);
-        System.out.println("body:" + httpResponse.body());
-        System.out.println("name:" + name + "--mobile" + mobile);
+        String body = httpResponse.body();
+        if (body.contains("retinfo")) {
+            System.out.println("body:" + httpResponse.body());
+            System.out.println("name:" + name + "--mobile" + mobile);
+
+        }
 
         if (httpResponse.body().startsWith("{")) {
             JSONObject resule = JSONObject.fromObject(httpResponse.body());
@@ -3103,6 +3089,499 @@ public class RunTest<T> {
             }
         });
 
+    }
+
+    //手机品牌型号导入
+    @Test
+    public void insertModel() {
+        StringBuffer buff = new StringBuffer();
+        String[] FIELDS = {"manufacturer", "model", "mobilename"};
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\手机品牌机型信息.xlsx"), FIELDS);
+        list.remove(0);
+        buff.append("INSERT INTO `v09x_platf_core`.`mobilemodel` (`modelid`,manufacturer,`model`,mobilename,status) VALUES  \n");
+        int modelid = 10000;
+        for (Map x : list) {
+            String manufacturer = x.get("manufacturer").toString().trim();
+            String model = x.get("model").toString().trim();
+            String mobilename = x.get("mobilename").toString().trim();
+            int status = 1;
+            buff.append(String.format("('%s','%s','%s','%s',%s),\n", modelid, manufacturer, model, mobilename, status));
+            modelid++;
+        }
+
+        buff.delete(buff.length() - 2, buff.length() + 1);
+        buff.append(";");
+        // 入库
+        FileKit.strToFile(buff.toString(), new File("tmp/2020929手机型号入库数据.sql"));
+
+    }
+
+    //9-10月用户活跃明细
+    @Test
+    public void activeusers() {
+        String sql1 = "SELECT u.userid,u.userno,u.username,u.mobile,u.age,u.birthday,u.gender,u.constellation,MAX(ua.intday) day FROM v09x_platf_core.userdetail u " +
+                " LEFT JOIN platf_quest.useractiverecord ua ON u.userid = ua.userid " +
+                " WHERE ua.intday > 20200831 AND u.usertype = 2" +
+                " GROUP BY ua.userid ORDER BY ua.userid";
+        //微动态
+        String sql2 = "SELECT a.userid,count(0) count FROM articleinfo a" +
+                " WHERE  a.articletype = 1 AND a.status <> 80 AND createtime >= 1598889600000 AND " +
+                " a.userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY a.userid ";
+        //游戏说
+        String sql3 = "SELECT a.userid,count(0) count FROM articleinfo a" +
+                " WHERE a.articletype = 2 AND a.status <> 80 AND createtime >= 1598889600000  AND " +
+                " a.userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY a.userid ";
+        //评论数
+        String sql4 = "SELECT userid,count(userid) count FROM articlecomment WHERE status = 10 AND createtime >= 1598889600000 " +
+                " AND userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY userid";
+        String sql4x = "SELECT userid,count(userid) count FROM gamecomment WHERE status = 10 AND createtime >= 1598889600000 " +
+                " AND userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY userid";
+        //点赞数
+        String sql5 = "SELECT userid,count(userid) count FROM articlesupport WHERE status = 10 AND createtime >= 1598889600000 " +
+                " AND userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY userid";
+        String sql5x = "SELECT userid,count(userid) count FROM articlecommentsupport WHERE status = 10 AND createtime >= 1598889600000 " +
+                " AND userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY userid";
+        String sql5y = "SELECT userid,count(userid) count FROM gamecommentsupport WHERE  createtime >= 1598889600000 " +
+                " AND userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY userid";
+        //转发数
+        String sql6 = "SELECT a.userid,count(0) count FROM articleinfo a" +
+                " WHERE reprintid <> '' AND a.status <> 80 AND createtime >= 1598889600000 AND " +
+                " a.userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY a.userid ";
+        //充值或购买记录
+        String sql7 = "SELECT userid,count(userid) count FROM platf_pay.payrecord WHERE status = 10 AND createtime >= 1598889600000 " +
+                " AND userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY userid";
+
+        List<Map> list = findList(sql1);
+        List<Map> dyns = findList(sql2);
+        List<Map> plays = findList(sql3);
+        List<Map> comments = findList(sql4);
+        List<Map> gamecomments = findList(sql4x);
+        List<Map> supports = findList(sql5);
+        List<Map> commentsupports = findList(sql5x);
+        List<Map> gamecommentsupports = findList(sql5y);
+        List<Map> reprints = findList(sql6);
+        List<Map> pays = findList(sql7);
+
+        Kv<Integer, Long> dynkv = Kv.of();
+        Kv<Integer, Long> playskv = Kv.of();
+        Kv<Integer, Long> commentskv = Kv.of();
+        Kv<Integer, Long> gamecommentskv = Kv.of();
+        Kv<Integer, Long> supportskv = Kv.of();
+        Kv<Integer, Long> commentsupportskv = Kv.of();
+        Kv<Integer, Long> gamecommentsupportskv = Kv.of();
+        Kv<Integer, Long> reprintskv = Kv.of();
+        Kv<Integer, Long> payskv = Kv.of();
+        dyns.forEach(x -> dynkv.set((Integer) x.get("userid"), (Long) x.get("count")));
+        plays.forEach(x -> playskv.set((Integer) x.get("userid"), (Long) x.get("count")));
+        comments.forEach(x -> commentskv.set((Integer) x.get("userid"), (Long) x.get("count")));
+        gamecomments.forEach(x -> gamecommentskv.set((Integer) x.get("userid"), (Long) x.get("count")));
+        supports.forEach(x -> supportskv.set((Integer) x.get("userid"), (Long) x.get("count")));
+        commentsupports.forEach(x -> commentsupportskv.set((Integer) x.get("userid"), (Long) x.get("count")));
+        gamecommentsupports.forEach(x -> gamecommentsupportskv.set((Integer) x.get("userid"), (Long) x.get("count")));
+        reprints.forEach(x -> reprintskv.set((Integer) x.get("userid"), (Long) x.get("count")));
+        pays.forEach(x -> payskv.set((Integer) x.get("userid"), (Long) x.get("count")));
+
+
+        ArrayList<Object> list1 = new ArrayList<>();
+        list.forEach(x -> {
+            Integer userid = (Integer) x.get("userid");
+            Kv kv1 = Kv.of();
+            Integer gender = (Integer) x.get("gender");
+            String g = "未知";
+            if (gender == 2) {
+                g = "男";
+            } else if (gender == 4) {
+                g = "女";
+            }
+
+
+            kv1.set("userid", userid)
+                    .set("username", x.get("username"))
+                    .set("userno", x.get("userno"))
+                    .set("mobile", x.get("mobile"))
+                    .set("age", x.get("age"))
+                    .set("birthday", x.get("birthday"))
+                    .set("gender", g)
+                    .set("constellation", x.get("constellation"))
+                    .set("day", x.get("day"))
+                    .set("dyns", dynkv.getOrDefault(userid, 0l))
+                    .set("plays", payskv.getOrDefault(userid, 0l))
+                    .set("comments", commentskv.getOrDefault(userid, 0l) + gamecommentskv.getOrDefault(userid, 0l))
+                    .set("supports", supportskv.getOrDefault(userid, 0l) + commentsupportskv.getOrDefault(userid, 0l) + gamecommentsupportskv.getOrDefault(userid, 0l))
+                    .set("reprints", reprintskv.getOrDefault(userid, 0l))
+                    .set("pays", payskv.getOrDefault(userid, 0l))
+            ;
+            list1.add(kv1);
+        });
+
+        Kv kv = Kv.of();
+        kv.set("userid", "用户ID")
+                .set("username", "用户昵称")
+                .set("userno", "彩虹号")
+                .set("mobile", "手机号")
+                .set("age", "年龄")
+                .set("birthday", "生日")
+                .set("gender", "性别")
+                .set("constellation", "星座")
+                .set("day", "最后活跃日期")
+                .set("dyns", "发布微动态数")
+                .set("plays", "发布游戏说数")
+                .set("comments", "评论数")
+                .set("supports", "点赞数")
+                .set("reprints", "转发数")
+                .set("pays", "充值或购买次数");
+
+        try {
+            Workbook workbook = ExcelKit.exportExcel(list1, kv);
+            workbook.write(new FileOutputStream(new File("target/9-10月用户活跃数据.xls"))); // 将工作簿对象写到磁盘文件
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    //各个社区用户活跃排行
+    @Test
+    public void active() {
+
+
+        String sql = "SELECT u.userno ,u.username,u.explevel ,c.activecount,c.communityid,cf.communityname FROM communitybook c" +
+                " LEFT JOIN userdetail u ON u.userid = c.userid" +
+                " LEFT JOIN communityinfo cf ON c.communityid = cf.communityid" +
+                " ORDER BY c.activecount DESC ";
+
+        List<Map> list = findList(sql);
+        Map<String, List<Map>> map = list.stream().collect(Collectors.groupingBy(x -> x.get("communityname").toString()));
+        List<Map<String, Object>> l = new ArrayList<>();
+        map.keySet().forEach(x -> {
+            List<Map> list1 = map.get(x);
+            Kv sheet1 = Kv.of();
+            List<Kv> kvs = new ArrayList<>();
+            for (int i = 0; i < list1.size(); i++) {
+                kvs.add(Kv.of("userno", list1.get(i).get("userno"))
+                        .set("username", list1.get(i).get("username"))
+                        .set("explevel", list1.get(i).get("explevel"))
+                        .set("activecount", list1.get(i).get("activecount")));
+            }
+
+            sheet1.set("data", kvs);
+            sheet1.set("sheetName", x);
+            sheet1.set("hdNames", new String[]{"彩虹号", "用户昵称", "用户等级", "用户活跃值"});
+            sheet1.set("hds", new String[]{"userno", "username", "explevel", "activecount"});
+            l.add(sheet1);
+        });
+
+
+        Workbook wb = ExcelKit.exportExcels(l);
+        try {
+            wb.write(new FileOutputStream(new File("target/各个社区用户活跃排行数据.xls"))); // 将工作簿对象写到磁盘文件
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    //10月份全月的用户发贴率和用户分享率
+    @Test
+    public void articleStat() {
+        String starttime = "1601481600000";
+        String endtime = "1604159999000";
+
+        Supplier<List<String>> daysSupplier = () -> {
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(Long.parseLong(starttime));
+
+            Calendar cal2 = Calendar.getInstance();
+            cal2.setTimeInMillis(Long.parseLong(endtime));
+
+            LocalDate startDay = LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
+            LocalDate endDay = LocalDate.of(cal2.get(Calendar.YEAR), cal2.get(Calendar.MONTH) + 1, cal2.get(Calendar.DAY_OF_MONTH));
+
+            List<String> days = new ArrayList<>();
+            while (true) {
+                int _year = startDay.getYear();
+                int _month = startDay.getMonthValue();
+                int _day = startDay.getDayOfMonth();
+
+                days.add(String.format("%s-%s-%s", _year,
+                        _month < 10 ? "0" + _month : "" + _month,
+                        _day < 10 ? "0" + _day : "" + _day));
+                startDay = startDay.plusDays(1);
+                if (startDay.isAfter(endDay)) {
+                    break;
+                }
+            }
+            return days;
+        };
+        List<String> days = daysSupplier.get();
+
+        String where = " WHERE a.status IN (10,20) AND content NOT LIKE '大家好，我是%' AND (a.memberid='' or a.memberid=1001052) AND u.usertype = 2 ";
+//        String where = " WHERE status IN (10,20) AND content NOT LIKE '大家好，我是%' ";
+        if (!Utils.isEmpty(starttime)) {
+            where += " AND a.createtime >= " + starttime;
+        }
+        if (!Utils.isEmpty(endtime)) {
+            where += " AND a.createtime < " + endtime;
+        }
+
+        // 总发帖人数
+        String select1 = "SELECT COUNT(DISTINCT a.`userid`) 'count',FROM_UNIXTIME(a.`createtime`/1000, '%Y-%m-%d') `day` FROM articleinfo a LEFT JOIN userdetail u ON a.userid = u.userid ";
+        List<Map> list = findList(select1 + (where + " GROUP BY `day`"));
+        List<Map> list1 = findList(select1 + (where + " AND a.manufacturer = 'iPhone' GROUP BY `day`"));
+        System.out.println(select1 + (where + " AND a.manufacturer = 'iPhone' GROUP BY `day`"));
+        List<Map> list2 = findList(select1 + (where + " AND a.manufacturer NOT IN ('iPhone','') GROUP BY `day`"));
+        System.out.println(select1 + (where + " AND a.manufacturer NOT IN ('iPhone','') GROUP BY `day`"));
+        Map<String, Object> data = Utils.toMap(list, x -> Kv.toAs(x.get("day"), String.class), x -> x.get("count"));
+        Map<String, Object> data1 = Utils.toMap(list1, x -> Kv.toAs(x.get("day"), String.class), x -> x.get("count"));
+        Map<String, Object> data2 = Utils.toMap(list2, x -> Kv.toAs(x.get("day"), String.class), x -> x.get("count"));
+        // 数据补齐
+        Kv<String, Object> _data = Utils.toMap(days, x -> x, x -> data.getOrDefault(x, 0l));
+        Kv<String, Object> _data1 = Utils.toMap(days, x -> x, x -> data1.getOrDefault(x, 0l));
+        Kv<String, Object> _data2 = Utils.toMap(days, x -> x, x -> data2.getOrDefault(x, 0l));
+        long total = 0;
+        for (Object value : _data.values()) {
+            total += (long) value;
+        }
+        long total1 = 0;
+        for (Object value : _data1.values()) {
+            total1 += (long) value;
+        }
+        long total2 = 0;
+        for (Object value : _data2.values()) {
+            total2 += (long) value;
+        }
+
+
+        String userwhere = " WHERE u.`status`!=80 AND  u.usertype = 2 ";
+        String userwhere1 = " WHERE u.`status`!=80 AND  u.usertype = 2 AND u.appos = 'ios' ";
+        String userwhere2 = " WHERE u.`status`!=80 AND  u.usertype = 2 AND u.appos = 'android' ";
+           /* if (!Utils.isEmpty(bean.get("starttime"))) {
+                userwhere += " AND regtime >= " +starttime;
+            }*/
+        if (!Utils.isEmpty(endtime)) {
+            userwhere += " AND regtime < " + endtime;
+        }
+
+        String usersql = "SELECT COUNT(n.userid) 'count',FROM_UNIXTIME(n.`regtime`/1000, '%Y-%m-%d') `day` FROM" +
+                " (SELECT u.`userid`,IF(u.`regtime`< " + starttime + ", " + starttime + ", u.`regtime`) 'regtime' FROM userdetail u " + userwhere + ") n" +
+                " GROUP BY `day` ORDER BY `day`";
+        String usersql1 = "SELECT COUNT(n.userid) 'count',FROM_UNIXTIME(n.`regtime`/1000, '%Y-%m-%d') `day` FROM" +
+                " (SELECT u.`userid`,IF(u.`regtime`< " + starttime + ", " + starttime + ", u.`regtime`) 'regtime' FROM userdetail u " + userwhere1 + ") n" +
+                " GROUP BY `day` ORDER BY `day`";
+        String usersql2 = "SELECT COUNT(n.userid) 'count',FROM_UNIXTIME(n.`regtime`/1000, '%Y-%m-%d') `day` FROM" +
+                " (SELECT u.`userid`,IF(u.`regtime`< " + starttime + ", " + starttime + ", u.`regtime`) 'regtime' FROM userdetail u " + userwhere2 + ") n" +
+                " GROUP BY `day` ORDER BY `day`";
+        List<Map> usercountList = findList(usersql);
+        List<Map> usercountList1 = findList(usersql1);
+        List<Map> usercountList2 = findList(usersql2);
+        Kv kv = Kv.of();
+        long hiscount = 0;
+        for (Map m : usercountList) {
+            String day = Kv.toAs(m.get("day"), String.class);
+            hiscount += Kv.toAs(m.get("count"), long.class);
+            kv.put(day, hiscount);
+        }
+        String day = days.get(days.size() - 1);
+        long usercount = (long) kv.get(day);
+        double totalvalue = new BigDecimal((double) total / usercount).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+        System.out.println(totalvalue);
+
+        Kv kvios = Kv.of();
+        long hiscountios = 0;
+        for (Map m : usercountList1) {
+            String dayios = kvios.toAs(m.get("day"), String.class);
+            hiscountios += kvios.toAs(m.get("count"), long.class);
+            kvios.put(dayios, hiscountios);
+        }
+        String dayios = days.get(days.size() - 1);
+        long usercountios = (long) kvios.get(dayios);
+        double totalvalueios = 0d;
+        if (usercountios > 0) {
+            totalvalueios = new BigDecimal((double) total1 / usercountios).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+
+        }
+        System.out.println(totalvalueios);
+
+        Kv kvan = Kv.of();
+        long hiscountan = 0;
+        for (Map m : usercountList2) {
+            String dayan = kvan.toAs(m.get("day"), String.class);
+            hiscountan += kvan.toAs(m.get("count"), long.class);
+            kvan.put(dayan, hiscountan);
+        }
+        String dayan = days.get(days.size() - 1);
+        long usercountan = (long) kvan.get(dayan);
+        double totalvaluean = 0d;
+        if (usercountan > 0) {
+            totalvaluean = new BigDecimal((double) total2 / usercountan).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+        }
+        System.out.println(totalvaluean);
+
+        data.forEach((k, v) -> {
+            long userCount = getUserCount(kv, k);
+            if (userCount != 0) {
+                double value = new BigDecimal((double) (long) v / getUserCount(kv, k)).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+                data.put(k, value);
+            }
+        });
+        data1.forEach((k, v) -> {
+            long userCount = getUserCount(kvios, k);
+            if (userCount != 0) {
+                double value = new BigDecimal((double) (long) v / getUserCount(kvios, k)).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+                data1.put(k, value);
+            }
+        });
+        data2.forEach((k, v) -> {
+            long userCount = getUserCount(kvan, k);
+            if (userCount != 0) {
+                double value = new BigDecimal((double) (long) v / getUserCount(kvan, k)).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+                data2.put(k, value);
+            }
+        });
+        // 数据补齐
+        Kv<String, Object> alldata = Utils.toMap(days, x -> x, x -> data.getOrDefault(x, 0));
+        Kv<String, Object> iosdata = Utils.toMap(days, x -> x, x -> data1.getOrDefault(x, 0));
+        Kv<String, Object> andata = Utils.toMap(days, x -> x, x -> data2.getOrDefault(x, 0));
+        alldata.put("总计", totalvalue);
+        iosdata.put("总计", totalvalueios);
+        andata.put("总计", totalvaluean);
+
+        ArrayList<Object> l = new ArrayList<>();
+        alldata.keySet().forEach(x -> {
+            Kv of = Kv.of();
+            of.set("day", x);
+            of.set("value", alldata.get(x));
+            of.set("iosvalue", iosdata.get(x));
+            of.set("anvalue", andata.get(x));
+            l.add(of);
+        });
+        Kv kv2 = Kv.of();
+        kv2.set("day", "日期")
+                .set("value", "总发文率")
+                .set("iosvalue", "ios发文率")
+                .set("anvalue", "安卓发文率");
+
+
+        try {
+            Workbook workbook = ExcelKit.exportExcel(l, kv2);
+            workbook.write(new FileOutputStream(new File("target/发文率.xls"))); // 将工作簿对象写到磁盘文件
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    public void articleshare() {
+        String starttime = "1601481600000";
+        String endtime = "1604159999000";
+
+        Supplier<List<String>> daysSupplier = () -> {
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(Long.parseLong(starttime));
+
+            Calendar cal2 = Calendar.getInstance();
+            cal2.setTimeInMillis(Long.parseLong(endtime));
+
+            LocalDate startDay = LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
+            LocalDate endDay = LocalDate.of(cal2.get(Calendar.YEAR), cal2.get(Calendar.MONTH) + 1, cal2.get(Calendar.DAY_OF_MONTH));
+
+            List<String> days = new ArrayList<>();
+            while (true) {
+                int _year = startDay.getYear();
+                int _month = startDay.getMonthValue();
+                int _day = startDay.getDayOfMonth();
+
+                days.add(String.format("%s-%s-%s", _year,
+                        _month < 10 ? "0" + _month : "" + _month,
+                        _day < 10 ? "0" + _day : "" + _day));
+                startDay = startDay.plusDays(1);
+                if (startDay.isAfter(endDay)) {
+                    break;
+                }
+            }
+            return days;
+        };
+        List<String> days = daysSupplier.get();
+
+        String where = " WHERE s.type = 20 AND u.usertype = 2 ";
+        if (!Utils.isEmpty(starttime)) {
+            where += " AND s.createtime >= " + starttime;
+        }
+        if (!Utils.isEmpty(endtime)) {
+            where += " AND s.createtime < " + endtime;
+        }
+
+        // 分享人数
+        String sql = "SELECT COUNT(DISTINCT s.`userid`) 'count',FROM_UNIXTIME(s.`createtime`/1000, '%Y-%m-%d') `day` FROM  platf_quest.sharerecord s LEFT JOIN userdetail u ON s.userid=u.userid ";
+        List<Map> list = findList(sql + (where + " GROUP BY `day`"));
+        Map<String, Object> data = Utils.toMap(list, x -> Kv.toAs(x.get("day"), String.class), x -> x.get("count"));
+        // 数据补齐
+        Kv<String, Object> _data = Utils.toMap(days, x -> x, x -> data.getOrDefault(x, 0l));
+        long total = 0;
+        for (Object value : _data.values()) {
+            total += (long) value;
+        }
+
+        String userwhere = " WHERE u.`status`!=80";
+           /* if (!Utils.isEmpty(bean.get("starttime"))) {
+                userwhere += " AND regtime >= " +starttime;
+            }*/
+        if (!Utils.isEmpty(endtime)) {
+            userwhere += " AND regtime < " + endtime;
+        }
+
+        String usersql = "SELECT COUNT(n.userid) 'count',FROM_UNIXTIME(n.`regtime`/1000, '%Y-%m-%d') `day` FROM" +
+                " (SELECT u.`userid`,IF(u.`regtime`< " + starttime + ", " + starttime + ", u.`regtime`) 'regtime' FROM userdetail u " + userwhere + ") n" +
+                " GROUP BY `day` ORDER BY `day`";
+        List<Map> usercountList = findList(usersql);
+        Kv kv = Kv.of();
+        long hiscount = 0;
+        for (Map m : usercountList) {
+            String day = Kv.toAs(m.get("day"), String.class);
+            hiscount += Kv.toAs(m.get("count"), long.class);
+            kv.put(day, hiscount);
+        }
+        String day = days.get(days.size() - 1);
+        long usercount = (long) kv.get(day);
+        double totalvalue = new BigDecimal((double) total / usercount).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+        System.out.println(totalvalue);
+
+        data.forEach((k, v) -> {
+            double value = new BigDecimal((double) (long) v / getUserCount(kv, k)).setScale(4, BigDecimal.ROUND_HALF_UP).doubleValue();
+            data.put(k, value);
+        });
+        // 数据补齐
+        Kv<String, Object> _data1 = Utils.toMap(days, x -> x, x -> data.getOrDefault(x, 0));
+        _data1.put("总计", totalvalue);
+        ArrayList<Object> list1 = new ArrayList<>();
+        _data1.keySet().forEach(x -> {
+            Kv of = Kv.of();
+            of.set("day", x);
+            of.set("value", _data1.get(x));
+            list1.add(of);
+        });
+        Kv kv2 = Kv.of();
+        kv2.set("day", "日期")
+                .set("value", "值");
+        try {
+            Workbook workbook = ExcelKit.exportExcel(list1, kv2);
+            workbook.write(new FileOutputStream(new File("target/分享率.xls"))); // 将工作簿对象写到磁盘文件
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private long getUserCount(Kv<String, Long> kv, String day) {
+        long count = 0;
+        for (Map.Entry<String, Long> entry : kv.entrySet()) {
+            count = entry.getValue();
+            if (day.compareTo(entry.getKey()) <= 0) {
+                break;
+            }
+        }
+        return count;
     }
 }
 
