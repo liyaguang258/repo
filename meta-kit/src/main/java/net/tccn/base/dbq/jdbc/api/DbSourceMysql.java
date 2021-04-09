@@ -137,6 +137,11 @@ public class DbSourceMysql implements DbSource {
     }
 
     @Override
+    public <T> T findColumn(String sql, Class<T> type) {
+        return null;
+    }
+
+    @Override
     public void createTable(String sql) {
         new RuntimeException("DbSourceMysql.createTable NOT SUPPORT right now" ); // todo:
     }

@@ -70,6 +70,11 @@ public class DbKit implements DbSource{
     }
 
     @Override
+    public <T> T findColumn(String sql, Class<T> type) {
+        return dbSource.findColumn(sql, type);
+    }
+
+    @Override
     public void createTable(String sql) {
         dbSource.createTable(sql);
     }

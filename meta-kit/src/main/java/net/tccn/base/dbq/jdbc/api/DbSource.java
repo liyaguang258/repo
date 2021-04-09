@@ -19,6 +19,8 @@ public interface DbSource extends IService {
 
     <T> T queryColumn(String sql, Class<T> type);
 
+    <T> T findColumn(String sql, Class<T> type);
+
     //待实现
     default <T> void save(String tableName, T t) {}
 
