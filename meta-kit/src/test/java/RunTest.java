@@ -4354,40 +4354,11 @@ public class RunTest<T> {
 
     @Test
     public void sssss(){
-       /* Supplier<List<String>> daysSupplier = () -> {
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(1614873600000l);
+        String x ="\u001FJesusDelAlamo也在会上介绍，888在未来\u001D, \u001f,,,,\b，，\u001D";
+        String a = x.replaceAll("[\\u0000-\\u001f\b]","");//转义字符 回车等范围
+        System.out.println(a);
+        System.out.println(x);
 
-            Calendar cal2 = Calendar.getInstance();
-            cal2.setTimeInMillis(1615651200000l);
-
-            LocalDate startDay = LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
-            LocalDate endDay = LocalDate.of(cal2.get(Calendar.YEAR), cal2.get(Calendar.MONTH) + 1, cal2.get(Calendar.DAY_OF_MONTH));
-
-            List<String> days = new ArrayList<>();
-            while (true) {
-                int _year = startDay.getYear();
-                int _month = startDay.getMonthValue();
-                int _day = startDay.getDayOfMonth();
-
-                days.add(String.format("%s-%s-%s", _year,
-                        _month < 10 ? "0" + _month : "" + _month,
-                        _day < 10 ? "0" + _day : "" + _day));
-                startDay = startDay.plusDays(1);
-                if (startDay.isAfter(endDay)) {
-                    break;
-                }
-            }
-            return days;
-        };
-        List<String> days = daysSupplier.get();
-        days.forEach(x-> System.out.println(x));*/
-
-        HashSet<Object> set = new HashSet<>();
-        set.add(1);
-        set.add(2);
-        String s = Utils.arrToStr(set);
-        System.out.println(s);
     }
 
 }
