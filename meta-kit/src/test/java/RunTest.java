@@ -4354,7 +4354,7 @@ public class RunTest<T> {
 
     @Test
     public void sssss(){
-        String x ="\u001FJesusDelAlamo也在会上介绍，888在未来\u001D, \u001f,,,,\b，，\u001D";
+        String x ="\u001FJesusDelAlamo\u0001也在会上介绍，888在未来\u001D, \u001f,,,,\b，，\u001D";
         String a = x.replaceAll("[\\u0000-\\u001f\b]","");//转义字符 回车等范围
         System.out.println(a);
         System.out.println(x);
