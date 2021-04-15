@@ -25,6 +25,7 @@ import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
@@ -4353,14 +4354,42 @@ public class RunTest<T> {
     }
 
     @Test
-    public void sssss(){
-        String x ="\u001FJesusDelAlamo\u0001也在会上介绍，888在未来\u001D, \u001f,,,,\b，，\u001D";
-        String a = x.replaceAll("[\\u0000-\\u001f\b]","");//转义字符 回车等范围
+    public void sssss() {
+        String x = "\u001FJesusDelAlamo\u0001也在会上介绍，888在未来\u001D, \u001f,,,,\b，，\u001D";
+        String a = x.replaceAll("[\\u0000-\\u001f\b]", "");//转义字符 回车等范围
         System.out.println(a);
         System.out.println(x);
+    }
+
+    @Test
+    public void checkUrl() {
+        List<Map> list = findList("SELECT downurl FROM gameplatformdetail WHERE platid = 501 AND downurl !=''  ORDER BY createtime DESC  ");
+        List<String> downurls = Utils.toList(list, x -> x.get("downurl").toString());
+
+        List<Kv> list1 = new ArrayList<>();
+        downurls.forEach(x -> {
+            URL url;
+            try {
+//                url = new URL("https://apps.apple.com/cn/app/id996785884");
+                url = new URL(x);
+                url.openStream();
+//                System.out.println("连接可用");
+            } catch (Exception e) {
+                e.printStackTrace();
+//                System.out.println(x);
+                System.out.println("连接打不开!");
+                list1.add(Kv.of("downurl",x));
+//                list1.add(Kv.of("downurl","https://apps.apple.com/cn/app/id996785884"));
+            }
+        });
 
 
-
+        try {
+            Workbook workbook = ExcelKit.exportExcel(list1,Kv.of("downurl","地址"));
+            workbook.write(new FileOutputStream(new File("target/ios错误地址.xls"))); // 将工作簿对象写到磁盘文件
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
