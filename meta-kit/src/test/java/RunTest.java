@@ -776,7 +776,7 @@ public class RunTest<T> {
         dbAccount.setCate("mysql");
 //        dbAccount.setUrl("jdbc:mysql://47.111.150.118:6063/platf_quest");
 //        dbAccount.setUrl("jdbc:mysql://121.196.17.55:6063/platf_quest");
-        dbAccount.setUrl("jdbc:mysql://122.112.180.156:6033/v09x_platf_core");
+        dbAccount.setUrl("jdbc:mysql://122.112.180.156:6033/platf_sdk");
         dbAccount.setUser("guest");
         dbAccount.setPwd("*Zhong123098!");
 
@@ -4343,10 +4343,14 @@ public class RunTest<T> {
 
     @Test
     public void reload() {
-        String[] FIELDS = {"userno", "username", "gender"};
+       /* String[] FIELDS = {"userno", "username", "gender"};
         List<Map> map = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\编辑用户数据.xls"), FIELDS);
-        map.remove(0);
-        List<String> usernos = Utils.toList(map, x -> "'" + x.get("userno") + "'");
+        map.remove(0);*/
+//        List<String> usernos = Utils.toList(map, x -> "'" + x.get("userno") + "'");
+        List<String> usernos = new ArrayList<>();
+        usernos.add("1");
+        usernos.add("2");
+        usernos.add("3");
         String s = Utils.arrToStr(usernos);
         List<Map> userlist = findList("SELECT userid FROM v09x_platf_core.userdetail WHERE userno IN (" + s.trim().substring(1, s.length() - 1) + ")");
         List<Integer> userid = Utils.toList(userlist, x -> Integer.parseInt(x.get("userid").toString()));
@@ -4354,11 +4358,79 @@ public class RunTest<T> {
     }
 
     @Test
-    public void sssss() {
-        String x = "\u001FJesusDelAlamo\u0001也在会上介绍，888在未来\u001D, \u001f,,,,\b，，\u001D";
+    public void sssss() throws ParseException {
+        /*String x = "\u001FJesusDelAlamo\u0001也在会上介绍，888在未来\u001D, \u001f,,,,\b，，\u001D";
         String a = x.replaceAll("[\\u0000-\\u001f\b]", "");//转义字符 回车等范围
         System.out.println(a);
-        System.out.println(x);
+        System.out.println(x);*/
+
+        /*double v = new BigDecimal((double) Math.abs(5.6 - 1.8) / 1.8).setScale(6, BigDecimal.ROUND_HALF_UP).doubleValue();
+        DecimalFormat df = new DecimalFormat("0.00%");
+        System.out.println(df.format(v));*/
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(1618675200000l);
+
+        Calendar cal2 = Calendar.getInstance();
+        cal2.setTimeInMillis(1618761599000l);
+
+        int i = cal.get(Calendar.HOUR);
+        LocalDateTime startDay = LocalDateTime.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR), 0);
+        LocalDateTime endDay = LocalDateTime.of(cal2.get(Calendar.YEAR), cal2.get(Calendar.MONTH) + 1, cal2.get(Calendar.DAY_OF_MONTH), cal2.get(Calendar.HOUR), 0);
+
+        List<String> hours = new ArrayList<>();
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        int ehour = cal2.get(Calendar.HOUR_OF_DAY);
+        while (true) {
+            hours.add(String.format("%s", hour < 10 ? "0" + hour : "" + hour));
+            hour += 1;
+            if (hour > ehour) {
+                break;
+            }
+        }
+        hours.forEach(x -> {
+            System.out.println(x);
+        });
+
+
+    }
+
+    /**
+     * 获取当前时间小时整点时间
+     *
+     * @param
+     * @return
+     */
+    public static Date getCurrentHourTime() {
+        return getHourTime(new Date(), 0, "=");
+    }
+
+    /**
+     * 获取指定时间n个小时整点时间
+     *
+     * @param date
+     * @return
+     */
+    public static Date getHourTime(Date date, int n, String direction) {
+        Calendar ca = Calendar.getInstance();
+        ca.setTime(date);
+        ca.set(Calendar.MINUTE, 0);
+        ca.set(Calendar.SECOND, 0);
+        switch (direction) {
+            case "+":
+                ca.set(Calendar.HOUR_OF_DAY, ca.get(Calendar.HOUR_OF_DAY) + n);
+                break;
+            case "-":
+                ca.set(Calendar.HOUR_OF_DAY, ca.get(Calendar.HOUR_OF_DAY) - n);
+                break;
+            case "=":
+                ca.set(Calendar.HOUR_OF_DAY, ca.get(Calendar.HOUR_OF_DAY));
+                break;
+            default:
+                ca.set(Calendar.HOUR_OF_DAY, ca.get(Calendar.HOUR_OF_DAY));
+        }
+
+        date = ca.getTime();
+        return date;
     }
 
     @Test
@@ -4378,20 +4450,305 @@ public class RunTest<T> {
                 e.printStackTrace();
 //                System.out.println(x);
                 System.out.println("连接打不开!");
-                list1.add(Kv.of("downurl",x));
+                list1.add(Kv.of("downurl", x));
 //                list1.add(Kv.of("downurl","https://apps.apple.com/cn/app/id996785884"));
             }
         });
 
 
         try {
-            Workbook workbook = ExcelKit.exportExcel(list1,Kv.of("downurl","地址"));
+            Workbook workbook = ExcelKit.exportExcel(list1, Kv.of("downurl", "地址"));
             workbook.write(new FileOutputStream(new File("target/ios错误地址.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    @Test
+    public void checkgamepic() {
+        List<Map> list = findList("SELECT downurl FROM gameplatformdetail WHERE platid = 501 AND downurl !=''  ORDER BY createtime DESC  ");
+        List<String> downurls = Utils.toList(list, x -> x.get("downurl").toString());
+
+        List<Kv> list1 = new ArrayList<>();
+        downurls.forEach(x -> {
+            URL url;
+            try {
+//                url = new URL("https://apps.apple.com/cn/app/id996785884");
+                url = new URL(x);
+                url.openStream();
+//                System.out.println("连接可用");
+            } catch (Exception e) {
+                e.printStackTrace();
+//                System.out.println(x);
+                System.out.println("连接打不开!");
+                list1.add(Kv.of("downurl", x));
+//                list1.add(Kv.of("downurl","https://apps.apple.com/cn/app/id996785884"));
+            }
+        });
+
+
+        try {
+            Workbook workbook = ExcelKit.exportExcel(list1, Kv.of("downurl", "地址"));
+            workbook.write(new FileOutputStream(new File("target/ios错误地址.xls"))); // 将工作簿对象写到磁盘文件
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void sdkpaystat() {
+        long rstarttime = 1619488800000l;
+        long rendtime = rstarttime + 24 * 3600 * 1000;
+
+        long starttime = 1619452800000l;
+        long endtime = starttime + 24 * 3600 * 1000;
+        String reg = "SELECT guserid FROM platf_sdk.`guserdetail` WHERE regtime >=" + rstarttime + " AND regtime<" + rendtime + " AND status = 10";
+        String payusercount1 = "SELECT DISTINCT guserid FROM platf_sdk.paymentinfo WHERE paytime>=" + starttime + " AND paytime<" + endtime + " AND guserid IN (" + reg + ")";
+        String paycount1 = "SELECT SUM(amount2) amount FROM platf_sdk.paymentinfo WHERE paytime>=" + starttime + " AND paytime<" + endtime + " AND guserid IN (" + reg + ")";
+
+        starttime = starttime + 24 * 3600 * 1000;
+        endtime = starttime + 24 * 3600 * 1000;
+        String payusercount2 = "SELECT DISTINCT guserid FROM platf_sdk.paymentinfo WHERE paytime>=" + starttime + " AND paytime<" + endtime + " AND guserid IN (" + reg + ")";
+        String paycount2 = "SELECT SUM(amount2) amount FROM platf_sdk.paymentinfo WHERE paytime>=" + starttime + " AND paytime<" + endtime + " AND guserid IN (" + reg + ")";
+
+        starttime = starttime + 24 * 3600 * 1000;
+        endtime = starttime + 24 * 3600 * 1000;
+        String payusercount3 = "SELECT DISTINCT guserid FROM platf_sdk.paymentinfo WHERE paytime>=" + starttime + " AND paytime<" + endtime + " AND guserid IN (" + reg + ")";
+        String paycount3 = "SELECT SUM(amount2) amount FROM platf_sdk.paymentinfo WHERE paytime>=" + starttime + " AND paytime<" + endtime + " AND guserid IN (" + reg + ")";
+
+        starttime = starttime + 24 * 3600 * 1000;
+        endtime = starttime + 24 * 3600 * 1000;
+        String payusercount4 = "SELECT DISTINCT guserid FROM platf_sdk.paymentinfo WHERE paytime>=" + starttime + " AND paytime<" + endtime + " AND guserid IN (" + reg + ")";
+        String paycount4 = "SELECT SUM(amount2) amount FROM platf_sdk.paymentinfo WHERE paytime>=" + starttime + " AND paytime<" + endtime + " AND guserid IN (" + reg + ")";
+
+        starttime = starttime + 24 * 3600 * 1000;
+        endtime = starttime + 24 * 3600 * 1000;
+        String payusercount5 = "SELECT DISTINCT guserid FROM platf_sdk.paymentinfo WHERE paytime>=" + starttime + " AND paytime<" + endtime + " AND guserid IN (" + reg + ")";
+        String paycount5 = "SELECT SUM(amount2) amount FROM platf_sdk.paymentinfo WHERE paytime>=" + starttime + " AND paytime<" + endtime + " AND guserid IN (" + reg + ")";
+
+        starttime = starttime + 24 * 3600 * 1000;
+        endtime = starttime + 24 * 3600 * 1000;
+        String payusercount6 = "SELECT DISTINCT guserid FROM platf_sdk.paymentinfo WHERE paytime>=" + starttime + " AND paytime<" + endtime + " AND guserid IN (" + reg + ")";
+        String paycount6 = "SELECT SUM(amount2) amount FROM platf_sdk.paymentinfo WHERE paytime>=" + starttime + " AND paytime<" + endtime + " AND guserid IN (" + reg + ")";
+
+        starttime = starttime + 24 * 3600 * 1000;
+        endtime = starttime + 24 * 3600 * 1000;
+        String payusercount7 = "SELECT DISTINCT guserid FROM platf_sdk.paymentinfo WHERE paytime>=" + starttime + " AND paytime<" + endtime + " AND guserid IN (" + reg + ")";
+        String paycount7 = "SELECT SUM(amount2) amount FROM platf_sdk.paymentinfo WHERE paytime>=" + starttime + " AND paytime<" + endtime + " AND guserid IN (" + reg + ")";
+
+        starttime = starttime + 24 * 3600 * 1000;
+        endtime = starttime + 24 * 3600 * 1000;
+        String payusercount8 = "SELECT DISTINCT guserid FROM platf_sdk.paymentinfo WHERE paytime>=" + starttime + " AND paytime<" + endtime + " AND guserid IN (" + reg + ")";
+        String paycount8 = "SELECT SUM(amount2) amount FROM platf_sdk.paymentinfo WHERE paytime>=" + starttime + " AND paytime<" + endtime + " AND guserid IN (" + reg + ")";
+
+        List<Map> regcount = findList(reg);
+        List<Map> paycountmap1 = findList(payusercount1);
+        List<Map> paymap1 = findList(paycount1);
+        List<Map> paycountmap2 = findList(payusercount2);
+        List<Map> paymap2 = findList(paycount2);
+        List<Map> paycountmap3 = findList(payusercount3);
+        List<Map> paymap3 = findList(paycount3);
+        List<Map> paycountmap4 = findList(payusercount4);
+        List<Map> paymap4 = findList(paycount4);
+        List<Map> paycountmap5 = findList(payusercount5);
+        List<Map> paymap5 = findList(paycount5);
+        List<Map> paycountmap6 = findList(payusercount6);
+        List<Map> paymap6 = findList(paycount6);
+        List<Map> paycountmap7 = findList(payusercount7);
+        List<Map> paymap7 = findList(paycount7);
+        List<Map> paycountmap8 = findList(payusercount8);
+        List<Map> paymap8 = findList(paycount8);
+
+        System.out.println(regcount.size());
+        System.out.println(paycountmap1.size());
+        System.out.println(paymap1.get(0).get("amount"));
+        System.out.println(paycountmap2.size());
+        System.out.println(paymap2.get(0).get("amount"));
+        System.out.println(paycountmap3.size());
+        System.out.println(paymap3.get(0).get("amount"));
+        System.out.println(paycountmap4.size());
+        System.out.println(paymap4.get(0).get("amount"));
+        System.out.println(paycountmap5.size());
+        System.out.println(paymap5.get(0).get("amount"));
+        System.out.println(paycountmap6.size());
+        System.out.println(paymap6.get(0).get("amount"));
+        System.out.println(paycountmap7.size());
+        System.out.println(paymap7.get(0).get("amount"));
+        System.out.println(paycountmap8.size());
+        System.out.println(paymap8.get(0).get("amount"));
+
+    }
+
+    @Test
+    public void gamePicSave() {
+        List<Map> list = findList("SELECT gameid,videofiles,picturefiles FROM gameinfo where status = 10 limit 10 ");
+
+        StringBuffer buff = new StringBuffer();
+        StringBuffer buff2 = new StringBuffer();
+        buff.append("INSERT INTO `v09x_platf_core`.`gamepicture`(`picid`, `gameid`, `picname`, `picpath`, `thumbpath`, `intro`, `pictype`, `createtime`, `sequence`, `status`)  VALUES  \n");
+        list.forEach(x -> {
+            String gameid = x.get("gameid").toString();
+            String videofiles = x.get("videofiles").toString();
+            String picturefiles = x.get("picturefiles").toString();
+            if (!Utils.isEmpty(videofiles)) {
+                Type type = new TypeToken<List<Kv<String, String>>>() {
+                }.getType();
+                List<Kv<String, String>> videos = convert.convertFrom(type, videofiles);
+                for (int i = 0; i < videos.size(); i++) {
+                    String uuid = Utility.uuid();
+                    buff.append(String.format("('%s','%s','%s','%s','%s','%s',%s,%s,%s,%s),\n", uuid, gameid, "", convert.convertTo(videos.get(i)), "", "", 20, System.currentTimeMillis(), i, 10));
+                }
+            }
+            if (!Utils.isEmpty(picturefiles)) {
+                List<String> pics = Utils.strToArr(picturefiles, String.class);
+                for (int i = 0; i < pics.size(); i++) {
+                    String uuid = Utility.uuid();
+                    buff.append(String.format("('%s','%s','%s','%s','%s','%s',%s,%s,%s,%s),\n", uuid, gameid, "", pics.get(i), "", "", 11, System.currentTimeMillis(), i, 10));
+                }
+            }
+        });
+        buff.delete(buff.length() - 2, buff.length() + 1);
+        buff.append(";");
+        // 入库数据
+        FileKit.strToFile(buff.toString(), new File("tmp/游戏视频图片数据处理.sql"));
+
+    }
+
+    @Test
+    public void insertgamecomment1() throws FileNotFoundException {
+        StringBuffer buff = new StringBuffer();
+        String[] FIELDS = {"gameid", "", "userno", "commentcontent", "score", "supportcount"};
+
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\评论0717.xlsx"), FIELDS);
+        list.remove(0);//去除多余的行首
+        HashSet<Object> set = new HashSet<>();
+        list.forEach(x -> set.add(x.get("userno")));
+        set.remove("用户ID");
+        String sql = "SELECT userno,userid FROM userdetail WHERE userno IN (" + set.toString().replace("[", "").replace("]", "").trim() + ");";
+        List<Map> list1 = findList(sql);
+        Map<Object, Object> map = new HashMap<>();
+        list1.forEach(x -> {
+            map.put(Integer.parseInt(x.get("userno").toString()), x.get("userid"));
+        });
+        System.out.println(map.size());
+
+        buff.append("INSERT INTO `v09x_platf_core`.`gamecomment`(`commentid`, `userid`, `gameid`, `versionid`, `commentcontent`,`supportcount`,`createtime`) VALUES  \n");
+        Random random = new Random();
+        //所有评论发表时间在5月20日——6月29日之间随机  1589904000000   1593446400000
+        List<Map<String, Object>> l = new ArrayList<>();
+        Kv kv = Kv.of();
+
+        list.forEach(x -> {
+            if (x.get("gameid").toString() == "" || x.get("commentcontent").toString() == "" || x.get("supportcount").toString() == "" || x.get("score").toString() == "") {
+                return;
+            }
+
+            HashMap<String, Object> map1 = new HashMap<>();
+            long createtime = 1589904000000l + (long) (Math.random() * (1593446400000l - 1589904000000l));
+            int userid = (int) Float.parseFloat(x.get("userno").toString());
+            int gameid = (int) Float.parseFloat(x.get("gameid").toString());
+            String commentcontent = x.get("commentcontent").toString();
+
+            int supportcount = (int) Float.parseFloat(x.get("supportcount").toString());
+            String score = x.get("score").toString();
+            String commentid = map.get(userid) + "-" + Utility.format36time(createtime);
+
+            buff.append(String.format("('%s',%s,'%s','%s','%s',%s,%s),\n", commentid, map.get(userid), gameid, gameid + "-0", commentcontent, supportcount, createtime));
+
+
+            map1.put("commentid", commentid);
+            map1.put("userid", map.get(userid));
+            map1.put("gameid", gameid);
+            map1.put("commentcontent", commentcontent);
+            map1.put("createtime", createtime);
+            map1.put("supportcount", supportcount);
+            map1.put("score", score);
+            l.add(map1);
+
+        });
+        kv.set("commentid", "评论ID");
+        kv.set("userid", "用户id");
+        kv.set("gameid", "游戏id");
+        kv.set("commentcontent", "评论内容");
+        kv.set("createtime", "创建时间");
+        kv.set("supportcount", "点赞数");
+        kv.set("score", "评分");
+
+        buff.delete(buff.length() - 2, buff.length() + 1);
+        buff.append(";");
+        // 入库数据
+        FileKit.strToFile(buff.toString(), new File("tmp/游戏评论数据0717.sql"));
+        try {
+            Workbook workbook = ExcelKit.exportExcel(l, kv);
+            workbook.write(new FileOutputStream(new File("target/编辑评论录入数据0717.xls"))); // 将工作簿对象写到磁盘文件
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void test1() throws UnsupportedEncodingException {
+        // 平台数据库表 catalog
+        List<String> catalogs = asList("v09x_platf_core", "platf_stat", "platf_sdk", "platf_quest", "platf_pay", "platf_oth",
+                "platf_oss", "platf_oauth", "platf_mall", "platf_live", "platf_im", "official_ipci", "official_core", "platf_component");
+
+        Kv<String, Integer> yesterdayStat = Kv.of(); // 上一天各个数据库表数据量
+        findList("SELECT * FROM `platf_oth`.`datastat` WHERE _intday=" + Utility.yesterdayYYMMDD()).forEach(x -> {
+            yesterdayStat.put(String.format("%s-%s", x.get("_catalog").toString(), x.get("_name").toString()), Integer.parseInt(x.get("_count").toString()));
+        });
+
+        StringBuffer buf = new StringBuffer("INSERT `platf_oth`.`datastat` (`recordid`, `_catalog`, `_name`, `_comment`,`_count`, `_inccount`, `_intday`) VALUES ");
+        for (String catalog : catalogs) {
+            String sql = String.format("SELECT TABLE_NAME 'name',TABLE_COMMENT 'comment',table_schema 'catalog'" +
+                    "        FROM INFORMATION_SCHEMA.TABLES" +
+                    "        WHERE TABLE_SCHEMA = '%s'", catalog);
+
+            List<Map> list = findList(sql);
+            list.forEach(m -> {
+                String tablename = (String) m.get("name");
+                m.put("count", Integer.parseInt(findList(String.format("select count(1) count from %s.%s", catalog, tablename)).get(0).get("count").toString()));
+
+                String rowsql = String.format("\n('%s', '%s', '%s', '%s', %s, %s, %s),",
+                        Utility.todayYYMMDD() + "-" + catalog + "-" + tablename,
+                        catalog,
+                        tablename,
+                        m.get("comment"),
+                        Integer.parseInt(m.get("count").toString()),
+                        Integer.parseInt(m.get("count").toString()) - yesterdayStat.get(catalog + "-" + tablename),
+                        Utility.todayYYMMDD());
+
+                buf.append(rowsql);
+            });
+        }
+
+        buf.deleteCharAt(buf.length() - 1);
+        FileKit.strToFile(buf.toString(), new File("tmp/数据库数据增减量.sql"));
+//        execute(buf.toString());
+
+    }
+
+//    private void execute(String sql) {
+//        DataJdbcSource jdbcSource = (DataJdbcSource) dataSource;
+//        jdbcSource.directExecute(sql);
+//    }
+//
+//    private <T> List<T> findList1(String sql, Class<T> clazz) {
+//        DataJdbcSource jdbcSource = (DataJdbcSource) dataSource;
+//        List<T> list = jdbcSource.directQuery(sql, rs -> Utils.queryList(rs, clazz));
+//        return list;
+//    }
+
+    @Test
+    public void ttxxxx(){
+        System.out.println(Utility.yesterdayYYMMDD());
+    }
+
+    private static void test2(String s1) {
+
+        String b = "2";
+        s1 = b;
+        System.out.println(Utility.yesterdayYYMMDD());
+    }
 }
 
 
