@@ -778,6 +778,7 @@ public class RunTest<T> {
 //        dbAccount.setUrl("jdbc:mysql://121.196.17.55:6063/platf_quest");
         dbAccount.setUrl("jdbc:mysql://122.112.180.156:6033/platf_sdk");
         dbAccount.setUser("guest");
+//        dbAccount.setUser("root");
         dbAccount.setPwd("*Zhong123098!");
 
 //        dbAccount.setPwd("*Hello@27.com!");
@@ -4579,15 +4580,23 @@ public class RunTest<T> {
 
     }
 
+    /**
+     * 游戏历史图片视频数据处理
+     */
     @Test
     public void gamePicSave() {
-        List<Map> list = findList("SELECT gameid,videofiles,picturefiles FROM gameinfo where status = 10 limit 10 ");
+        List<Map> list = findList("SELECT gameid,videofiles,picturefiles FROM gameinfo where status = 10  ");
 
         StringBuffer buff = new StringBuffer();
         StringBuffer buff2 = new StringBuffer();
         buff.append("INSERT INTO `v09x_platf_core`.`gamepicture`(`picid`, `gameid`, `picname`, `picpath`, `thumbpath`, `intro`, `pictype`, `createtime`, `sequence`, `status`)  VALUES  \n");
+        buff2.append("INSERT INTO `platf_component`.`gameconfig`(`gameid`, `displaymodule`, `displaypictype`, `officialnotice`) VALUES  \n");
+
         list.forEach(x -> {
             String gameid = x.get("gameid").toString();
+
+            buff2.append(String.format("('%s','%s','%s','%s'),\n", gameid, "platenumber", "11", ""));
+
             String videofiles = x.get("videofiles").toString();
             String picturefiles = x.get("picturefiles").toString();
             if (!Utils.isEmpty(videofiles)) {
@@ -4611,6 +4620,33 @@ public class RunTest<T> {
         buff.append(";");
         // 入库数据
         FileKit.strToFile(buff.toString(), new File("tmp/游戏视频图片数据处理.sql"));
+        FileKit.strToFile(buff2.toString(), new File("tmp/游戏配置数据处理.sql"));
+
+    }
+
+    /**
+     * 文章评级相关历史数据处理
+     */
+    @Test
+    public void gamearSave() {
+        List<Map> list = findList("SELECT articleid,articletype,title,userid,createtime FROM articleinfo where status = 10 and memberid = 0 and original =1 and articletype =2 and createtime>=1619798400000 order by createtime desc  ");
+//        List<Map> list = findList("SELECT articleid,articletype,title,userid,createtime FROM articleinfo where status = 10 and memberid = 0  and articletype =3 and createtime>=1619798400000 order by createtime desc  ");
+
+        StringBuffer buff = new StringBuffer();
+        StringBuffer buff2 = new StringBuffer();
+        buff.append("INSERT INTO `v09x_platf_core`.`articlegrade`(`recordid`, `userid`, `type`, `createtime`)  VALUES  \n");
+        list.forEach(x -> {
+            String articleid = x.get("articleid").toString();
+            int userid = Integer.parseInt(x.get("userid").toString());
+            int articletype = Integer.parseInt(x.get("articletype").toString());
+            long createtime = Long.parseLong(x.get("createtime").toString());
+
+            buff.append(String.format("('%s',%s,%s,%s),\n", articleid, userid, articletype, createtime));
+        });
+        buff.delete(buff.length() - 2, buff.length() + 1);
+        buff.append(";");
+        // 入库数据
+        FileKit.strToFile(buff.toString(), new File("tmp/文章评级数据处理.sql"));
 
     }
 
@@ -4739,12 +4775,39 @@ public class RunTest<T> {
 //    }
 
     @Test
-    public void ttxxxx(){
-        System.out.println(Utility.yesterdayYYMMDD());
+    public void ttxxxx() {
+//        System.out.println(Double.parseDouble("15"));
+//        System.out.println(Utility.monthFirstDay(Utility.midnight() - 100));
+        System.out.println("Onimusha 2：Samurai's Destiny".replace(" ", "").replaceAll("\\pP","").replaceAll("[\\u0000-\\u001f\b]", ""));
+        System.out.println("Onimusha 2：Samurai's Destiny".replaceAll("[\\pP\\p{Punct}]",""));
+
+    }
+
+    @Test
+    public void testxx() {
+        List<String> list = new ArrayList<>();
+        test1(list);
+        System.out.println(list.size());
+        test2(list);
+        System.out.println(list.size());
+        test3(list);
+        System.out.println(list.size());
+
+    }
+
+    public static void test1(List list) {
+        list = null;
+    }
+
+    public static void test2(List list) {
+        list.add("ass");
+    }
+
+    public static void test3(List list) {
+        list.add(new StringBuilder("ass"));
     }
 
     private static void test2(String s1) {
-
         String b = "2";
         s1 = b;
         System.out.println(Utility.yesterdayYYMMDD());
