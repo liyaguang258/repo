@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Array;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -543,5 +544,25 @@ public abstract class Utils {
 
     public static String fmt36(long n) {
         return Long.toString(n, 36);
+    }
+
+    @Comment("GET请求参数转换为字符，结果：p1=v1&p2=v2&p3=v3")
+    public static String convertHttpParams(Map map, boolean encode) {
+        if (map == null || map.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        map.forEach((k, v) -> {
+            if (Utils.isEmpty(k) || Utils.isEmpty(v)) {
+                return;
+            }
+            String value = String.valueOf(v);
+            if (encode) {
+                value = URLEncoder.encode(String.valueOf(v), StandardCharsets.UTF_8);
+            }
+            sb.append("&").append(k).append("=").append(value);
+        });
+        return sb.length() > 0 ? sb.substring(1) : "";
     }
 }

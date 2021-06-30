@@ -26,6 +26,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
@@ -4629,8 +4630,10 @@ public class RunTest<T> {
      */
     @Test
     public void gamearSave() {
-        List<Map> list = findList("SELECT articleid,articletype,title,userid,createtime FROM articleinfo where status = 10 and memberid = 0 and original =1 and articletype =2 and createtime>=1619798400000 order by createtime desc  ");
+//        List<Map> list = findList("SELECT articleid,articletype,title,userid,createtime FROM articleinfo where status = 10 and memberid = 0 and original =1 and articletype =2 and createtime>=1619798400000 order by createtime desc  ");
 //        List<Map> list = findList("SELECT articleid,articletype,title,userid,createtime FROM articleinfo where status = 10 and memberid = 0  and articletype =3 and createtime>=1619798400000 order by createtime desc  ");
+        List<Map> list = findList("SELECT articleid,articletype,title,userid,createtime FROM articleinfo where status = 10 and memberid = 0  and articletype =3 and createtime>=1619798400000 AND articleid NOT IN\n" +
+                "(SELECT recordid FROM articlegrade WHERE type =3 )  ");
 
         StringBuffer buff = new StringBuffer();
         StringBuffer buff2 = new StringBuffer();
@@ -4778,20 +4781,29 @@ public class RunTest<T> {
     public void ttxxxx() {
 //        System.out.println(Double.parseDouble("15"));
 //        System.out.println(Utility.monthFirstDay(Utility.midnight() - 100));
-        System.out.println("Onimusha 2：Samurai's Destiny".replace(" ", "").replaceAll("\\pP","").replaceAll("[\\u0000-\\u001f\b]", ""));
-        System.out.println("Onimusha 2：Samurai's Destiny".replaceAll("[\\pP\\p{Punct}]",""));
+//        System.out.println("Onimusha 2：Samurai's Destiny".replace(" ", "").replaceAll("\\pP", "").replaceAll("[\\u0000-\\u001f\b]", ""));
+//        System.out.println("Onimusha 2：Samurai's Destiny".replaceAll("[\\pP\\p{Punct}]", ""));
+//        System.out.println("Onimusha 2：Samurai's Destiny".replace(" ", "").replaceAll("\\pP", ""));
+        System.out.println(URLEncoder.encode("71%", StandardCharsets.UTF_8));
+        String encode = URLEncoder.encode("71%", StandardCharsets.UTF_8);
 
+        System.out.println(URLDecoder.decode(encode, StandardCharsets.UTF_8));
     }
 
     @Test
-    public void testxx() {
-        List<String> list = new ArrayList<>();
-        test1(list);
-        System.out.println(list.size());
-        test2(list);
-        System.out.println(list.size());
-        test3(list);
-        System.out.println(list.size());
+    public void testxx() throws ParseException {
+//        List<String> list = new ArrayList<>();
+//        test1(list);
+//        System.out.println(list.size());
+//        test2(list);
+//        System.out.println(list.size());
+//        test3(list);
+//        System.out.println(list.size());
+
+//        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+//        String format1 = format.format("2021-06-15 00:00:00");
+//        System.out.println(format1);
+        System.out.println(0.5 + 0.1);
 
     }
 
@@ -4807,11 +4819,178 @@ public class RunTest<T> {
         list.add(new StringBuilder("ass"));
     }
 
-    private static void test2(String s1) {
-        String b = "2";
-        s1 = b;
-        System.out.println(Utility.yesterdayYYMMDD());
+    private static void test2(String s1) throws ParseException {
+//        String b = "2";
+//        s1 = b;
+//        System.out.println(Utility.yesterdayYYMMDD());
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String format1 = format.format(format.parse("2021-06-15 00:00:00"));
+        System.out.println(format1);
+
     }
+
+    @Test
+    public void getTouTiaoReport() {
+        String access_token = "3baf047452390e8920f0865debc8fe6078323530";
+        final Long advertiser_id = 1688121329330179l;
+        final Long[] ad_ids = new Long[]{1L};
+
+        // 请求地址
+        String url = "https://ad.oceanengine.com/open_api/2/report/integrated/get/";
+
+        SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd");
+        String format1 = format.format(System.currentTimeMillis());
+        // 请求参数
+        Map data = new HashMap() {
+            {
+                put("advertiser_id", advertiser_id);
+                put("start_date", format.format(1622866545000l));
+                put("end_date", format.format(System.currentTimeMillis()));
+//                put("group_by", new String[]{"STAT_GROUP_BY_BIDWORD_ID", "STAT_GROUP_BY_AD_ID"});
+                put("group_by", URLEncoder.encode(JsonConvert.root().convertTo(new String[]{"STAT_GROUP_BY_BIDWORD_ID", "STAT_GROUP_BY_AD_ID"}), StandardCharsets.UTF_8));
+            }
+        };
+        String httpParams = Utils.convertHttpParams(data, false);
+
+
+        TreeMap<String, String> headerMap = new TreeMap<>();
+        headerMap.put("Content-Type", "application/json");
+        headerMap.put("Access-Token", access_token);
+
+
+        String retBody = null;
+        try {
+            System.out.println(url + "?" + httpParams);
+
+            retBody = Utility.getHttpContent(url + "?" + httpParams, headerMap, null);
+            System.out.println(retBody);
+        } catch (IOException e) {
+            e.getMessage();
+        }
+
+
+//        return null;
+    }
+
+    @Test
+    public void getTouTiaoToken() {
+        String access_token = "xxx";
+
+        // 请求地址
+        String url = "https://ad.oceanengine.com/open_api/oauth2/access_token/";
+
+
+        // 请求参数
+        Map<String, Object> data = new HashMap() {
+            {
+                put("app_id", 1688650032257035l);
+                put("secret", "b2f0d89e5de3cc6284fe00d3eece7762ecdfba2a");
+                put("grant_type", "auth_code");
+                put("auth_code", "cf39b948c05f9b1ccede612863f1dd87c4eaa1b5");
+            }
+        };
+        String s = JsonConvert.root().convertTo(data);
+
+        String retbody = null;
+        try {
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Content-Type", "application/json");
+            retbody = Utility.postHttpContent(url, headers, s);
+            System.out.println(retbody);
+
+            Map<String, Object> map = convert.convertFrom(retbody);
+            Object data1 = map.get("data");
+            Map<String, Object> daaa = (Map<String, Object>) map.get("data");
+            access_token = daaa.get("access_token").toString();
+        } catch (IOException e) {
+            e.getMessage();
+        }
+
+//        return retbody;
+    }
+
+    @Test
+    public void getKuaiShouReport() {
+        String access_token = "47ccc146e41db92642b1f2d4e573945f";
+        final Long advertiser_id = 1688121329330179l;
+        final Long[] ad_ids = new Long[]{1L};
+
+        // 请求地址
+//        String url = "https://ad.e.kuaishou.com/rest/openapi/v1/report/account_report";
+        String url = "https://sandbox-ad.e.kuaishou.com/rest/openapi/v1/report/account_report";
+
+        SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd");
+        // 请求参数
+        Map data = new HashMap() {
+            {
+                put("advertiser_id", 700001995);
+                put("start_date", format.format(1623291121000l));
+                put("end_date", format.format(System.currentTimeMillis()));
+                put("temporal_granularity", "DAILY");
+            }
+        };
+//        String httpParams = Utils.convertHttpParams(data, false);
+
+        String s = JsonConvert.root().convertTo(data);
+
+
+        TreeMap<String, String> headerMap = new TreeMap<>();
+        headerMap.put("Content-Type", "application/json");
+        headerMap.put("Access-Token", access_token);
+
+
+        String retBody = null;
+        try {
+            System.out.println(url + "?" + s);
+
+            retBody = Utility.postHttpContent(url, headerMap, s);
+            System.out.println(retBody);
+        } catch (IOException e) {
+            e.getMessage();
+        }
+
+
+//        return null;
+    }
+
+    @Test
+    public void getKuaiShouToken() {
+        String access_token = "xxx";
+
+        // 请求地址
+        String url = "https://ad.oceanengine.com/open_api/oauth2/access_token/";
+
+
+        // 请求参数
+        Map<String, Object> data = new HashMap() {
+            {
+                put("app_id", 1688650032257035l);
+                put("secret", "b2f0d89e5de3cc6284fe00d3eece7762ecdfba2a");
+                put("grant_type", "auth_code");
+                put("auth_code", "cf39b948c05f9b1ccede612863f1dd87c4eaa1b5");
+            }
+        };
+        String s = JsonConvert.root().convertTo(data);
+
+        String retbody = null;
+        try {
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Content-Type", "application/json");
+            retbody = Utility.postHttpContent(url, headers, s);
+            System.out.println(retbody);
+
+            Map<String, Object> map = convert.convertFrom(retbody);
+            Object data1 = map.get("data");
+            Map<String, Object> daaa = (Map<String, Object>) map.get("data");
+            access_token = daaa.get("access_token").toString();
+        } catch (IOException e) {
+            e.getMessage();
+        }
+
+//        return retbody;
+    }
+
+
 }
 
 
