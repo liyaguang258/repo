@@ -26,6 +26,8 @@ import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -564,5 +566,23 @@ public abstract class Utils {
             sb.append("&").append(k).append("=").append(value);
         });
         return sb.length() > 0 ? sb.substring(1) : "";
+    }
+
+    @Comment("字符串转时间戳")
+    public static long strToTimestamp(String str, String pattern) {
+        if(Utils.isEmpty(pattern)){
+            pattern = "yyyy-MM-dd";
+        }
+        Date d = new Date();
+        long timeStemp = 0;
+        try {
+            SimpleDateFormat sf = new SimpleDateFormat(pattern);
+            d = sf.parse(str);// 日期转换为时间戳
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        timeStemp = d.getTime();
+        return timeStemp;
     }
 }

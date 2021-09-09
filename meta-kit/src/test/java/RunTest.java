@@ -26,6 +26,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.net.http.HttpResponse;
@@ -44,6 +45,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -2964,7 +2967,7 @@ public class RunTest<T> {
         StringBuffer buff = new StringBuffer();
         String[] FIELDS = {"name", "company", "position", "mobile", "idnum"};
 
-        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\游戏达人表格1031.xlsx"), FIELDS);
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\机器人.xlsx"), FIELDS);
         list.remove(0);//去除多余的行首
 
 
@@ -2974,13 +2977,13 @@ public class RunTest<T> {
                 return;
             }
 
-            String sql = "select mobile from platf_oth.cjrecord where mobile = " + mobile + ";";
+//            String sql = "select mobile from platf_oth.cjrecord where mobile = " + mobile + ";";
 //            System.out.println(sql);
-            List<Map> tempList = findList(sql);
-            System.out.println(tempList.size());
-            if (tempList == null || tempList.size() == 0) {
-                insertCj(x);
-            }
+//            List<Map> tempList = findList(sql);
+//            System.out.println(tempList.size());
+//            if (tempList == null || tempList.size() == 0) {
+//                insertCj(x);
+//            }
 
             String sql1 = "select userid from userdetail where mobile = " + mobile + ";";
 //            System.out.println(sql1);
@@ -2995,16 +2998,20 @@ public class RunTest<T> {
     }
 
     public void accountlogin(Map x) {
+        //ip 需要加入白名单。不然有限制
         if (x.get("mobile").toString() == "") {
             return;
         }
         String mobile = x.get("mobile").toString().trim();
         StringBuffer buffer = new StringBuffer();
-        buffer.append("{mobile:'" + mobile + "',vercode:159753}");
+        buffer.append("{mobile:'" + mobile + "',vercode:123098}");
+        //刷新白名单
+        String reload = "https://api.woaihaoyouxi.com/reject/white_reload";
         String login = "https://api.woaihaoyouxi.com/account/signup";
 //        String login = "https://api.1216.top/account/signup";
         HashMap<String, Object> loginmap = new HashMap<>();
         loginmap.put("bean", buffer.toString());
+        HttpResponse<String> httpResponsereload = HttpUtils.send(reload, new HashMap<>(), HttpUtils.HttpMethod.GET);
         HttpResponse<String> httpResponsexx = HttpUtils.send(login, loginmap, HttpUtils.HttpMethod.GET);
         String body = httpResponsexx.body();
         if (body.contains("retinfo")) {
@@ -4447,6 +4454,7 @@ public class RunTest<T> {
 //                url = new URL("https://apps.apple.com/cn/app/id996785884");
                 url = new URL(x);
                 url.openStream();
+                URLConnection urlConnection = url.openConnection();
 //                System.out.println("连接可用");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -4788,22 +4796,17 @@ public class RunTest<T> {
         String encode = URLEncoder.encode("71%", StandardCharsets.UTF_8);
 
         System.out.println(URLDecoder.decode(encode, StandardCharsets.UTF_8));
+
+        String regex = "[\u0001,\u0002]";
+        String aaa = "身为配角,人气居然比主角高?这只绿色萌物为何能俘获玩家芳心?";
+        System.out.println(aaa.replaceAll(regex, aaa));
     }
 
     @Test
     public void testxx() throws ParseException {
-//        List<String> list = new ArrayList<>();
-//        test1(list);
-//        System.out.println(list.size());
-//        test2(list);
-//        System.out.println(list.size());
-//        test3(list);
-//        System.out.println(list.size());
-
-//        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-//        String format1 = format.format("2021-06-15 00:00:00");
-//        System.out.println(format1);
-        System.out.println(0.5 + 0.1);
+        List<Integer> list = new ArrayList<>();
+        Set<String> aids = new HashSet<>();
+        System.out.println(aids.contains("2"));
 
     }
 
@@ -4990,6 +4993,72 @@ public class RunTest<T> {
 //        return retbody;
     }
 
+
+    @Test
+    public void setJiqiren() throws IOException, InterruptedException {
+        StringBuffer buff = new StringBuffer();
+        String[] FIELDS = {"userno", "name", "mobile"};
+
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\20210826机器人.xlsx"), FIELDS);
+        list.remove(0);//去除多余的行首
+
+
+        list.forEach(x -> {
+            String mobile = x.get("mobile").toString().trim();
+            if (Utils.isEmpty(mobile)) {
+                return;
+            }
+
+            String sql1 = "select userid from userdetail where mobile = " + mobile + ";";
+            List<Map> tempList2 = findList(sql1);
+            System.out.println(tempList2.size());
+            if (tempList2 == null || tempList2.size() == 0) {
+                accountlogin(x);
+            }
+
+        });
+
+    }
+
+    //修改机器人头像，昵称，彩虹号信息
+    @Test
+    public void updateusermobile() {
+        String[] FIELDS = {"userno", "username", "mobile"};
+        List<Map> map = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\20210826机器人.xlsx"), FIELDS);
+        map.remove(0);
+        StringBuffer buff = new StringBuffer();
+        for (int i = 0; i < map.size(); i++) {
+            long userno = Long.parseLong(map.get(i).get("userno").toString());
+            String mobile = map.get(i).get("mobile").toString();
+            String username = map.get(i).get("username").toString();
+            String face = "https://aimg.woaihaoyouxi.com/app/" + userno + ".jpg";
+            buff.append("UPDATE v09x_platf_core.`userdetail` SET face = '" + face + "',userno = " + userno + ",username = '" + username + "'");
+            buff.append(" WHERE mobile = '" + mobile + "';\n");
+        }
+
+        FileKit.strToFile(buff.toString(), new File("tmp/批量修改机器人头像数据.sql"));
+
+    }
+
+    @Test
+    public void testttt() {
+
+        String s = "特价促销！9 月 9日截止";
+        Pattern p = Pattern.compile("\\d{1,2}月\\d{1,2}日");
+//        Pattern p = Pattern.compile("\\d月\\d日");
+        Matcher matcher = p.matcher(s.replaceAll(" ", ""));
+        if (matcher.find()) {
+            System.out.println(matcher.group(0));  // 组提取字符串 0x993902CE
+        }
+    }
+
+    @Test
+    public void testtttttttttttt() throws ParseException {
+        String s = "购买 Devil May Cry 5 Deluxe + Vergil".replaceAll("[\\pP\\p{Punct}]", "");
+        List<Kv<String, String>> o = convert.convertFrom(new TypeToken<List<Kv<String, String>>>() {
+        }.getType(), "");
+        System.out.println(o);
+    }
 
 }
 
