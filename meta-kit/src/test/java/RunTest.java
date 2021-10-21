@@ -2977,13 +2977,6 @@ public class RunTest<T> {
                 return;
             }
 
-//            String sql = "select mobile from platf_oth.cjrecord where mobile = " + mobile + ";";
-//            System.out.println(sql);
-//            List<Map> tempList = findList(sql);
-//            System.out.println(tempList.size());
-//            if (tempList == null || tempList.size() == 0) {
-//                insertCj(x);
-//            }
 
             String sql1 = "select userid from userdetail where mobile = " + mobile + ";";
 //            System.out.println(sql1);
@@ -2997,21 +2990,23 @@ public class RunTest<T> {
 
     }
 
+    @Test
     public void accountlogin(Map x) {
         //ip 需要加入白名单。不然有限制
-        if (x.get("mobile").toString() == "") {
-            return;
-        }
+//        if (x.get("mobile").toString() == "") {
+//            return;
+//        }
         String mobile = x.get("mobile").toString().trim();
         StringBuffer buffer = new StringBuffer();
-        buffer.append("{mobile:'" + mobile + "',vercode:123098}");
+        int userno = 11111;
+        buffer.append("{mobile:'" + mobile + "','userno :" + userno + ",vercode:123098}");
+        Kv kv = Kv.of("mobile", "15697177897").set("userno", userno).set("vercode", 204220);
+        String s = convert.convertTo(kv);
         //刷新白名单
-        String reload = "https://api.woaihaoyouxi.com/reject/white_reload";
-        String login = "https://api.woaihaoyouxi.com/account/signup";
-//        String login = "https://api.1216.top/account/signup";
+//        String login = "https://api.woaihaoyouxi.com/account/signup";
+        String login = "https://api.1216.top/account/signup";
         HashMap<String, Object> loginmap = new HashMap<>();
-        loginmap.put("bean", buffer.toString());
-        HttpResponse<String> httpResponsereload = HttpUtils.send(reload, new HashMap<>(), HttpUtils.HttpMethod.GET);
+        loginmap.put("bean", s);
         HttpResponse<String> httpResponsexx = HttpUtils.send(login, loginmap, HttpUtils.HttpMethod.GET);
         String body = httpResponsexx.body();
         if (body.contains("retinfo")) {
@@ -4444,15 +4439,14 @@ public class RunTest<T> {
 
     @Test
     public void checkUrl() {
-        List<Map> list = findList("SELECT downurl FROM gameplatformdetail WHERE platid = 501 AND downurl !=''  ORDER BY createtime DESC  ");
-        List<String> downurls = Utils.toList(list, x -> x.get("downurl").toString());
+        List<Map> list = findList("SELECT gamename,downurl FROM gameplatformdetail WHERE platid = 501 AND downurl !=''  ORDER BY createtime DESC  ");
 
         List<Kv> list1 = new ArrayList<>();
-        downurls.forEach(x -> {
+        list.forEach(x -> {
             URL url;
             try {
 //                url = new URL("https://apps.apple.com/cn/app/id996785884");
-                url = new URL(x);
+                url = new URL(x.get("downurl").toString());
                 url.openStream();
                 URLConnection urlConnection = url.openConnection();
 //                System.out.println("连接可用");
@@ -4460,15 +4454,14 @@ public class RunTest<T> {
                 e.printStackTrace();
 //                System.out.println(x);
                 System.out.println("连接打不开!");
-                list1.add(Kv.of("downurl", x));
+                list1.add(Kv.of("downurl", x.get("downurl").toString()).set("gamename", x.get("gamename").toString()));
 //                list1.add(Kv.of("downurl","https://apps.apple.com/cn/app/id996785884"));
             }
         });
 
-
         try {
-            Workbook workbook = ExcelKit.exportExcel(list1, Kv.of("downurl", "地址"));
-            workbook.write(new FileOutputStream(new File("target/ios错误地址.xls"))); // 将工作簿对象写到磁盘文件
+            Workbook workbook = ExcelKit.exportExcel(list1, Kv.of("gamename", "游戏名称").set("downurl", "地址"));
+            workbook.write(new FileOutputStream(new File("target/ios错误地址0918.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -5054,10 +5047,9 @@ public class RunTest<T> {
 
     @Test
     public void testtttttttttttt() throws ParseException {
-        String s = "购买 Devil May Cry 5 Deluxe + Vergil".replaceAll("[\\pP\\p{Punct}]", "");
-        List<Kv<String, String>> o = convert.convertFrom(new TypeToken<List<Kv<String, String>>>() {
-        }.getType(), "");
-        System.out.println(o);
+        String s = "购买 Mount & Blade II: Bannerlord".replaceAll("[\\pP\\p{Punct}]", "");
+
+        System.out.println(Utility.monday(System.currentTimeMillis()));
     }
 
 }
