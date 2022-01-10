@@ -15,29 +15,30 @@ import net.tccn.qtask.TaskKit;
 import net.tccn.user.User;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.junit.Test;
 import org.redkale.convert.json.JsonConvert;
 import org.redkale.source.CacheMemorySource;
+import org.redkale.util.Comment;
 import org.redkale.util.TypeToken;
 import org.redkale.util.Utility;
+import org.testng.annotations.Test;
 
 import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -79,14 +80,11 @@ public class RunTest<T> {
 
 
         //System.out.println(query.getClass());
-    }*/
-    ParseMysql parser = new ParseMysql();
+    }*/ ParseMysql parser = new ParseMysql();
 
     //@Test
     public void parseFBeanTest() {
-        String str = "{'platToken':'ipsm_v4','name':'historyTrack'," +
-                "'filters':[{'col':'ap.comName','value':'贵阳市第十九中学','type':'LIKE'},{'col':'','value':'name=213113','type':'SQL'}," +
-                "{'col':'age','values':[1,2],'type':'RANGE'}]," +
+        String str = "{'platToken':'ipsm_v4','name':'historyTrack'," + "'filters':[{'col':'ap.comName','value':'贵阳市第十九中学','type':'LIKE'},{'col':'','value':'name=213113','type':'SQL'}," + "{'col':'age','values':[1,2],'type':'RANGE'}]," +
 
                 "'orders':[],'limit':{'pn':1,'ps':10,'total':1}}";
 
@@ -216,11 +214,7 @@ public class RunTest<T> {
 
         System.out.println(user);
         System.out.println(kv);*/
-        Class[] clazzs = {
-                int.class, long.class, short.class, byte.class,
-                Integer.class, Long.class, Short.class, Byte.class, float.class, Float.class,
-                String.class,
-        };
+        Class[] clazzs = {int.class, long.class, short.class, byte.class, Integer.class, Long.class, Short.class, Byte.class, float.class, Float.class, String.class,};
         Object[] ks = new Object[]{"1", (int) 1, (Integer) 1, 1l, 1.0, 1f, 1.0d};
 
         for (Object k : ks) {
@@ -420,8 +414,7 @@ public class RunTest<T> {
     public void exportTest() {
         List<Map> list = dbKitTest();
 
-        Kv kv = Kv.of("platID", "平台id")
-                .set("platDomain", "平台域名").set("platIP", "平台IP");
+        Kv kv = Kv.of("platID", "平台id").set("platDomain", "平台域名").set("platIP", "平台IP");
 
         try {
             Workbook workbook = ExcelKit.exportExcel(list, kv);
@@ -740,14 +733,10 @@ public class RunTest<T> {
      * @return
      */
     public static boolean isEmpty(Object obj) {
-        if (obj == null)
-            return true;
-        if (obj instanceof String)
-            return ((String) obj).trim().isEmpty() || "null".equals(obj);
-        if (obj instanceof Collection)
-            return ((Collection) obj).isEmpty();
-        if (obj instanceof Map)
-            return ((Map) obj).isEmpty();
+        if (obj == null) return true;
+        if (obj instanceof String) return ((String) obj).trim().isEmpty() || "null".equals(obj);
+        if (obj instanceof Collection) return ((Collection) obj).isEmpty();
+        if (obj instanceof Map) return ((Map) obj).isEmpty();
 
         if (obj.getClass().isArray() && Array.getLength(obj) == 0) {
             return true;
@@ -804,8 +793,7 @@ public class RunTest<T> {
         //System.out.println(findList("SELECT g.`gameid`,g.`lastscore`,g.`tagids` FROM gameinfo g WHERE g.`tagids` LIKE '%,201,%' ORDER BY g.`lastscore` DESC"));
 
         Kv dictKv = Kv.of();
-        findList("SELECT d.`numvalue`,d.`keydesc` FROM `dictinfo` d WHERE d.`keyname` LIKE 'TAG-102-2%'").forEach(x ->
-                dictKv.put(x.get("numvalue"), x.get("keydesc")));
+        findList("SELECT d.`numvalue`,d.`keydesc` FROM `dictinfo` d WHERE d.`keyname` LIKE 'TAG-102-2%'").forEach(x -> dictKv.put(x.get("numvalue"), x.get("keydesc")));
 
         // 游戏数据
         List<Kv> games = new ArrayList<>();
@@ -843,10 +831,7 @@ public class RunTest<T> {
         List<Map<String, Object>> list = new ArrayList<>();
 
         Kv sheet1 = Kv.of();
-        sheet1.set("data", asList(
-                Kv.of("name", "张三").set("age", 12),
-                Kv.of("name", "李四").set("age", 15)
-        ));
+        sheet1.set("data", asList(Kv.of("name", "张三").set("age", 12), Kv.of("name", "李四").set("age", 15)));
         sheet1.set("sheetName", "人员名单");
         sheet1.set("hdNames", new String[]{"姓名", "年龄"});
         sheet1.set("hds", new String[]{"name", "age"});
@@ -854,10 +839,7 @@ public class RunTest<T> {
 
 
         Kv sheet2 = Kv.of();
-        sheet2.set("data", asList(
-                Kv.of("name", "苹果").set("price", 12),
-                Kv.of("name", "梨子").set("price", 15)
-        ));
+        sheet2.set("data", asList(Kv.of("name", "苹果").set("price", 12), Kv.of("name", "梨子").set("price", 15)));
         sheet2.set("sheetName", "水果价目表");
         sheet2.set("hdNames", new String[]{"水果名称", "单价"});
         sheet2.set("hds", new String[]{"name", "price"});
@@ -1203,8 +1185,7 @@ public class RunTest<T> {
 //        String sql = "SELECT v.`invitecode` '邀请码',u.`username` '邀请人', u1.`username` '被邀请人',FROM_UNIXTIME(v.`createtime`/1000, '%Y-%m-%d %H:%i:%S') '激活码使用时间' FROM `userinviterecord` v LEFT JOIN userdetail u ON v.`userid`=u.`userid` LEFT JOIN userdetail u1 ON v.`inviteeid`=u1.`userid`\n" +
 //                "WHERE v.`userid` IN (11244,11255,11192 , 11047 , 11039 , 11189 , 11190 , 11191 , 11042 , 11038 , 11041 , 11043 , 11044 , 11050 , 11049 , 11051 , 11053 , 11054 , 11058 , 11193 , 11194 , 11195 , 11196 , 11197 , 11198 , 11199 , 11200 , 11201 , 11202 , 11037)  ORDER BY v.`createtime` DESC;";
 
-        String sql = "SELECT v.`invitecode` '邀请码',u.`userid` '邀请人', u1.`username` '被邀请人',FROM_UNIXTIME(v.`createtime`/1000, '%Y-%m-%d %H:%i:%S') '激活码使用时间' FROM `userinviterecord` v LEFT JOIN userdetail u ON v.`userid`=u.`userid` LEFT JOIN userdetail u1 ON v.`inviteeid`=u1.`userid`\n" +
-                "WHERE v.`userid` IN (11244,11245,11192 , 11047 , 11039 , 11189 , 11190 , 11191 , 11042 , 11038 , 11041 , 11043 , 11044 , 11050 , 11049 , 11051 , 11053 , 11054 , 11058 , 11193 , 11194 , 11195 , 11196 , 11197 , 11198 , 11199 , 11200 , 11201 , 11202 , 11037)  ORDER BY v.`createtime` DESC;";
+        String sql = "SELECT v.`invitecode` '邀请码',u.`userid` '邀请人', u1.`username` '被邀请人',FROM_UNIXTIME(v.`createtime`/1000, '%Y-%m-%d %H:%i:%S') '激活码使用时间' FROM `userinviterecord` v LEFT JOIN userdetail u ON v.`userid`=u.`userid` LEFT JOIN userdetail u1 ON v.`inviteeid`=u1.`userid`\n" + "WHERE v.`userid` IN (11244,11245,11192 , 11047 , 11039 , 11189 , 11190 , 11191 , 11042 , 11038 , 11041 , 11043 , 11044 , 11050 , 11049 , 11051 , 11053 , 11054 , 11058 , 11193 , 11194 , 11195 , 11196 , 11197 , 11198 , 11199 , 11200 , 11201 , 11202 , 11037)  ORDER BY v.`createtime` DESC;";
 
         HashMap<Object, Object> map = new HashMap<>();
         map.put(11244, "岩茹");
@@ -1268,8 +1249,7 @@ public class RunTest<T> {
     //时间格式转换
     public String datechange(long date) {
         Date current = new Date(date);
-        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(
-                "yyyy-MM-dd HH:mm:ss");
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String time = sdf.format(current);
         return time;
     }
@@ -1353,8 +1333,7 @@ public class RunTest<T> {
 //                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 3)
 //                    Kv.of("userid", 11042).set("name", "墨菲").set("n", 3)
 //                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 87)
-                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 20)
-            );
+                    Kv.of("userid", 10000).set("name", "小彩虹").set("n", 20));
 
         }
         //生成邀请码,
@@ -1451,9 +1430,7 @@ public class RunTest<T> {
     }
 
     private String buildCode() {
-        char[] str = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
-                'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
-                'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+        char[] str = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
         StringBuffer buf = new StringBuffer();
         Random random = new Random();
         while (buf.length() < 6) {
@@ -1467,8 +1444,7 @@ public class RunTest<T> {
     @Test
     public void readmerchant() {
         StringBuffer buff = new StringBuffer();
-        String[] FIELDS = {"merchantname", "", "merchantnameen", "merchantalias", "merchantgovurl", "creditcode", "businesscode", "teamsize", "operationstatus",
-                "businessstart", "businessend", "behalfuser", "mobile", "email", "registration", "capital", "zone", "address", "introduction", "", "merchantid"};
+        String[] FIELDS = {"merchantname", "", "merchantnameen", "merchantalias", "merchantgovurl", "creditcode", "businesscode", "teamsize", "operationstatus", "businessstart", "businessend", "behalfuser", "mobile", "email", "registration", "capital", "zone", "address", "introduction", "", "merchantid"};
         List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\编辑数据\\商家信息.xlsx"), FIELDS);
         list.remove(0);//去除多余的行首
         list.remove(0);//去除多余的行首
@@ -1554,19 +1530,13 @@ public class RunTest<T> {
 
         for (String s : database) {
 
-            String sql = "SELECT table_schema,TABLE_NAME,CONCAT(truncate(data_length/1024/1024,2),'MB') as data_size,table_rows rs,TABLE_COMMENT" +
-                    " FROM information_schema.`TABLES` WHERE TABLE_SCHEMA = '" + s +
-                    "' ORDER BY rs DESC";
+            String sql = "SELECT table_schema,TABLE_NAME,CONCAT(truncate(data_length/1024/1024,2),'MB') as data_size,table_rows rs,TABLE_COMMENT" + " FROM information_schema.`TABLES` WHERE TABLE_SCHEMA = '" + s + "' ORDER BY rs DESC";
 
             List<Map> list1 = findList(sql);
             Kv sheet1 = Kv.of();
             List<Kv> kvs = new ArrayList<>();
             for (int i = 0; i < list1.size(); i++) {
-                kvs.add(Kv.of("TABLE_SCHEMA", list1.get(i).get("TABLE_SCHEMA"))
-                        .set("TABLE_NAME", list1.get(i).get("TABLE_NAME"))
-                        .set("data_size", list1.get(i).get("data_size"))
-                        .set("rs", list1.get(i).get("rs"))
-                        .set("TABLE_COMMENT", list1.get(i).get("TABLE_COMMENT")));
+                kvs.add(Kv.of("TABLE_SCHEMA", list1.get(i).get("TABLE_SCHEMA")).set("TABLE_NAME", list1.get(i).get("TABLE_NAME")).set("data_size", list1.get(i).get("data_size")).set("rs", list1.get(i).get("rs")).set("TABLE_COMMENT", list1.get(i).get("TABLE_COMMENT")));
             }
 
 
@@ -1595,9 +1565,7 @@ public class RunTest<T> {
 
         for (String s : database) {
 
-            String sql = "SELECT table_schema,TABLE_NAME" +
-                    " FROM information_schema.`TABLES` WHERE TABLE_SCHEMA = '" + s +
-                    "' ";
+            String sql = "SELECT table_schema,TABLE_NAME" + " FROM information_schema.`TABLES` WHERE TABLE_SCHEMA = '" + s + "' ";
             List<Map> list1 = findList(sql);
 
             Kv sheet1 = Kv.of();
@@ -1616,14 +1584,7 @@ public class RunTest<T> {
                         if (x.get("COLUMN_TYPE").equals("mediumtext") || x.get("COLUMN_TYPE").equals("text")) {
                             return;
                         }
-                        kvs.add(Kv.of("TABLE_SCHEMA", x.get("TABLE_SCHEMA"))
-                                .set("TABLE_NAME", x.get("TABLE_NAME"))
-                                .set("COLUMN_NAME", x.get("COLUMN_NAME"))
-                                .set("COLUMN_DEFAULT", x.get("COLUMN_DEFAULT"))
-                                .set("IS_NULLABLE", x.get("IS_NULLABLE"))
-                                .set("COLUMN_TYPE", x.get("COLUMN_TYPE"))
-                                .set("COLUMN_COMMENT", x.get("COLUMN_COMMENT"))
-                        );
+                        kvs.add(Kv.of("TABLE_SCHEMA", x.get("TABLE_SCHEMA")).set("TABLE_NAME", x.get("TABLE_NAME")).set("COLUMN_NAME", x.get("COLUMN_NAME")).set("COLUMN_DEFAULT", x.get("COLUMN_DEFAULT")).set("IS_NULLABLE", x.get("IS_NULLABLE")).set("COLUMN_TYPE", x.get("COLUMN_TYPE")).set("COLUMN_COMMENT", x.get("COLUMN_COMMENT")));
 
                     }
 
@@ -1656,9 +1617,7 @@ public class RunTest<T> {
         StringBuffer buff2 = new StringBuffer();
         for (String s : database) {
 
-            String sql = "SELECT table_schema,TABLE_NAME" +
-                    " FROM information_schema.`TABLES` WHERE TABLE_SCHEMA = '" + s +
-                    "' ";
+            String sql = "SELECT table_schema,TABLE_NAME" + " FROM information_schema.`TABLES` WHERE TABLE_SCHEMA = '" + s + "' ";
             List<Map> list1 = findList(sql);
             for (int i = 0; i < list1.size(); i++) {
                 Object table_schema = list1.get(i).get("TABLE_SCHEMA");
@@ -2729,14 +2688,10 @@ public class RunTest<T> {
     @Test
     public void gameplatfinfo() {
         //填写了批准文号或出版物号任一一个的统计表
-        String sql1 = "SELECT gameid , gamename ,approvalno,publicationno FROM gameinfo  WHERE approvalno !='' OR publicationno !='' AND gameid IN (SELECT gameid FROM gameplatformdetail WHERE platid = 501 OR platid = 502 " +
-                " GROUP BY gameid" +
-                " );";
+        String sql1 = "SELECT gameid , gamename ,approvalno,publicationno FROM gameinfo  WHERE approvalno !='' OR publicationno !='' AND gameid IN (SELECT gameid FROM gameplatformdetail WHERE platid = 501 OR platid = 502 " + " GROUP BY gameid" + " );";
 
         //没有填写了批准文号或出版物号任一一个的统计表
-        String sql2 = "SELECT gameid , gamename ,approvalno,publicationno FROM gameinfo  WHERE approvalno ='' AND publicationno ='' AND gameid IN (SELECT gameid FROM gameplatformdetail WHERE platid = 501 OR platid = 502 " +
-                " GROUP BY gameid" +
-                " );";
+        String sql2 = "SELECT gameid , gamename ,approvalno,publicationno FROM gameinfo  WHERE approvalno ='' AND publicationno ='' AND gameid IN (SELECT gameid FROM gameplatformdetail WHERE platid = 501 OR platid = 502 " + " GROUP BY gameid" + " );";
 
         //选择了安卓载体的游戏id
         String sql3 = "SELECT gameid FROM gameplatformdetail WHERE platid = 502 ";
@@ -2996,15 +2951,18 @@ public class RunTest<T> {
 //        if (x.get("mobile").toString() == "") {
 //            return;
 //        }
-        String mobile = x.get("mobile").toString().trim();
+//        String mobile = x.get("mobile").toString().trim();
+        String mobile = "";
         StringBuffer buffer = new StringBuffer();
-        int userno = 11111;
+        long userno = 11111;
         buffer.append("{mobile:'" + mobile + "','userno :" + userno + ",vercode:123098}");
-        Kv kv = Kv.of("mobile", "15697177897").set("userno", userno).set("vercode", 204220);
+        Kv kv = Kv.of("mobile", mobile).set("vercode", 204220);
         String s = convert.convertTo(kv);
         //刷新白名单
-//        String login = "https://api.woaihaoyouxi.com/account/signup";
-        String login = "https://api.1216.top/account/signup";
+        String login = "https://api.woaihaoyouxi.com/account/signup";
+//        String login = "https://api.1216.top/account/signup";
+//        String login = "http://localhost:80/platf/account/signup";
+
         HashMap<String, Object> loginmap = new HashMap<>();
         loginmap.put("bean", s);
         HttpResponse<String> httpResponsexx = HttpUtils.send(login, loginmap, HttpUtils.HttpMethod.GET);
@@ -3170,10 +3128,7 @@ public class RunTest<T> {
 
         String buffer = "(11037 ,11041 ,11042 ,11047 ,11050 ,11051 ,11053 ,11173 ,11189 ,11192 ,11195 ,11196 ,11201 ,11202 ,11668 ,11873 ,12148 ,14794 ,15226 ,16047 ,16904 ,17070 ,18152 ,18252 ,18369 ,18710 ,19110 ,19282 ,19352 ,20327 ,20395 ,21935 ,22153 ,22465)";
 //        String buffer = "(11037, 11041, 11042, 11047, 11050, 11051, 11053, 11173, 11189, 11192, 11196, 11197, 11202, 11668, 11873, 12148, 14794, 15226, 16047, 16904, 17070, 18152, 18155, 18252, 18369, 18710, 19110, 19282, 19352, 20395, 11195)";
-        String sql1 = "SELECT u.userid,u.userno,u.username,u.explevel,u.mobile,u.age,u.birthday,u.gender,u.constellation,COUNT(ua.userid) count FROM v09x_platf_core.userdetail u " +
-                " LEFT JOIN platf_quest.useractiverecord ua ON u.userid = ua.userid " +
-                " WHERE ua.intday >= 20201101 AND ua.intday <= 20201130  AND u.userno IN (" + s + ")" +
-                " GROUP BY ua.userid ORDER BY ua.userid";
+        String sql1 = "SELECT u.userid,u.userno,u.username,u.explevel,u.mobile,u.age,u.birthday,u.gender,u.constellation,COUNT(ua.userid) count FROM v09x_platf_core.userdetail u " + " LEFT JOIN platf_quest.useractiverecord ua ON u.userid = ua.userid " + " WHERE ua.intday >= 20201101 AND ua.intday <= 20201130  AND u.userno IN (" + s + ")" + " GROUP BY ua.userid ORDER BY ua.userid";
         List<Map> list = findList(sql1);
 
         list.sort(Comparator.comparing(x -> usernos.indexOf(x.get("userno"))));
@@ -3181,41 +3136,20 @@ public class RunTest<T> {
         String useridss = Utils.arrToStr(userids);
         String s1 = useridss.substring(1, useridss.length() - 1);
         //微动态
-        String sql2 = "SELECT a.userid,count(userid) count FROM articleinfo a" +
-                " WHERE  a.articletype = 1 AND a.status IN (10,20,21) AND reprintid = '' AND createtime >= 1604160000000 AND createtime <= 1606751999999 AND " +
-                " a.userid IN (" + s1 + ")" +
-                "  GROUP BY a.userid ";
+        String sql2 = "SELECT a.userid,count(userid) count FROM articleinfo a" + " WHERE  a.articletype = 1 AND a.status IN (10,20,21) AND reprintid = '' AND createtime >= 1604160000000 AND createtime <= 1606751999999 AND " + " a.userid IN (" + s1 + ")" + "  GROUP BY a.userid ";
         //游戏说
-        String sql3 = "SELECT a.userid,count(userid) count FROM articleinfo a" +
-                " WHERE a.articletype = 2 AND a.status IN (10,20,21) AND createtime >= 1604160000000 AND createtime <= 1606751999999  AND " +
-                " a.userid IN  (" + s1 + ")" +
-                " GROUP BY a.userid ";
+        String sql3 = "SELECT a.userid,count(userid) count FROM articleinfo a" + " WHERE a.articletype = 2 AND a.status IN (10,20,21) AND createtime >= 1604160000000 AND createtime <= 1606751999999  AND " + " a.userid IN  (" + s1 + ")" + " GROUP BY a.userid ";
         //标记评论游戏数
-        String sql4 = "SELECT userid,count(userid) count FROM gamemark WHERE  createtime >= 1604160000000 AND createtime <= 1606751999999 " +
-                " AND userid IN  (" + s1 + ")" +
-                "  GROUP BY userid";
-        String sql4x = "SELECT userid,count(userid) count FROM gamecomment WHERE status = 10 AND createtime >= 1604160000000 AND createtime <= 1606751999999 " +
-                " AND userid IN  (" + s1 + ")" +
-                " GROUP BY userid";
+        String sql4 = "SELECT userid,count(userid) count FROM gamemark WHERE  createtime >= 1604160000000 AND createtime <= 1606751999999 " + " AND userid IN  (" + s1 + ")" + "  GROUP BY userid";
+        String sql4x = "SELECT userid,count(userid) count FROM gamecomment WHERE status = 10 AND createtime >= 1604160000000 AND createtime <= 1606751999999 " + " AND userid IN  (" + s1 + ")" + " GROUP BY userid";
         //点赞数
-        String sql5 = "SELECT userid,count(userid) count FROM articlesupport WHERE  createtime >= 1604160000000 AND createtime <= 1606751999999 " +
-                " AND userid IN  (" + s1 + ")" +
-                " GROUP BY userid";
-        String sql5x = "SELECT userid,count(userid) count FROM articlecommentsupport WHERE  createtime >= 1604160000000 AND createtime <= 1606751999999 " +
-                " AND userid IN   (" + s1 + ")" +
-                " GROUP BY userid";
-        String sql5y = "SELECT userid,count(userid) count FROM gamecommentsupport WHERE  createtime >= 1604160000000 AND createtime <= 1606751999999 " +
-                " AND userid IN  (" + s1 + ")" +
-                " GROUP BY userid";
+        String sql5 = "SELECT userid,count(userid) count FROM articlesupport WHERE  createtime >= 1604160000000 AND createtime <= 1606751999999 " + " AND userid IN  (" + s1 + ")" + " GROUP BY userid";
+        String sql5x = "SELECT userid,count(userid) count FROM articlecommentsupport WHERE  createtime >= 1604160000000 AND createtime <= 1606751999999 " + " AND userid IN   (" + s1 + ")" + " GROUP BY userid";
+        String sql5y = "SELECT userid,count(userid) count FROM gamecommentsupport WHERE  createtime >= 1604160000000 AND createtime <= 1606751999999 " + " AND userid IN  (" + s1 + ")" + " GROUP BY userid";
         //转发数
-        String sql6 = "SELECT a.userid,count(0) count FROM articleinfo a" +
-                " WHERE reprintid <> '' AND a.status <> 80 AND createtime >= 1604160000000 AND createtime <= 1606751999999 AND " +
-                " a.userid IN   (" + s1 + ")" +
-                " GROUP BY a.userid ";
+        String sql6 = "SELECT a.userid,count(0) count FROM articleinfo a" + " WHERE reprintid <> '' AND a.status <> 80 AND createtime >= 1604160000000 AND createtime <= 1606751999999 AND " + " a.userid IN   (" + s1 + ")" + " GROUP BY a.userid ";
         //充值或购买记录
-        String sql7 = "SELECT userid,count(userid) count FROM platf_pay.payrecord WHERE status = 10 AND createtime >= 1604160000000 AND createtime <= 1606751999999 " +
-                " AND userid IN  (" + s1 + ")" +
-                " GROUP BY userid";
+        String sql7 = "SELECT userid,count(userid) count FROM platf_pay.payrecord WHERE status = 10 AND createtime >= 1604160000000 AND createtime <= 1606751999999 " + " AND userid IN  (" + s1 + ")" + " GROUP BY userid";
 
 
         List<Map> dyns = findList(sql2);
@@ -3261,44 +3195,11 @@ public class RunTest<T> {
             }
 
 
-            kv1.set("userid", userid)
-                    .set("username", x.get("username"))
-                    .set("userno", x.get("userno"))
-                    .set("count", x.get("count"))
-                    .set("explevel", x.get("explevel"))
-                    .set("mobile", x.get("mobile"))
-                    .set("age", x.get("age"))
-                    .set("birthday", x.get("birthday"))
-                    .set("gender", g)
-                    .set("constellation", x.get("constellation"))
-                    .set("day", x.get("day"))
-                    .set("dyns", dynkv.getOrDefault(userid, 0l))
-                    .set("plays", playskv.getOrDefault(userid, 0l))
-                    .set("comments", commentskv.getOrDefault(userid, 0l) + gamecommentskv.getOrDefault(userid, 0l))
-                    .set("supports", supportskv.getOrDefault(userid, 0l) + commentsupportskv.getOrDefault(userid, 0l) + gamecommentsupportskv.getOrDefault(userid, 0l))
-                    .set("reprints", reprintskv.getOrDefault(userid, 0l))
-                    .set("pays", payskv.getOrDefault(userid, 0l))
-            ;
+            kv1.set("userid", userid).set("username", x.get("username")).set("userno", x.get("userno")).set("count", x.get("count")).set("explevel", x.get("explevel")).set("mobile", x.get("mobile")).set("age", x.get("age")).set("birthday", x.get("birthday")).set("gender", g).set("constellation", x.get("constellation")).set("day", x.get("day")).set("dyns", dynkv.getOrDefault(userid, 0l)).set("plays", playskv.getOrDefault(userid, 0l)).set("comments", commentskv.getOrDefault(userid, 0l) + gamecommentskv.getOrDefault(userid, 0l)).set("supports", supportskv.getOrDefault(userid, 0l) + commentsupportskv.getOrDefault(userid, 0l) + gamecommentsupportskv.getOrDefault(userid, 0l)).set("reprints", reprintskv.getOrDefault(userid, 0l)).set("pays", payskv.getOrDefault(userid, 0l));
             list1.add(kv1);
         });
         Kv kv = Kv.of();
-        kv.set("userid", "用户ID")
-                .set("userno", "彩虹号")
-                .set("username", "用户昵称")
-                .set("explevel", "用户等级")
-                .set("count", "活跃天数")
-                .set("supports", "点赞数")
-                .set("dyns", "发布微动态数")
-                .set("plays", "发布游戏说数")
-                .set("comments", "标记评论游戏数")
-                .set("reprints", "转发数")
-                .set("mobile", "手机号")
-                .set("age", "年龄")
-                .set("birthday", "生日")
-                .set("gender", "性别")
-                .set("constellation", "星座")
-                .set("pays", "充值或购买次数")
-        ;
+        kv.set("userid", "用户ID").set("userno", "彩虹号").set("username", "用户昵称").set("explevel", "用户等级").set("count", "活跃天数").set("supports", "点赞数").set("dyns", "发布微动态数").set("plays", "发布游戏说数").set("comments", "标记评论游戏数").set("reprints", "转发数").set("mobile", "手机号").set("age", "年龄").set("birthday", "生日").set("gender", "性别").set("constellation", "星座").set("pays", "充值或购买次数");
 
         try {
             Workbook workbook = ExcelKit.exportExcel(list1, kv);
@@ -3314,10 +3215,7 @@ public class RunTest<T> {
     public void active() {
 
 
-        String sql = "SELECT u.userno ,u.username,u.explevel ,c.activecount,c.communityid,cf.communityname FROM communitybook c" +
-                " LEFT JOIN userdetail u ON u.userid = c.userid" +
-                " LEFT JOIN communityinfo cf ON c.communityid = cf.communityid" +
-                " ORDER BY c.activecount DESC ";
+        String sql = "SELECT u.userno ,u.username,u.explevel ,c.activecount,c.communityid,cf.communityname FROM communitybook c" + " LEFT JOIN userdetail u ON u.userid = c.userid" + " LEFT JOIN communityinfo cf ON c.communityid = cf.communityid" + " ORDER BY c.activecount DESC ";
 
         List<Map> list = findList(sql);
         Map<String, List<Map>> map = list.stream().collect(Collectors.groupingBy(x -> x.get("communityname").toString()));
@@ -3327,10 +3225,7 @@ public class RunTest<T> {
             Kv sheet1 = Kv.of();
             List<Kv> kvs = new ArrayList<>();
             for (int i = 0; i < list1.size(); i++) {
-                kvs.add(Kv.of("userno", list1.get(i).get("userno"))
-                        .set("username", list1.get(i).get("username"))
-                        .set("explevel", list1.get(i).get("explevel"))
-                        .set("activecount", list1.get(i).get("activecount")));
+                kvs.add(Kv.of("userno", list1.get(i).get("userno")).set("username", list1.get(i).get("username")).set("explevel", list1.get(i).get("explevel")).set("activecount", list1.get(i).get("activecount")));
             }
 
             sheet1.set("data", kvs);
@@ -3372,9 +3267,7 @@ public class RunTest<T> {
                 int _month = startDay.getMonthValue();
                 int _day = startDay.getDayOfMonth();
 
-                days.add(String.format("%s-%s-%s", _year,
-                        _month < 10 ? "0" + _month : "" + _month,
-                        _day < 10 ? "0" + _day : "" + _day));
+                days.add(String.format("%s-%s-%s", _year, _month < 10 ? "0" + _month : "" + _month, _day < 10 ? "0" + _day : "" + _day));
                 startDay = startDay.plusDays(1);
                 if (startDay.isAfter(endDay)) {
                     break;
@@ -3431,15 +3324,9 @@ public class RunTest<T> {
             userwhere += " AND regtime < " + endtime;
         }
 
-        String usersql = "SELECT COUNT(n.userid) 'count',FROM_UNIXTIME(n.`regtime`/1000, '%Y-%m-%d') `day` FROM" +
-                " (SELECT u.`userid`,IF(u.`regtime`< " + starttime + ", " + starttime + ", u.`regtime`) 'regtime' FROM userdetail u " + userwhere + ") n" +
-                " GROUP BY `day` ORDER BY `day`";
-        String usersql1 = "SELECT COUNT(n.userid) 'count',FROM_UNIXTIME(n.`regtime`/1000, '%Y-%m-%d') `day` FROM" +
-                " (SELECT u.`userid`,IF(u.`regtime`< " + starttime + ", " + starttime + ", u.`regtime`) 'regtime' FROM userdetail u " + userwhere1 + ") n" +
-                " GROUP BY `day` ORDER BY `day`";
-        String usersql2 = "SELECT COUNT(n.userid) 'count',FROM_UNIXTIME(n.`regtime`/1000, '%Y-%m-%d') `day` FROM" +
-                " (SELECT u.`userid`,IF(u.`regtime`< " + starttime + ", " + starttime + ", u.`regtime`) 'regtime' FROM userdetail u " + userwhere2 + ") n" +
-                " GROUP BY `day` ORDER BY `day`";
+        String usersql = "SELECT COUNT(n.userid) 'count',FROM_UNIXTIME(n.`regtime`/1000, '%Y-%m-%d') `day` FROM" + " (SELECT u.`userid`,IF(u.`regtime`< " + starttime + ", " + starttime + ", u.`regtime`) 'regtime' FROM userdetail u " + userwhere + ") n" + " GROUP BY `day` ORDER BY `day`";
+        String usersql1 = "SELECT COUNT(n.userid) 'count',FROM_UNIXTIME(n.`regtime`/1000, '%Y-%m-%d') `day` FROM" + " (SELECT u.`userid`,IF(u.`regtime`< " + starttime + ", " + starttime + ", u.`regtime`) 'regtime' FROM userdetail u " + userwhere1 + ") n" + " GROUP BY `day` ORDER BY `day`";
+        String usersql2 = "SELECT COUNT(n.userid) 'count',FROM_UNIXTIME(n.`regtime`/1000, '%Y-%m-%d') `day` FROM" + " (SELECT u.`userid`,IF(u.`regtime`< " + starttime + ", " + starttime + ", u.`regtime`) 'regtime' FROM userdetail u " + userwhere2 + ") n" + " GROUP BY `day` ORDER BY `day`";
         List<Map> usercountList = findList(usersql);
         List<Map> usercountList1 = findList(usersql1);
         List<Map> usercountList2 = findList(usersql2);
@@ -3525,10 +3412,7 @@ public class RunTest<T> {
             l.add(of);
         });
         Kv kv2 = Kv.of();
-        kv2.set("day", "日期")
-                .set("value", "总发文率")
-                .set("iosvalue", "ios发文率")
-                .set("anvalue", "安卓发文率");
+        kv2.set("day", "日期").set("value", "总发文率").set("iosvalue", "ios发文率").set("anvalue", "安卓发文率");
 
 
         try {
@@ -3561,9 +3445,7 @@ public class RunTest<T> {
                 int _month = startDay.getMonthValue();
                 int _day = startDay.getDayOfMonth();
 
-                days.add(String.format("%s-%s-%s", _year,
-                        _month < 10 ? "0" + _month : "" + _month,
-                        _day < 10 ? "0" + _day : "" + _day));
+                days.add(String.format("%s-%s-%s", _year, _month < 10 ? "0" + _month : "" + _month, _day < 10 ? "0" + _day : "" + _day));
                 startDay = startDay.plusDays(1);
                 if (startDay.isAfter(endDay)) {
                     break;
@@ -3600,9 +3482,7 @@ public class RunTest<T> {
             userwhere += " AND regtime < " + endtime;
         }
 
-        String usersql = "SELECT COUNT(n.userid) 'count',FROM_UNIXTIME(n.`regtime`/1000, '%Y-%m-%d') `day` FROM" +
-                " (SELECT u.`userid`,IF(u.`regtime`< " + starttime + ", " + starttime + ", u.`regtime`) 'regtime' FROM userdetail u " + userwhere + ") n" +
-                " GROUP BY `day` ORDER BY `day`";
+        String usersql = "SELECT COUNT(n.userid) 'count',FROM_UNIXTIME(n.`regtime`/1000, '%Y-%m-%d') `day` FROM" + " (SELECT u.`userid`,IF(u.`regtime`< " + starttime + ", " + starttime + ", u.`regtime`) 'regtime' FROM userdetail u " + userwhere + ") n" + " GROUP BY `day` ORDER BY `day`";
         List<Map> usercountList = findList(usersql);
         Kv kv = Kv.of();
         long hiscount = 0;
@@ -3631,8 +3511,7 @@ public class RunTest<T> {
             list1.add(of);
         });
         Kv kv2 = Kv.of();
-        kv2.set("day", "日期")
-                .set("value", "值");
+        kv2.set("day", "日期").set("value", "值");
         try {
             Workbook workbook = ExcelKit.exportExcel(list1, kv2);
             workbook.write(new FileOutputStream(new File("target/分享率.xls"))); // 将工作簿对象写到磁盘文件
@@ -3655,37 +3534,22 @@ public class RunTest<T> {
 
     @Test
     public void platfUserActive() {
-        String sql1 = "SELECT u.userid,u.userno,u.username,u.mobile,u.age,u.birthday,u.gender,u.constellation,MAX(ua.intday) day FROM v09x_platf_core.userdetail u " +
-                " LEFT JOIN platf_quest.useractiverecord ua ON u.userid = ua.userid " +
-                " WHERE ua.intday > 20200831 AND u.usertype = 2" +
-                " GROUP BY ua.userid ORDER BY ua.userid";
+        String sql1 = "SELECT u.userid,u.userno,u.username,u.mobile,u.age,u.birthday,u.gender,u.constellation,MAX(ua.intday) day FROM v09x_platf_core.userdetail u " + " LEFT JOIN platf_quest.useractiverecord ua ON u.userid = ua.userid " + " WHERE ua.intday > 20200831 AND u.usertype = 2" + " GROUP BY ua.userid ORDER BY ua.userid";
         //微动态
-        String sql2 = "SELECT a.userid,count(0) count FROM articleinfo a" +
-                " WHERE  a.articletype = 1 AND reprintid = '' AND a.status <> 80 AND createtime >= 1598889600000 AND " +
-                " a.userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY a.userid ";
+        String sql2 = "SELECT a.userid,count(0) count FROM articleinfo a" + " WHERE  a.articletype = 1 AND reprintid = '' AND a.status <> 80 AND createtime >= 1598889600000 AND " + " a.userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY a.userid ";
         //游戏说
-        String sql3 = "SELECT a.userid,count(0) count FROM articleinfo a" +
-                " WHERE a.articletype = 2 AND a.status <> 80 AND createtime >= 1598889600000  AND " +
-                " a.userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY a.userid ";
+        String sql3 = "SELECT a.userid,count(0) count FROM articleinfo a" + " WHERE a.articletype = 2 AND a.status <> 80 AND createtime >= 1598889600000  AND " + " a.userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY a.userid ";
         //评论数
-        String sql4 = "SELECT userid,count(userid) count FROM articlecomment WHERE status = 10 AND createtime >= 1598889600000 " +
-                " AND userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY userid";
-        String sql4x = "SELECT userid,count(userid) count FROM gamecomment WHERE status = 10 AND createtime >= 1598889600000 " +
-                " AND userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY userid";
+        String sql4 = "SELECT userid,count(userid) count FROM articlecomment WHERE status = 10 AND createtime >= 1598889600000 " + " AND userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY userid";
+        String sql4x = "SELECT userid,count(userid) count FROM gamecomment WHERE status = 10 AND createtime >= 1598889600000 " + " AND userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY userid";
         //点赞数
-        String sql5 = "SELECT userid,count(userid) count FROM articlesupport WHERE status = 10 AND createtime >= 1598889600000 " +
-                " AND userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY userid";
-        String sql5x = "SELECT userid,count(userid) count FROM articlecommentsupport WHERE status = 10 AND createtime >= 1598889600000 " +
-                " AND userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY userid";
-        String sql5y = "SELECT userid,count(userid) count FROM gamecommentsupport WHERE  createtime >= 1598889600000 " +
-                " AND userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY userid";
+        String sql5 = "SELECT userid,count(userid) count FROM articlesupport WHERE status = 10 AND createtime >= 1598889600000 " + " AND userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY userid";
+        String sql5x = "SELECT userid,count(userid) count FROM articlecommentsupport WHERE status = 10 AND createtime >= 1598889600000 " + " AND userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY userid";
+        String sql5y = "SELECT userid,count(userid) count FROM gamecommentsupport WHERE  createtime >= 1598889600000 " + " AND userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY userid";
         //转发数
-        String sql6 = "SELECT a.userid,count(0) count FROM articleinfo a" +
-                " WHERE reprintid <> '' AND a.status <> 80 AND createtime >= 1598889600000 AND " +
-                " a.userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY a.userid ";
+        String sql6 = "SELECT a.userid,count(0) count FROM articleinfo a" + " WHERE reprintid <> '' AND a.status <> 80 AND createtime >= 1598889600000 AND " + " a.userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY a.userid ";
         //充值或购买记录
-        String sql7 = "SELECT userid,count(userid) count FROM platf_pay.payrecord WHERE status = 10 AND createtime >= 1598889600000 " +
-                " AND userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY userid";
+        String sql7 = "SELECT userid,count(userid) count FROM platf_pay.payrecord WHERE status = 10 AND createtime >= 1598889600000 " + " AND userid IN (SELECT userid FROM platf_quest.useractiverecord WHERE intday > 20200831 GROUP BY userid) GROUP BY userid";
 
         List<Map> list = findList(sql1);
         List<Map> dyns = findList(sql2);
@@ -3731,41 +3595,12 @@ public class RunTest<T> {
             }
 
 
-            kv1.set("userid", userid)
-                    .set("username", x.get("username"))
-                    .set("userno", x.get("userno"))
-                    .set("mobile", x.get("mobile"))
-                    .set("age", x.get("age"))
-                    .set("birthday", x.get("birthday"))
-                    .set("gender", g)
-                    .set("constellation", x.get("constellation"))
-                    .set("day", x.get("day"))
-                    .set("dyns", dynkv.getOrDefault(userid, 0l))
-                    .set("plays", payskv.getOrDefault(userid, 0l))
-                    .set("comments", commentskv.getOrDefault(userid, 0l) + gamecommentskv.getOrDefault(userid, 0l))
-                    .set("supports", supportskv.getOrDefault(userid, 0l) + commentsupportskv.getOrDefault(userid, 0l) + gamecommentsupportskv.getOrDefault(userid, 0l))
-                    .set("reprints", reprintskv.getOrDefault(userid, 0l))
-                    .set("pays", payskv.getOrDefault(userid, 0l))
-            ;
+            kv1.set("userid", userid).set("username", x.get("username")).set("userno", x.get("userno")).set("mobile", x.get("mobile")).set("age", x.get("age")).set("birthday", x.get("birthday")).set("gender", g).set("constellation", x.get("constellation")).set("day", x.get("day")).set("dyns", dynkv.getOrDefault(userid, 0l)).set("plays", payskv.getOrDefault(userid, 0l)).set("comments", commentskv.getOrDefault(userid, 0l) + gamecommentskv.getOrDefault(userid, 0l)).set("supports", supportskv.getOrDefault(userid, 0l) + commentsupportskv.getOrDefault(userid, 0l) + gamecommentsupportskv.getOrDefault(userid, 0l)).set("reprints", reprintskv.getOrDefault(userid, 0l)).set("pays", payskv.getOrDefault(userid, 0l));
             list1.add(kv1);
         });
 
         Kv kv = Kv.of();
-        kv.set("userid", "用户ID")
-                .set("username", "用户昵称")
-                .set("userno", "彩虹号")
-                .set("mobile", "手机号")
-                .set("age", "年龄")
-                .set("birthday", "生日")
-                .set("gender", "性别")
-                .set("constellation", "星座")
-                .set("day", "最后活跃日期")
-                .set("dyns", "发布微动态数")
-                .set("plays", "发布游戏说数")
-                .set("comments", "评论数")
-                .set("supports", "点赞数")
-                .set("reprints", "转发数")
-                .set("pays", "充值或购买次数");
+        kv.set("userid", "用户ID").set("username", "用户昵称").set("userno", "彩虹号").set("mobile", "手机号").set("age", "年龄").set("birthday", "生日").set("gender", "性别").set("constellation", "星座").set("day", "最后活跃日期").set("dyns", "发布微动态数").set("plays", "发布游戏说数").set("comments", "评论数").set("supports", "点赞数").set("reprints", "转发数").set("pays", "充值或购买次数");
 
         try {
             Workbook workbook = ExcelKit.exportExcel(list1, kv);
@@ -3961,8 +3796,7 @@ public class RunTest<T> {
 
                 buff.append(hotvalue + " WHERE recordid = " + "'" + t + "-" + id + "';\n");
             } else {
-                buff1.append("INSERT INTO `v09x_platf_core`.`hotsearchrecord`(`recordid`, `type`, `targetid`, `tagname`, `hotvalue`, `updatetime`, `status`)" +
-                        " VALUES ( ");
+                buff1.append("INSERT INTO `v09x_platf_core`.`hotsearchrecord`(`recordid`, `type`, `targetid`, `tagname`, `hotvalue`, `updatetime`, `status`)" + " VALUES ( ");
                 buff1.append("'" + t + "-" + id + "'," + t + ",'" + id + "'," + "''," + hotvalue + "," + createtime + ",10 );\n");
             }
         });
@@ -3994,9 +3828,7 @@ public class RunTest<T> {
                 int _month = startDay.getMonthValue();
                 int _day = startDay.getDayOfMonth();
 
-                days.add(String.format("%s-%s-%s", _year,
-                        _month < 10 ? "0" + _month : "" + _month,
-                        _day < 10 ? "0" + _day : "" + _day));
+                days.add(String.format("%s-%s-%s", _year, _month < 10 ? "0" + _month : "" + _month, _day < 10 ? "0" + _day : "" + _day));
                 startDay = startDay.plusDays(1);
                 if (startDay.isAfter(endDay)) {
                     break;
@@ -4038,10 +3870,7 @@ public class RunTest<T> {
             l.add(of);
         });
         Kv kv2 = Kv.of();
-        kv2.set("day", "日期")
-                .set("value", "总数")
-                .set("iosvalue", "ios")
-                .set("anvalue", "安卓");
+        kv2.set("day", "日期").set("value", "总数").set("iosvalue", "ios").set("anvalue", "安卓");
 
 
         try {
@@ -4140,12 +3969,9 @@ public class RunTest<T> {
     @Test
     public void dataStat() {
         Workbook workbook = new SXSSFWorkbook();
-        for (String catalog : asList("v09x_platf_core", "platf_stat", "platf_sdk", "platf_quest", "platf_pay", "platf_oth", "platf_oss", "platf_oauth", "platf_mall", "platf_live", "platf_im",
-                "official_ipci", "official_core")) {
+        for (String catalog : asList("v09x_platf_core", "platf_stat", "platf_sdk", "platf_quest", "platf_pay", "platf_oth", "platf_oss", "platf_oauth", "platf_mall", "platf_live", "platf_im", "official_ipci", "official_core")) {
 
-            String sql = String.format("SELECT TABLE_NAME 'name',TABLE_COMMENT 'comment',table_schema 'catalog' " +
-                    "        FROM INFORMATION_SCHEMA.TABLES " +
-                    "        WHERE TABLE_SCHEMA = '%s'", catalog);
+            String sql = String.format("SELECT TABLE_NAME 'name',TABLE_COMMENT 'comment',table_schema 'catalog' " + "        FROM INFORMATION_SCHEMA.TABLES " + "        WHERE TABLE_SCHEMA = '%s'", catalog);
 
             List<Map> list = findList(sql);
             list.forEach(m -> {
@@ -4224,16 +4050,14 @@ public class RunTest<T> {
                 String communityid = cmap.get(x.get("c1").toString()).get("communityid").toString();
                 String gameid = cmap.get(x.get("c1").toString()).get("gameid").toString();
                 long time = System.currentTimeMillis();
-                String bookid = String.format("%s-%s-%s", Utils.fmt36(Long.parseLong(communityid)),
-                        Utils.fmt36(userid), Utils.fmt36(time));
+                String bookid = String.format("%s-%s-%s", Utils.fmt36(Long.parseLong(communityid)), Utils.fmt36(userid), Utils.fmt36(time));
                 buff.append(String.format("('%s',%s,'%s','%s',%s,%s,%s,%s,'%s','%s',%s),\n", bookid, userid, communityid, gameid, 1, 0, time, 0, "", "", 10));
             }
             if (!Utils.isEmpty(x.get("c2"))) {
                 String communityid = cmap.get(x.get("c2").toString()).get("communityid").toString();
                 String gameid = cmap.get(x.get("c2").toString()).get("gameid").toString();
                 long time = System.currentTimeMillis();
-                String bookid = String.format("%s-%s-%s", Utils.fmt36(Long.parseLong(communityid)),
-                        Utils.fmt36(userid), Utils.fmt36(time));
+                String bookid = String.format("%s-%s-%s", Utils.fmt36(Long.parseLong(communityid)), Utils.fmt36(userid), Utils.fmt36(time));
                 buff.append(String.format("('%s',%s,'%s','%s',%s,%s,%s,%s,'%s','%s',%s),\n", bookid, userid, communityid, gameid, 1, 0, time, 0, "", "", 10));
 
             }
@@ -4241,8 +4065,7 @@ public class RunTest<T> {
                 String communityid = cmap.get(x.get("c3").toString()).get("communityid").toString();
                 String gameid = cmap.get(x.get("c3").toString()).get("gameid").toString();
                 long time = System.currentTimeMillis();
-                String bookid = String.format("%s-%s-%s", Utils.fmt36(Long.parseLong(communityid)),
-                        Utils.fmt36(userid), Utils.fmt36(time));
+                String bookid = String.format("%s-%s-%s", Utils.fmt36(Long.parseLong(communityid)), Utils.fmt36(userid), Utils.fmt36(time));
                 buff.append(String.format("('%s',%s,'%s','%s',%s,%s,%s,%s,'%s','%s',%s),\n", bookid, userid, communityid, gameid, 1, 0, time, 0, "", "", 10));
             }
         });
@@ -4266,9 +4089,7 @@ public class RunTest<T> {
             l.add(of);
         });
         Kv kv2 = Kv.of();
-        kv2.set("userno", "彩虹号")
-                .set("username", "昵称")
-                .set("gender", "性别");
+        kv2.set("userno", "彩虹号").set("username", "昵称").set("gender", "性别");
 
 
         try {
@@ -4633,8 +4454,7 @@ public class RunTest<T> {
     public void gamearSave() {
 //        List<Map> list = findList("SELECT articleid,articletype,title,userid,createtime FROM articleinfo where status = 10 and memberid = 0 and original =1 and articletype =2 and createtime>=1619798400000 order by createtime desc  ");
 //        List<Map> list = findList("SELECT articleid,articletype,title,userid,createtime FROM articleinfo where status = 10 and memberid = 0  and articletype =3 and createtime>=1619798400000 order by createtime desc  ");
-        List<Map> list = findList("SELECT articleid,articletype,title,userid,createtime FROM articleinfo where status = 10 and memberid = 0  and articletype =3 and createtime>=1619798400000 AND articleid NOT IN\n" +
-                "(SELECT recordid FROM articlegrade WHERE type =3 )  ");
+        List<Map> list = findList("SELECT articleid,articletype,title,userid,createtime FROM articleinfo where status = 10 and memberid = 0  and articletype =3 and createtime>=1619798400000 AND articleid NOT IN\n" + "(SELECT recordid FROM articlegrade WHERE type =3 )  ");
 
         StringBuffer buff = new StringBuffer();
         StringBuffer buff2 = new StringBuffer();
@@ -4729,8 +4549,7 @@ public class RunTest<T> {
     @Test
     public void test1() throws UnsupportedEncodingException {
         // 平台数据库表 catalog
-        List<String> catalogs = asList("v09x_platf_core", "platf_stat", "platf_sdk", "platf_quest", "platf_pay", "platf_oth",
-                "platf_oss", "platf_oauth", "platf_mall", "platf_live", "platf_im", "official_ipci", "official_core", "platf_component");
+        List<String> catalogs = asList("v09x_platf_core", "platf_stat", "platf_sdk", "platf_quest", "platf_pay", "platf_oth", "platf_oss", "platf_oauth", "platf_mall", "platf_live", "platf_im", "official_ipci", "official_core", "platf_component");
 
         Kv<String, Integer> yesterdayStat = Kv.of(); // 上一天各个数据库表数据量
         findList("SELECT * FROM `platf_oth`.`datastat` WHERE _intday=" + Utility.yesterdayYYMMDD()).forEach(x -> {
@@ -4739,23 +4558,14 @@ public class RunTest<T> {
 
         StringBuffer buf = new StringBuffer("INSERT `platf_oth`.`datastat` (`recordid`, `_catalog`, `_name`, `_comment`,`_count`, `_inccount`, `_intday`) VALUES ");
         for (String catalog : catalogs) {
-            String sql = String.format("SELECT TABLE_NAME 'name',TABLE_COMMENT 'comment',table_schema 'catalog'" +
-                    "        FROM INFORMATION_SCHEMA.TABLES" +
-                    "        WHERE TABLE_SCHEMA = '%s'", catalog);
+            String sql = String.format("SELECT TABLE_NAME 'name',TABLE_COMMENT 'comment',table_schema 'catalog'" + "        FROM INFORMATION_SCHEMA.TABLES" + "        WHERE TABLE_SCHEMA = '%s'", catalog);
 
             List<Map> list = findList(sql);
             list.forEach(m -> {
                 String tablename = (String) m.get("name");
                 m.put("count", Integer.parseInt(findList(String.format("select count(1) count from %s.%s", catalog, tablename)).get(0).get("count").toString()));
 
-                String rowsql = String.format("\n('%s', '%s', '%s', '%s', %s, %s, %s),",
-                        Utility.todayYYMMDD() + "-" + catalog + "-" + tablename,
-                        catalog,
-                        tablename,
-                        m.get("comment"),
-                        Integer.parseInt(m.get("count").toString()),
-                        Integer.parseInt(m.get("count").toString()) - yesterdayStat.get(catalog + "-" + tablename),
-                        Utility.todayYYMMDD());
+                String rowsql = String.format("\n('%s', '%s', '%s', '%s', %s, %s, %s),", Utility.todayYYMMDD() + "-" + catalog + "-" + tablename, catalog, tablename, m.get("comment"), Integer.parseInt(m.get("count").toString()), Integer.parseInt(m.get("count").toString()) - yesterdayStat.get(catalog + "-" + tablename), Utility.todayYYMMDD());
 
                 buf.append(rowsql);
             });
@@ -5047,11 +4857,172 @@ public class RunTest<T> {
 
     @Test
     public void testtttttttttttt() throws ParseException {
-        String s = "购买 Mount & Blade II: Bannerlord".replaceAll("[\\pP\\p{Punct}]", "");
+//        String s = ",50001 ,50002 ,50003 ,50004 ,50005 ,50006 ,50007 ,50008 ,50009 ,50010 ,50011 ,50012 ,50013 ,50014 ,50015 ,50016 ,50017 ,50018 ,50019 ,50020 ,50021 ,50022 ,50023 ,50024 ,50025 ,50026 ,50027 ,50028 ,50029 ,50030 ,50031 ,50032 ,50033 ,50034 ,50035 ,50036 ,50037 ,50038 ,50039 ,50040 ,50041 ,50042 ,50043 ,50044 ,50045 ,50046 ,50047 ,50048 ,50049 ,50050 ,";
 
-        System.out.println(Utility.monday(System.currentTimeMillis()));
+//        System.out.println(Utility.monday(System.currentTimeMillis()));
+
+//        for (int i = 0; i < 13; i++) {
+//            System.out.println(getUserNo(230506, 231505));
+//        }
+
+        System.out.println(Utility.midnight());
+        System.out.println((4 * 7 * 24 * 3600000l));
+        System.out.println(Utility.midnight() - (4 * 7 * 24 * 3600000l));
+
     }
 
+    @Comment("生成彩虹号")
+    private long getUserNo(long startuserno, long enduserno) {
+        long nextno = 0;
+        a:
+        while (true) {
+            nextno = startuserno + (long) (Math.random() * (enduserno - startuserno));
+            // 彩虹号是否重复
+            List<Map> list = findList("select userid from userdetail where userno = " + nextno);
+            if (list.size() > 0) {
+                continue;
+            }
+
+            break;
+        }
+        return nextno;
+    }
+
+    @Test
+    public void testttttttt() throws ParseException {
+//        String s = "一款值得你亲自体验的国产AVG";
+//        System.out.println(s.replaceAll("(?i)(zhan|国产av)", "<span style='background-color:red;'>$1</span>"));
+
+//        String regex = "[\u0001,\u0002]";
+//        bean.setTitle(bean.getTitle().replaceAll(regex, ""));
+
+//        System.out.println("国产买断制网游《帝国神话》上线，疑似端游版骑马与砍杀".length());
+
+        System.out.println(md5("zhty445566"));
+//        System.out.println(5 + (int) (Math.random() * 45));
+//        System.out.println((int) (Math.random() * 50));
+
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+//
+//        System.out.println(formatter.format(time2LocalDateTime(1638720000000l)));
+    }
+
+    @Comment("时间戳转LocalDateTime")
+    public static LocalDateTime time2LocalDateTime(long time) {
+        Date date = new Date(time);
+        Instant instant = date.toInstant();
+        ZoneId zoneId = ZoneId.systemDefault();
+        return instant.atZone(zoneId).toLocalDateTime();
+    }
+
+    @Test
+    public void tesxxxxxxadf() throws ParseException {
+        String s = "[{'num':1,'content':'摩洛哥'},{'num':2,'content':'上海'},{'num':3,'content':'夏蒙尼'}]";
+
+        Type kvType = new TypeToken<List<Kv<String, String>>>() {
+        }.getType();
+        Kv kv = Kv.of("qusetionid", 1);
+        kv.set("rightnum", 1).set("status", 20);
+
+        List<Kv<Integer, String>> list = convert.convertFrom(kvType, s);
+        kv.set("options", list);
+
+
+        System.out.println(Utility.today());
+
+    }
+
+
+    public static String md5(String plainText) {
+        byte[] secretBytes = null;
+        try {
+            secretBytes = MessageDigest.getInstance("md5").digest(plainText.getBytes());
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("MD5加密失败！", e);
+        }
+        String md5code = new BigInteger(1, secretBytes).toString(16);
+        for (int i = 0; i < 32 - md5code.length(); i++) {
+            md5code = "0" + md5code;
+        }
+        return md5code;
+    }
+
+
+    @Test
+    public void tesadfadsfadf() {
+        HashMap<String, Object> weekTimestamp = getWeekTimestamp();
+        weekTimestamp.keySet().forEach(x -> {
+//            weekTimestamp.get(x);
+            System.out.println(x + "-" + weekTimestamp.get(x));
+        });
+
+    }
+
+    public static HashMap<String, Object> getWeekTimestamp() {
+
+        HashMap<String, Object> hashMap = new HashMap<String, Object>();
+
+        Calendar calendar = Calendar.getInstance();
+
+        hashMap.put("startTime", getTimestampByOffsetDay(0 - calendar.get(Calendar.DAY_OF_WEEK) + 2));
+        hashMap.put("endTime", getTimestampByOffsetDay(calendar.getMaximum(Calendar.DAY_OF_WEEK) - calendar.get(Calendar.DAY_OF_WEEK) + 1));
+
+        return hashMap;
+    }
+
+    public static long getTimestampByOffsetDay(int day) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, day);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        return calendar.getTimeInMillis();
+    }
+
+
+    //冰雪题库导入
+    @Test
+    public void snowInsert() {
+        StringBuffer buff = new StringBuffer();
+        String[] FIELDS = {"questionid", "title", "rightnum", "num1", "num2", "num3"};
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\题目.xlsx"), FIELDS);
+        list.remove(0);
+        buff.append("INSERT INTO `snow_core`.`questionbank` (`questionid`,title,`options`,rightnum) VALUES  \n");
+        for (Map x : list) {
+            int questionid = Integer.parseInt(x.get("questionid").toString().trim());
+            String title = x.get("title").toString().trim();
+            String rightnum = x.get("rightnum").toString().trim();
+            String num1 = x.get("num1").toString().trim();
+            String num2 = x.get("num2").toString().trim();
+            String num3 = x.get("num3").toString().trim();
+            ArrayList<Object> list1 = new ArrayList<>();
+            Kv kv1 = Kv.of();
+            kv1.set("num", "A");
+            kv1.set("content", num1.substring(2));
+            list1.add(kv1);
+            Kv kv2 = Kv.of();
+            kv2.set("num", "B");
+            kv2.set("content", num2.substring(2));
+            list1.add(kv2);
+            Kv kv3 = Kv.of();
+            kv3.set("num", "C");
+            kv3.set("content", num3.substring(2));
+            list1.add(kv3);
+
+            String options = JsonConvert.root().convertTo(list1);
+
+            buff.append(String.format("(%s,'%s','%s','%s'),\n", questionid, title, options, rightnum));
+        }
+
+        buff.delete(buff.length() - 2, buff.length() + 1);
+        buff.append(";");
+        // 入库
+        FileKit.strToFile(buff.toString(), new File("tmp/20211229题库1.sql"));
+
+    }
 }
 
 

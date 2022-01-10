@@ -4,7 +4,7 @@ import com.jfinal.kit.TplKit;
 import net.tccn.base.Kv;
 
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.redkale.convert.json.JsonConvert;
 import org.redkale.service.RetResult;
 import org.redkale.source.Flipper;
