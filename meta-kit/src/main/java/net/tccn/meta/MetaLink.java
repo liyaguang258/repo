@@ -15,5 +15,30 @@ public class MetaLink extends Doc<MetaLink> {
     public static MetaLink dao = Doc.dao(MetaLink.class);
 
     private String[] tables;
+
+    public static MetaLink getDao() {
+        return dao;
+    }
+
+    public static void setDao(MetaLink dao) {
+        MetaLink.dao = dao;
+    }
+
+    public String[] getTables() {
+        return tables;
+    }
+
+    public void setTables(String[] tables) {
+        this.tables = tables;
+    }
+
+    public Map<String, String> getLink() {
+        return link;
+    }
+
+    public void setLink(Map<String, String> link) {
+        this.link = link;
+    }
+
     private Map<String, String> link;
 }

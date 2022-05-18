@@ -28,6 +28,70 @@ public class MetaTable extends Doc<MetaTable> implements Serializable {
     private String dbPlatId; //所属数据平台
     private String catalog; //所在database
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public List<Field> getItems() {
+        return items;
+    }
+
+    public void setItems(List<Field> items) {
+        this.items = items;
+    }
+
+    public String getSysPlatId() {
+        return sysPlatId;
+    }
+
+    public void setSysPlatId(String sysPlatId) {
+        this.sysPlatId = sysPlatId;
+    }
+
+    public String getDbPlatId() {
+        return dbPlatId;
+    }
+
+    public void setDbPlatId(String dbPlatId) {
+        this.dbPlatId = dbPlatId;
+    }
+
+    public String getCatalog() {
+        return catalog;
+    }
+
+    public void setCatalog(String catalog) {
+        this.catalog = catalog;
+    }
+
+    public Integer getHv() {
+        return hv;
+    }
+
+    public void setHv(Integer hv) {
+        this.hv = hv;
+    }
+
     private Integer hv;//临时
     // ------------------------------------------------
     public static MetaTable toAs(net.tccn.base.dbq.table.Table table) {

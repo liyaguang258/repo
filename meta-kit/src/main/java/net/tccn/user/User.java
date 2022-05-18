@@ -1,6 +1,7 @@
 package net.tccn.user;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import net.tccn.base.JBean;
 import net.tccn.base.arango.Doc;
 import org.redkale.util.Utility;
@@ -10,7 +11,8 @@ import javax.persistence.Table;
 /**
  * @author: liangxianyou at 2018/11/22 17:37.
  */
-@Data
+@Setter
+@Getter
 @Table(name = "sys_user", catalog = "db_dev")
 public class User extends Doc<User> {
     public static User dao = dao(User.class);

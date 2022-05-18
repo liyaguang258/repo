@@ -31,4 +31,91 @@ public class MetaService extends Doc<MetaService> {
 
     //------
 
+    public static MetaService getDao() {
+        return dao;
+    }
+
+    public static void setDao(MetaService dao) {
+        MetaService.dao = dao;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getTable() {
+        return table;
+    }
+
+    public void setTable(String table) {
+        this.table = table;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getSysPlatId() {
+        return sysPlatId;
+    }
+
+    public void setSysPlatId(String sysPlatId) {
+        this.sysPlatId = sysPlatId;
+    }
+
+    public List<Map<String, String>> getShows() {
+        return shows;
+    }
+
+    public void setShows(List<Map<String, String>> shows) {
+        this.shows = shows;
+    }
+
+    public List<FromItem> getEdits() {
+        return edits;
+    }
+
+    public void setEdits(List<FromItem> edits) {
+        this.edits = edits;
+    }
+
+    public List<Map<String, String>> getDetails() {
+        return details;
+    }
+
+    public void setDetails(List<Map<String, String>> details) {
+        this.details = details;
+    }
+
+    public Map<String, String> getDels() {
+        return dels;
+    }
+
+    public void setDels(Map<String, String> dels) {
+        this.dels = dels;
+    }
+
+    public List<Filter> getFilters() {
+        return filters;
+    }
+
+    public void setFilters(List<Filter> filters) {
+        this.filters = filters;
+    }
+
+    public List<Map<String, String>> getExports() {
+        return exports;
+    }
+
+    public void setExports(List<Map<String, String>> exports) {
+        this.exports = exports;
+    }
 }

@@ -1,3 +1,4 @@
+import com.sun.jdi.PathSearchingVirtualMachine;
 import lombok.Getter;
 import lombok.Setter;
 import net.sf.json.JSONObject;
@@ -15,12 +16,12 @@ import net.tccn.qtask.TaskKit;
 import net.tccn.user.User;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.junit.Test;
 import org.redkale.convert.json.JsonConvert;
 import org.redkale.source.CacheMemorySource;
 import org.redkale.util.Comment;
 import org.redkale.util.TypeToken;
 import org.redkale.util.Utility;
-import org.testng.annotations.Test;
 
 import java.io.*;
 import java.lang.reflect.Array;
@@ -2938,14 +2939,14 @@ public class RunTest<T> {
             List<Map> tempList2 = findList(sql1);
             System.out.println(tempList2.size());
             if (tempList2 == null || tempList2.size() == 0) {
-                accountlogin(x);
+//                accountlogin(x);
             }
 
         });
 
     }
 
-    @Test
+//    @Test
     public void accountlogin(Map x) {
         //ip 需要加入白名单。不然有限制
 //        if (x.get("mobile").toString() == "") {
@@ -3749,7 +3750,8 @@ public class RunTest<T> {
 
         });
 
-        Workbook wb = ExcelKit.exportExcels(l);
+        List<Map<String, Object>> maps = l.subList(0, 5);
+        Workbook wb = ExcelKit.exportExcels(maps);
         try {
             wb.write(new FileOutputStream(new File("target/编辑绑定账户信息.xls"))); // 将工作簿对象写到磁盘文件
         } catch (IOException e) {
@@ -4815,7 +4817,7 @@ public class RunTest<T> {
             List<Map> tempList2 = findList(sql1);
             System.out.println(tempList2.size());
             if (tempList2 == null || tempList2.size() == 0) {
-                accountlogin(x);
+//                accountlogin(x);
             }
 
         });
@@ -5021,6 +5023,52 @@ public class RunTest<T> {
         // 入库
         FileKit.strToFile(buff.toString(), new File("tmp/20211229题库1.sql"));
 
+    }
+
+
+    @Test
+    public void queryUsernames() {
+        String sqlcount = "SELECT count(0) count FROM userdetail WHERE userid > 10000 AND status = 10 AND username NOT LIKE 'Apple用户%' " +
+                "  AND userid NOT IN (SELECT userid FROM `userdetail` WHERE  username  LIKE '好游戏%' AND LENGTH(username) <= 15 ) ";
+        List<Map> count = findList(sqlcount);
+        long total = Long.parseLong(count.get(0).get("count").toString());
+
+        List<Map<String, Object>> l = new ArrayList<>();
+        int a = 0;
+        for (int i = 0, limit = 1500; i < total; i += limit) {
+            int _limit = (total - i) > limit ? limit : (int) (total - i);
+            String sql1 =  "SELECT userid,username FROM userdetail WHERE userid > 10000 AND status = 10 AND username NOT LIKE 'Apple用户%' " +
+                    "AND userid NOT IN (SELECT userid FROM `userdetail` WHERE  username  LIKE '好游戏%' AND LENGTH(username) <= 15 ) limit " + i + "," + _limit;
+//            String sql1 = "SELECT userid,username FROM `userdetail` WHERE userid > 10000 AND username  AND status = 10 limit " + i + "," + _limit;
+            List<Map> list1 = findList(sql1);
+
+            a++;
+            Kv sheet1 = Kv.of();
+            sheet1.set("data", list1);
+            sheet1.set("sheetName", "sheet" + a);
+            sheet1.set("hdNames", new String[]{"用户ID", "用户昵称"});
+            sheet1.set("hds", new String[]{"userid", "username"});
+
+            l.add(sheet1);
+        }
+
+        Workbook wb = ExcelKit.exportExcels(l);
+        try {
+            wb.write(new FileOutputStream(new File("target/用户昵称信息.xls"))); // 将工作簿对象写到磁盘文件
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void ttest(){
+        List<String> list = new ArrayList<>();
+        test1234(list);
+        System.out.println(list.size());
+    }
+
+    public static void test1234(List list) {
+        list = null;
     }
 }
 

@@ -16,6 +16,70 @@ public class Field {
     private Boolean pk; // 是否主键
     private Boolean notNull; // 是否主键
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getInType() {
+        return inType;
+    }
+
+    public void setInType(String inType) {
+        this.inType = inType;
+    }
+
+    public String getInExt() {
+        return inExt;
+    }
+
+    public void setInExt(String inExt) {
+        this.inExt = inExt;
+    }
+
+    public Boolean getPk() {
+        return pk;
+    }
+
+    public void setPk(Boolean pk) {
+        this.pk = pk;
+    }
+
+    public Boolean getNotNull() {
+        return notNull;
+    }
+
+    public void setNotNull(Boolean notNull) {
+        this.notNull = notNull;
+    }
+
     public Field() {}
 
     //------------------------------------
