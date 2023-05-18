@@ -1,4 +1,3 @@
-import com.sun.jdi.PathSearchingVirtualMachine;
 import lombok.Getter;
 import lombok.Setter;
 import net.sf.json.JSONObject;
@@ -16,13 +15,19 @@ import net.tccn.qtask.TaskKit;
 import net.tccn.user.User;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.junit.Test;
+import org.redkale.boot.Application;
 import org.redkale.convert.json.JsonConvert;
 import org.redkale.source.CacheMemorySource;
 import org.redkale.util.Comment;
 import org.redkale.util.TypeToken;
 import org.redkale.util.Utility;
 
+import javax.annotation.Resource;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
@@ -2946,7 +2951,7 @@ public class RunTest<T> {
 
     }
 
-//    @Test
+    //    @Test
     public void accountlogin(Map x) {
         //ip 需要加入白名单。不然有限制
 //        if (x.get("mobile").toString() == "") {
@@ -4899,7 +4904,8 @@ public class RunTest<T> {
 
 //        System.out.println("国产买断制网游《帝国神话》上线，疑似端游版骑马与砍杀".length());
 
-        System.out.println(md5("zhty445566"));
+        System.out.println(Utils.fmt36(1661238645656l));
+        System.out.println(md5("1661238645656"));
 //        System.out.println(5 + (int) (Math.random() * 45));
 //        System.out.println((int) (Math.random() * 50));
 
@@ -4989,7 +4995,7 @@ public class RunTest<T> {
     public void snowInsert() {
         StringBuffer buff = new StringBuffer();
         String[] FIELDS = {"questionid", "title", "rightnum", "num1", "num2", "num3"};
-        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\题目.xlsx"), FIELDS);
+        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\双碳题库.xlsx"), FIELDS);
         list.remove(0);
         buff.append("INSERT INTO `snow_core`.`questionbank` (`questionid`,title,`options`,rightnum) VALUES  \n");
         for (Map x : list) {
@@ -5021,7 +5027,7 @@ public class RunTest<T> {
         buff.delete(buff.length() - 2, buff.length() + 1);
         buff.append(";");
         // 入库
-        FileKit.strToFile(buff.toString(), new File("tmp/20211229题库1.sql"));
+        FileKit.strToFile(buff.toString(), new File("tmp/20220727题库1.sql"));
 
     }
 
@@ -5037,8 +5043,7 @@ public class RunTest<T> {
         int a = 0;
         for (int i = 0, limit = 1500; i < total; i += limit) {
             int _limit = (total - i) > limit ? limit : (int) (total - i);
-            String sql1 =  "SELECT userid,username FROM userdetail WHERE userid > 10000 AND status = 10 AND username NOT LIKE 'Apple用户%' " +
-                    "AND userid NOT IN (SELECT userid FROM `userdetail` WHERE  username  LIKE '好游戏%' AND LENGTH(username) <= 15 ) limit " + i + "," + _limit;
+            String sql1 = "SELECT userid,username FROM userdetail WHERE userid > 10000 AND status = 10 AND username NOT LIKE 'Apple用户%' " + "AND userid NOT IN (SELECT userid FROM `userdetail` WHERE  username  LIKE '好游戏%' AND LENGTH(username) <= 15 ) limit " + i + "," + _limit;
 //            String sql1 = "SELECT userid,username FROM `userdetail` WHERE userid > 10000 AND username  AND status = 10 limit " + i + "," + _limit;
             List<Map> list1 = findList(sql1);
 
@@ -5061,15 +5066,289 @@ public class RunTest<T> {
     }
 
     @Test
-    public void ttest(){
-        List<String> list = new ArrayList<>();
-        test1234(list);
-        System.out.println(list.size());
+    public void ttest() {
+        String name = "42062119900428421X";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < name.length(); i++) {
+            if (i < 3) {
+                sb.append(name.charAt(i));
+                continue;
+            }
+            if (i > (name.length() - 4 - 1)) {
+                sb.append(name.charAt(i));
+                continue;
+            }
+            sb.append("*");
+        }
+        System.out.println(sb.toString());
     }
 
     public static void test1234(List list) {
         list = null;
     }
+
+
+    @Resource(name = "APP_HOME")
+    protected File APP_HOME;
+
+    //行政区划数据导入
+    @Test
+    public void regionInsertMysql() throws IOException {
+        List<DistrictBean111> list = FileKit.readAs(new File(APP_HOME, "conf/busin/region.json"), new TypeToken<List<DistrictBean111>>() {
+        }.getType());
+        StringBuffer buff = new StringBuffer();
+        buff.append("INSERT INTO `aid_core`.`district` (id,pid,code,name) VALUES  \n");
+        int id = 1;
+        String ppp = "000000000000";
+        for (DistrictBean111 x : list) {
+            String i = x.getI();//pid  和  code需要补足12位
+            String n = x.getN();//名称
+            int length = i.length();
+            String code = i + ppp.substring(0, (12 - length));
+            buff.append(String.format("(%s,'%s','%s','%s'),\n", id, i, code, n));
+            id++;
+        }
+
+        // 入库
+        FileKit.strToFile(buff.toString(), new File("tmp/20220922行政区划五级.sql"));
+    }
+
+    @Test
+    public void regionInsertOrecle() throws IOException {
+        List<DistrictBean111> list = FileKit.readAs(new File(APP_HOME, "conf/busin/region.json"), new TypeToken<List<DistrictBean111>>() {
+        }.getType());
+        StringBuffer buff = new StringBuffer();
+        String ppp = "000000000000";
+        for (DistrictBean111 x : list) {
+            String i = x.getI();//  code需要补足12位
+            if (!i.startsWith("50")) {
+                continue;
+            }
+
+            String P = x.getP();//pid  需要补足12位
+            String n = x.getN();//名称
+            int length = i.length();
+            String code = i + ppp.substring(0, (12 - length));
+            String Pcode = P + ppp.substring(0, (12 - P.length()));
+            String level = "0";
+            if (i.length() == 2) {
+                level = "1";
+            } else if (i.length() == 4) {
+                level = "2";
+            } else if (i.length() == 6) {
+                level = "3";
+            } else if (i.length() == 9) {
+                level = "4";
+            }
+
+            buff.append("INSERT INTO TAI.TAI_SYS_REGION (ID, PARENTID, CODE, NAME, STATUS, SORT, LOGIC_FLAG, AREA_LEVEL,  " + "NOPID, ISAD, ISPLAN, TYPE) VALUES ");
+            buff.append(String.format("('%s','%s','%s','%s',%s,%s,'%s','%s','%s','%s','%s','%s');\n", code, Pcode, code, n, 1, 1, "1", level, Pcode, "0", "0", "1"));
+        }
+
+        // 入库
+        FileKit.strToFile(buff.toString(), new File("tmp/20220518行政区划.sql"));
+    }
+
+    @Test
+    public void createAppinfo() {
+        System.out.println(System.currentTimeMillis());
+        System.out.println(Utils.fmt36(System.currentTimeMillis()));
+        System.out.println(Utility.uuid());
+
+    }
+
+    @Test
+    public void asda() {
+        System.out.println("430104002000".substring(0, 6));
+    }
+
+    @Test
+    public void convert2Md5() {
+        List<String> list = List.of("M%THV%34jE7t", "dLkvKEzBJDX#", "sVCeYtqcCCU7", "V58fWuNkD6#H", "wxEJ$4ymEC7v", "97BqVLewkxYh", "2CRnrTjFbRTm", "BbhnLn4Fjcfj", "eeDmsLZQzFM5", "@6cp!qZ5gqya", "L$MWTjPjkpY9", "3Gtpd#r5pgWs");
+        list.forEach(x -> {
+            System.out.println(x + "--" + Utility.md5Hex(x));
+        });
+
+    }
+
+    @Test
+    public void test0203() {
+
+
+    }
+
+    public static void main(String[] args) {
+        List<String> list = new ArrayList<String>();
+        list = null;
+        System.out.println(list);
+        test020301(list);
+        System.out.println(list.size());
+        test020302(list);
+        System.out.println(list.size());
+        test020303(list);
+        System.out.println(list.size());
+    }
+
+    public static void test020301(List list) {
+        list = null;
+    }
+
+    public static void test020302(List list) {
+        list.add("test");
+        System.out.println(list);
+    }
+
+    public static void test020303(List list) {
+        list.add(new StringBuilder("test"));
+        System.out.println(list);
+    }
+
+    private static Application instance;
+    private long firstUseTime = 0l;
+
+    private void Application() {
+        this.firstUseTime = System.currentTimeMillis();
+    }
+
+    @Test
+    public void getArea() {
+        String url = "http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2022/";
+        getProvices(url);
+//        getCitys("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2022/43.html","430000");
+//        getCountys("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2022/43.html","430000");
+
+    }
+
+    private static Document connect(String url) {
+        try {
+            return Jsoup.connect(url).timeout(200 * 2000).get();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private List<Kv> getProvices(String url) {
+
+
+        Document connect = connect(url + "index.html");
+        Elements elements = connect.select("tr.provincetr");
+
+
+        for (Element element : elements) {
+            Elements select = element.select("a");
+
+            for (Element province : select) {
+
+                String codeurl = province.select("a").attr("href");
+                String bid = codeurl.replace(".html", "");
+                if (!"11".equals(bid)&&!"12".equals(bid)){
+                    continue;
+                }
+
+                StringBuilder builder = new StringBuilder();
+                String sql = "INSERT INTO `district` (`id`,`bid`,`code`,`name`,`open`,`status`,`level`) VALUES  ";
+                builder.append(sql);
+
+                List<Kv> list = new ArrayList<>();
+
+                String name = province.text();
+                Kv kv = Kv.of("code", bid + "0000000000").set("bid", bid).set("name", name).set("level", 1);
+                list.add(kv);
+                System.out.println("开始获取" + name + "市区相关信息");
+                String proviceurl = url + codeurl;
+
+                try {
+                    Thread.currentThread().sleep(5000);
+                    List<Kv> citys = getCitys(proviceurl, bid);
+                    list.addAll(citys);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                list.forEach(y -> {
+                    String rowsql = String.format("\n(%s,'%s', '%s', '%s', %s, %s, %s),",Integer.parseInt(y.get("bid").toString()), y.get("bid"), y.get("code"), y.get("name"), 1, 10, Integer.parseInt(y.get("level").toString()));
+                    builder.append(rowsql);
+                });
+                builder.deleteCharAt(builder.length() - 1);
+                FileKit.strToFile(builder.toString(), new File("tmp/" + name + "行政区划数据.sql"));
+            }
+        }
+
+        return null;
+    }
+
+    private List<Kv> getCitys(String url, String bidsiff) {
+        List<Kv> list = new ArrayList<>();
+        Document connect = connect(url);
+        Elements elements = connect.select("tr.citytr");
+        for (Element cityelement : elements) {
+            String codeurl = cityelement.select("a").attr("href");
+            String name = cityelement.select("td").text();
+            String[] split = name.split(" ");
+            String bid = split[0].substring(0, 4);
+//            Kv kv = Kv.of("addrcode", addrcode + "00000000").set("name", split[1]).set("type", 2).set("parentcode", fathercode);
+            Kv kv = Kv.of("code", bid + "00000000").set("bid", bid).set("name", split[1]).set("level", 2);
+            list.add(kv);
+
+            try {
+                Thread.currentThread().sleep(5000);
+                System.out.println("开始获取" + name + "下属区县相关信息");
+                String cityurl = "http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2022/" + codeurl;
+                List<Kv> countys = getCountys(cityurl, bidsiff);
+                list.addAll(countys);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+//        System.out.println(convert.convertTo(list));
+        return list;
+    }
+
+    private List<Kv> getCountys(String url, String bidsiff) {
+        List<Kv> list = new ArrayList<>();
+        Document connect = connect(url);
+        Elements elements = connect.select("tr.countytr");
+        for (Element cityelement : elements) {
+            String codeurl = cityelement.select("a").attr("href");
+            String name = cityelement.select("td").select("td").text();
+            String[] split = name.split(" ");
+
+            if (!"市辖区".equals(split[1])) {
+                String bid = split[0].substring(0, 6);
+                Kv kv = Kv.of("code", bid + "000000").set("bid", bid).set("name", split[1]).set("level", 3);
+//                Kv kv = Kv.of("addrcode", addrcode + "000000").set("name", split[1]).set("type", 3);
+                list.add(kv);
+                try {
+                    Thread.currentThread().sleep(5000);
+                    System.out.println("开始获取" + name + "下属街道相关信息");
+                    String countyurl = "http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2022/" + bidsiff+"/" + codeurl;
+                    List<Kv> streets = getStreets(countyurl, bidsiff);
+                    list.addAll(streets);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return list;
+    }
+
+    private List<Kv> getStreets(String url, String bidsiff) {
+        List<Kv> list = new ArrayList<>();
+        Document connect = connect(url);
+        Elements elements = connect.select("tr.towntr");
+        for (Element cityelement : elements) {
+            String codeurl = cityelement.select("a").attr("href");
+            String name = cityelement.select("td").select("td").select("td").text();
+            String[] split = name.split(" ");
+            String bid = split[0].substring(0, 9);
+            Kv kv = Kv.of("code", bid + "000").set("bid", bid).set("name", split[1]).set("level", 4);
+//            Kv kv = Kv.of("addrcode", addrcode + "00").set("name", split[1]).set("type", "02");
+            list.add(kv);
+        }
+        return list;
+    }
+
 }
 
 

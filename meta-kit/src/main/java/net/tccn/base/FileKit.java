@@ -2,8 +2,10 @@ package net.tccn.base;
 
 import com.jfinal.kit.Kv;
 import com.jfinal.template.Engine;
+import org.redkale.convert.json.JsonConvert;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.file.Files;
@@ -158,5 +160,13 @@ public final class FileKit {
     public static void tplRender(File tplFile, File file, Map para) throws IOException {
         String str = Engine.use().getTemplate(tplFile.getPath()).renderToString(para);
         strToFile(str, file);
+    }
+
+    public static <T> T readAs(File file, Type typeToken) throws IOException {
+        try (
+                FileInputStream inputStream = new FileInputStream(file)
+        ) {
+            return JsonConvert.root().convertFrom(typeToken, inputStream);
+        }
     }
 }
