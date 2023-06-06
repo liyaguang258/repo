@@ -164,6 +164,33 @@ public class ZoneCodeTest<T> {
             Kv kv = Kv.of("code", bid + "000").set("bid", bid).set("name", split[1]).set("level", 4);
 //            Kv kv = Kv.of("addrcode", addrcode + "00").set("name", split[1]).set("type", "02");
             list.add(kv);
+            try {
+                Thread.currentThread().sleep(5000);
+                System.out.println("开始获取" + name + "下属社区/村委会相关信息");
+                System.out.println("codeurl" + codeurl );
+                if (Utils.isEmpty(codeurl)){
+                    continue;
+                }
+                String countyurl = "http://www.stats.gov.cn/sj/tjbz/tjyqhdmhcxhfdm/2022/" + bidsiff + "/" + codeurl;
+                List<Kv> streets = getVillage(countyurl, bidsiff);
+                list.addAll(streets);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return list;
+    }
+
+    private List<Kv> getVillage(String url, String bidsiff) {
+        List<Kv> list = new ArrayList<>();
+        Document connect = connect(url);
+        Elements elements = connect.select("tr.villagetr");
+        for (Element cityelement : elements) {
+            String name = cityelement.select("td").select("td").select("td").text();
+            String[] split = name.split(" ");
+            String bid = split[0];
+            Kv kv = Kv.of("code", bid).set("bid", bid).set("name", split[2]).set("level", 5);
+            list.add(kv);
         }
         return list;
     }
