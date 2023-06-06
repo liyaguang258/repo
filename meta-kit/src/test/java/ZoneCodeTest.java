@@ -47,9 +47,18 @@ public class ZoneCodeTest<T> {
                 String bid = codeurl.replace(".html", "");
 
                 //每天只同步两个，不然会出问题
-                if (!"21".equals(bid)&&!"22".equals(bid)) {
+                if (!"45".equals(bid)) {
                     continue;
                 }
+//                if (!"13".equals(bid)) {
+//                    continue;
+//                }
+//                if (!"62".equals(bid)) {
+//                    continue;
+//                }
+//                if (!"36".equals(bid)) {
+//                    continue;
+//                }
 
                 StringBuilder builder = new StringBuilder();
                 String sql = "INSERT INTO `district` (`id`,`bid`,`code`,`name`,`open`,`status`,`level`) VALUES  ";
@@ -128,6 +137,10 @@ public class ZoneCodeTest<T> {
                 try {
                     Thread.currentThread().sleep(5000);
                     System.out.println("开始获取" + name + "下属街道相关信息");
+                    System.out.println("codeurl" + codeurl );
+                    if (Utils.isEmpty(codeurl)){
+                        continue;
+                    }
                     String countyurl = "http://www.stats.gov.cn/sj/tjbz/tjyqhdmhcxhfdm/2022/" + bidsiff + "/" + codeurl;
                     List<Kv> streets = getStreets(countyurl, bidsiff);
                     list.addAll(streets);
