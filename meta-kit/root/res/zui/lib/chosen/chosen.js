@@ -133,7 +133,7 @@ MIT License, https://github.com/harvesthq/chosen/blob/master/LICENSE.md
             if((text == null) || text === false) {
                 return "";
             }
-            if(!/[\&\<\>\"\'\`]/.test(text)) {
+            if(!/[\&\<\>\"\'\"]/.test(text)) {
                 return text;
             }
             map = {
@@ -141,9 +141,9 @@ MIT License, https://github.com/harvesthq/chosen/blob/master/LICENSE.md
                 ">": "&gt;",
                 '"': "&quot;",
                 "'": "&#x27;",
-                "`": "&#x60;"
+                """: "&#x60;"
             };
-            unsafe_chars = /&(?!\w+;)|[\<\>\"\'\`]/g;
+            unsafe_chars = /&(?!\w+;)|[\<\>\"\'\"]/g;
             return text.replace(unsafe_chars, function(chr) {
                 return map[chr] || "&amp;";
             });

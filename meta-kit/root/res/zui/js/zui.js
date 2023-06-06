@@ -4234,7 +4234,7 @@
         if(this.options.tipId) $tip.attr('id', this.options.tipId)
         if(this.options.tipClass) $tip.addClass(this.options.tipClass)
 
-        // IE8 doesn't accept hiding via the `:empty` pseudo selector, we have to do
+        // IE8 doesn't accept hiding via the ":empty" pseudo selector, we have to do
         // this manually by checking the contents.
         if(!$tip.find('.popover-title').html()) $tip.find('.popover-title').hide()
     }

@@ -164,7 +164,7 @@
 				})
 			},
 			tableItem(table) {
-				return `${table.name} [${table.comment}] (${table.linkCount})`
+				return "${table.name} [${table.comment}] (${table.linkCount})"
 			},
 			buildTable(linkInfo) {
 				let html = ''
@@ -172,21 +172,21 @@
 				for (let i = 0; i < linkInfo.length; i++) {
 					let link = linkInfo[i].link
 
-					html += `<tr>`
-					html += `<td rowspan='${linkInfo[i].linkSize}'>${linkInfo[i].name} [${linkInfo[i].comment}]</td>`
+					html += "<tr>"
+					html += "<td rowspan='${linkInfo[i].linkSize}'>${linkInfo[i].name} [${linkInfo[i].comment}]</td>"
 					for (let k in link) {
-						html +=  `<td>${k}</td><td>${link[k]}</td>`
+						html +=  "<td>${k}</td><td>${link[k]}</td>"
 						break
 					}
 
-					html += `<td rowspan='${linkInfo[i].linkSize}'><a href="javascript:vm.edit('${linkInfo[i]['alias']}');">修改</a></td>`
+					html += "<td rowspan='${linkInfo[i].linkSize}'><a href="javascript:vm.edit('${linkInfo[i]['alias']}');">修改</a></td>"
 					html += '</tr>'
 
 					let t = 0
 					for (let k in link) {
 						if (++t == 1) continue
 						html += '<tr>'
-						html +=  `<td>${k}</td><td>${link[k]}</td>`
+						html +=  "<td>${k}</td><td>${link[k]}</td>"
 						html += '</tr>'
 					}
 				}
@@ -210,7 +210,7 @@
 
 			/*
 
-			var m = {"a.field": "lxyer", "a.`age`": 11}
+			var m = {"a.field": "lxyer", "a."age"": 11}
 			console.log(m["a.field"])
 			console.log("---------")
 			for (var k in m) {

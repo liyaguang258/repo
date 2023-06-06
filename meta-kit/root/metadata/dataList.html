@@ -27,7 +27,7 @@
         <div style="padding-left: 10px;background-color: #ccc;width: 100%"> 业务列表(Meta-Service)</div>
         <ul class="nav nav-tabs nav-stacked tlist" style="height: 100%">
             <li :class="['clearfix',{'active':service==item.alias}]" v-for="item in services" >
-                <a @click="service=item.name" :title="`${item.name}`" v-text="`${item.name} [${item.comment}]`" href="javascript:;"></a>
+                <a @click="service=item.name" :title=""${item.name}"" v-text=""${item.name} [${item.comment}]"" href="javascript:;"></a>
             </li>
         </ul>
     </div>
@@ -192,8 +192,8 @@
                             <div v-show="item.inType != 'HIDDEN'" class="form-group">
                                 <label class="col-sm-5" v-text="item.label"></label>
                                 <div class="col-sm-7">
-                                    <input v-if="!item.inType || item.inType == 'INPUT' || item.inType == '' || !item.inType" v-model="detailData[item.col]" class="form-control" :placeholder="`请输入 ${item.label}`">
-                                    <input v-if="item.inType == 'INPUT_DT'" v-model="detailData[item.col]" class="form-control" :placeholder="`请输入 ${item.label}`">
+                                    <input v-if="!item.inType || item.inType == 'INPUT' || item.inType == '' || !item.inType" v-model="detailData[item.col]" class="form-control" :placeholder=""请输入 ${item.label}"">
+                                    <input v-if="item.inType == 'INPUT_DT'" v-model="detailData[item.col]" class="form-control" :placeholder=""请输入 ${item.label}"">
                                     <select v-if="item.inType == 'DICT'" v-model="detailData[item.col]" class="form-control">
                                         <option value="1">选项一</option>
                                         <option value="2">选项二</option>
@@ -225,10 +225,10 @@
         '        return x + " - by fun:abx";\n' +
         '    }')
     function abc (bean, v) {
-        return `<a class="btn btn-primary" href="javascript:console.log('${v} 我是一个自定义<btn>事件');">${v} (自定义按钮)</a>`
+        return "<a class="btn btn-primary" href="javascript:console.log('${v} 我是一个自定义<btn>事件');">${v} (自定义按钮)</a>"
     }
     function funDept (bean, v) {
-        return `<a href="javascript:console.log('${v} 我是一个自定义<a>标准事件');">${v} (点我)</a>`
+        return "<a href="javascript:console.log('${v} 我是一个自定义<a>标准事件');">${v} (点我)</a>"
     }
     function sexFun(bean, v) {
         return {1:"男",2:"女"}[v] || "未知性别"
@@ -348,12 +348,12 @@
                     }
 
                     if (cate == "Dict") {
-                        //console.log(`Dict:${fmt}-${bean[colFmt["col"]]}`)
+                        //console.log("Dict:${fmt}-${bean[colFmt["col"]]}")
                     }
                     else {
-                        //console.log(`func:${fmt}-${bean[colFmt["col"]]}`)
+                        //console.log("func:${fmt}-${bean[colFmt["col"]]}")
 
-                        let evl = `${fmt}(${JSON.stringify(bean)},'${bean[colFmt["col"]]}')`
+                        let evl = "${fmt}(${JSON.stringify(bean)},'${bean[colFmt["col"]]}')"
                         //console.log("evl", evl)
                         return (new Function("","return "+ evl))()
                     }
@@ -361,7 +361,7 @@
                     return bean[colFmt["col"]];
 
                 } else {
-                    //console.log(`k-v:${colFmt["col"]}-${bean[colFmt["col"]]}`)
+                    //console.log("k-v:${colFmt["col"]}-${bean[colFmt["col"]]}")
                     return bean[colFmt["col"]]
                 }*/
             },

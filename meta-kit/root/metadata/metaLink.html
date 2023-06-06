@@ -213,7 +213,7 @@
                 })
             },
             dealTableLabel(table) {
-                return `${table.name} [${table.comment}] (${table.linkCount})`
+                return "${table.name} [${table.comment}] (${table.linkCount})"
             },
             addLinkDia() {
                 this.newLinkTable = ""
@@ -292,7 +292,7 @@
         mounted: function () {
             this.loadLinkList()
 
-           /* var m = {"a.field": "lxyer", "a.`age`": 11}
+           /* var m = {"a.field": "lxyer", "a."age"": 11}
 
             console.log(m["a.field"])
 

@@ -35,13 +35,13 @@ var vendor = proto.matchesSelector
   || proto.oMatchesSelector;
 
 /**
- * Expose `match()`.
+ * Expose "match()".
  */
 
 module.exports = match;
 
 /**
- * Match `el` to `selector`.
+ * Match "el" to "selector".
  *
  * @param {Element} el
  * @param {String} selector
@@ -364,7 +364,7 @@ var _select = require('select');
 var _select2 = _interopRequireDefault(_select);
 
 /**
- * Inner class which performs selection from either `text` or `target`
+ * Inner class which performs selection from either "text" or "target"
  * properties and then executes copy or cut operations.
  */
 
@@ -399,7 +399,7 @@ var ClipboardAction = (function () {
 
     /**
      * Decides which selection strategy is going to be applied based
-     * on the existence of `text` and `target` properties.
+     * on the existence of "text" and "target" properties.
      */
 
     ClipboardAction.prototype.initSelection = function initSelection() {
@@ -415,7 +415,7 @@ var ClipboardAction = (function () {
     };
 
     /**
-     * Creates a fake textarea element, sets its value from `text` property,
+     * Creates a fake textarea element, sets its value from "text" property,
      * and makes a selection on it.
      */
 
@@ -443,7 +443,7 @@ var ClipboardAction = (function () {
 
     /**
      * Only removes the fake element after another click event, that way
-     * a user can hit `Ctrl+C` to copy because selection still exists.
+     * a user can hit "Ctrl+C" to copy because selection still exists.
      */
 
     ClipboardAction.prototype.removeFake = function removeFake() {
@@ -459,7 +459,7 @@ var ClipboardAction = (function () {
     };
 
     /**
-     * Selects the content from element passed on `target` property.
+     * Selects the content from element passed on "target" property.
      */
 
     ClipboardAction.prototype.selectTarget = function selectTarget() {
@@ -506,7 +506,7 @@ var ClipboardAction = (function () {
     };
 
     /**
-     * Removes current selection and focus from `target` element.
+     * Removes current selection and focus from "target" element.
      */
 
     ClipboardAction.prototype.clearSelection = function clearSelection() {
@@ -518,7 +518,7 @@ var ClipboardAction = (function () {
     };
 
     /**
-     * Sets the `action` to be performed which can be either 'copy' or 'cut'.
+     * Sets the "action" to be performed which can be either 'copy' or 'cut'.
      * @param {String} action
      */
 
@@ -543,7 +543,7 @@ var ClipboardAction = (function () {
         },
 
         /**
-         * Gets the `action` property.
+         * Gets the "action" property.
          * @return {String}
          */
         get: function get() {
@@ -551,7 +551,7 @@ var ClipboardAction = (function () {
         }
 
         /**
-         * Sets the `target` property using an element
+         * Sets the "target" property using an element
          * that will be have its content copied.
          * @param {Element} target
          */
@@ -568,7 +568,7 @@ var ClipboardAction = (function () {
         },
 
         /**
-         * Gets the `target` property.
+         * Gets the "target" property.
          * @return {String|HTMLElement}
          */
         get: function get() {
@@ -607,7 +607,7 @@ var _goodListener2 = _interopRequireDefault(_goodListener);
 
 /**
  * Base class which takes one or more elements, adds event listeners to them,
- * and instantiates a new `ClipboardAction` on each click.
+ * and instantiates a new "ClipboardAction" on each click.
  */
 
 var Clipboard = (function (_Emitter) {
@@ -661,7 +661,7 @@ var Clipboard = (function (_Emitter) {
     };
 
     /**
-     * Defines a new `ClipboardAction` on each click event.
+     * Defines a new "ClipboardAction" on each click event.
      * @param {Event} e
      */
 
@@ -682,7 +682,7 @@ var Clipboard = (function (_Emitter) {
     };
 
     /**
-     * Default `action` lookup function.
+     * Default "action" lookup function.
      * @param {Element} trigger
      */
 
@@ -691,7 +691,7 @@ var Clipboard = (function (_Emitter) {
     };
 
     /**
-     * Default `target` lookup function.
+     * Default "target" lookup function.
      * @param {Element} trigger
      */
 
@@ -704,7 +704,7 @@ var Clipboard = (function (_Emitter) {
     };
 
     /**
-     * Default `text` lookup function.
+     * Default "text" lookup function.
      * @param {Element} trigger
      */
 

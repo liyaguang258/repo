@@ -1368,7 +1368,7 @@
                 throw new Error("Invalid format type.");
             }
         },
-        nonpunctuation: /[^ -\/:-@\[-`{-~\t\n\rTZ]+/g,
+        nonpunctuation: /[^ -\/:-@\[-"{-~\t\n\rTZ]+/g,
         parseFormat: function(format, type) {
             // IE treats \0 as a string end in inputs (truncating the value),
             // so it's a bad format delimiter, anyway

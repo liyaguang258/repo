@@ -75,7 +75,7 @@
             <div class="input-group-btn dropdown dropdown-hover">
                 <button class="btn" type="button" data-toggle="dropdown"><span v-text="serviceLabel"></span> <span class="caret"></span></button>
                 <ul class="dropdown-menu">
-                    <li v-for="item in services" @click="service=item.name;serviceLabel=item.comment;"><a href="javascript:;" v-text="`${item.comment}`"></a></li>
+                    <li v-for="item in services" @click="service=item.name;serviceLabel=item.comment;"><a href="javascript:;" v-text=""${item.comment}""></a></li>
                 </ul>
             </div>
 
@@ -649,7 +649,7 @@
                 //console.log("dels", dels)
                 let cate = dels["cate"] || "UP_FIELD"
                 let sql1 = dels["sql1"] || "update #(table) set status=9 where id=#(id);"
-                let sql = dels["sql"] || `update ${v['tables'][this.serviceInfo.table]['name']} set status=9 where id=#(id);`
+                let sql = dels["sql"] || "update ${v['tables'][this.serviceInfo.table]['name']} set status=9 where id=#(id);"
                 let qtask = dels["qtask"] || ""
 
                 let serviceInfo = this.serviceInfo
@@ -908,12 +908,12 @@
                 return field["inExt"]
             },
             setMove: function () {
-                $(`#filter>table>tbody,
+                $("#filter>table>tbody,
                     #show>table>tbody,
                     #export>table>tbody,
                     #detail>table>tbody,
                     #edit>table>tbody,
-                    #show>table>tbody`).sortable({
+                    #show>table>tbody").sortable({
                     selector: 'tr',
                     trigger: '.icon',
                     finish: function (e) {
