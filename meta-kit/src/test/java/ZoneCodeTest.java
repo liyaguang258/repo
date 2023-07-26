@@ -47,7 +47,7 @@ public class ZoneCodeTest<T> {
                 String bid = codeurl.replace(".html", "");
 
                 //每天只同步两个，不然会出问题
-                if (!"45".equals(bid)) {
+                if (!"43".equals(bid)) {
                     continue;
                 }
 //                if (!"13".equals(bid)) {
@@ -137,12 +137,12 @@ public class ZoneCodeTest<T> {
                 try {
                     Thread.currentThread().sleep(5000);
                     System.out.println("开始获取" + name + "下属街道相关信息");
-                    System.out.println("codeurl" + codeurl );
+                    System.out.println("codeurl:" + codeurl);
                     if (Utils.isEmpty(codeurl)){
                         continue;
                     }
                     String countyurl = "http://www.stats.gov.cn/sj/tjbz/tjyqhdmhcxhfdm/2022/" + bidsiff + "/" + codeurl;
-                    List<Kv> streets = getStreets(countyurl, bidsiff);
+                    List<Kv> streets = getStreets(countyurl, bidsiff + "/" + codeurl.split("/")[0]);
                     list.addAll(streets);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
@@ -167,7 +167,7 @@ public class ZoneCodeTest<T> {
             try {
                 Thread.currentThread().sleep(5000);
                 System.out.println("开始获取" + name + "下属社区/村委会相关信息");
-                System.out.println("codeurl" + codeurl );
+                System.out.println("codeurl:" + codeurl);
                 if (Utils.isEmpty(codeurl)){
                     continue;
                 }
