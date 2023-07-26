@@ -15,10 +15,6 @@ import net.tccn.qtask.TaskKit;
 import net.tccn.user.User;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.junit.Test;
 import org.redkale.boot.Application;
 import org.redkale.convert.json.JsonConvert;
@@ -5208,6 +5204,68 @@ public class RunTest<T> {
 
     private void Application() {
         this.firstUseTime = System.currentTimeMillis();
+    }
+
+    @Test//行政区划数据
+    public void districtInsert() {
+        DbAccount dbAccount = new DbAccount();
+        dbAccount.setCate("mysql");
+        dbAccount.setUrl("jdbc:mysql://47.111.150.118:6063/aid_core");
+        dbAccount.setUser("root");
+        dbAccount.setPwd("*Zhong@0510!");
+
+        DbKit dbKit = new DbKit(dbAccount, "");
+        String sql1 = "SELECT * FROM `aid_core`.`cnarea_2020` where level = 4 and area_code like '43%' ORDER BY `id` DESC ;";
+        List<Map> list1 = dbKit.findList(sql1, Map.class);
+
+        StringBuffer buff = new StringBuffer();
+        buff.append("INSERT INTO `aid_core`.`district` (id,bid,code,name,open,status,level) VALUES  \n");
+        list1.forEach(x -> {
+            String id = x.get("area_code").toString();
+            String bid = x.get("area_code").toString();
+            String code = x.get("area_code").toString();
+            String name = x.get("name").toString();
+            buff.append(String.format("(%s,'%s','%s','%s',%s,%s,%s),\n", id, bid, code, name, 1, 10, 5));
+        });
+        buff.delete(buff.length() - 2, buff.length() + 1);
+        buff.append(";");
+        // 入库
+        FileKit.strToFile(buff.toString(), new File("tmp/20230726长沙五级.sql"));
+    }
+
+    @Test//行政区划数据
+    public void districtRead() {
+        String[] FIELDS = {"name", "code", "level"};
+        List<Map> list = ExcelKit.readExcel(new File("D:\\Desktop\\长沙救助系统区划代码.xlsx"), FIELDS);
+        list.remove(0);
+        StringBuffer buff = new StringBuffer();
+//        buff.append("INSERT INTO `aid_core`.`district` (id,bid,code,name,open,status,level) VALUES  \n");
+        buff.append("INSERT INTO \"public\".\"district\" (\"id\",\"bid\",\"code\",\"name\",\"open\",\"status\",\"level\") VALUES  \n");
+        list.forEach(x -> {
+            int level = Integer.parseInt(x.get("level").toString());
+            if (level == 1) {
+                return;
+            }
+            String id = "";
+            if (level == 2) {
+                id = x.get("code").toString().trim().substring(0, 2);
+            } else if (level == 3) {
+                id = x.get("code").toString().trim().substring(0, 4);
+            } else if (level == 4) {
+                id = x.get("code").toString().trim().substring(0, 6);
+            } else if (level == 5) {
+                id = x.get("code").toString().trim().substring(0, 9);
+            } else if (level == 6) {
+                id = x.get("code").toString();
+            }
+            String bid = id;
+            String code = x.get("code").toString();
+            String name = x.get("name").toString();
+            buff.append(String.format("(%s,'%s','%s','%s',%s,%s,%s),\n", id, bid, code, name, 1, 10, level - 1));
+        });
+        buff.delete(buff.length() - 2, buff.length() + 1);
+        buff.append(";");
+        FileKit.strToFile(buff.toString(), new File("tmp/20230726长沙五级02.sql"));
     }
 
 }
