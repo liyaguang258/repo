@@ -85,22 +85,22 @@ public final class DictKit {
         });
 
         Predicate<Map> isProvice = (s) -> String.valueOf(s.get("value")).trim().endsWith("0000");
-        Predicate<Map> isCity = (s) -> !isProvice.test(s); // && String.valueOf(s.get("value")).trim().endsWith("00");
+        Predicate<Map> isCity = (s) -> !isProvice.test.sql(s); // && String.valueOf(s.get("value")).trim().endsWith("00");
         BiPredicate<Map, Map> belongProvice = (p, x) -> String.valueOf(x.get("value")).trim().startsWith(String.valueOf(p.get("value")).trim().substring(0, 2));
 
 
         // 城市数据
         List<Map> cityAll = ExcelKit.readExcel(new File("tmp/city.xls"), new String[]{"value", "label1", "label2"});
-        List<Map> provice = cityAll.stream().filter(x -> isProvice.test(x)).map(x -> {
+        List<Map> provice = cityAll.stream().filter(x -> isProvice.test.sql(x)).map(x -> {
             x.put("label", String.valueOf(x.get("label1")).trim());
             x.put("value", String.valueOf(x.get("value")).trim());
             x.put("pValue", "0");
             return x;
         }).collect(Collectors.toList());
 
-        List<Map> city = cityAll.stream().filter(x -> isCity.test(x)).collect(Collectors.toList());
+        List<Map> city = cityAll.stream().filter(x -> isCity.test.sql(x)).collect(Collectors.toList());
         provice.forEach(p -> {
-            city.stream().filter(x -> belongProvice.test(p, x)).forEach(x -> {
+            city.stream().filter(x -> belongProvice.test.sql(p, x)).forEach(x -> {
                 x.put("label", String.valueOf(x.get("label2")).trim());
                 x.put("value", String.valueOf(x.get("value")).trim());
                 x.put("pValue", String.valueOf(p.get("value")).trim());

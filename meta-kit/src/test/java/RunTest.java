@@ -615,17 +615,17 @@ public class RunTest<T> {
 
         /*List<Dict> list = dictKit.getDicts("city");
 
-        list.stream().filter(x -> x.getValue().startsWith("52") && isCity.test(x)).sorted((a, b) -> a.getValue().compareTo(b.getValue())).forEach(x -> {
+        list.stream().filter(x -> x.getValue().startsWith("52") && isCity.test.sql(x)).sorted((a, b) -> a.getValue().compareTo(b.getValue())).forEach(x -> {
             System.out.println(x);
         });
 
 
         List<Map> data = new ArrayList<>();
-        list.stream().filter(x -> isProvice.test(x)).sorted((a, b) -> a.getValue().compareTo(b.getValue())).forEach(x -> {
+        list.stream().filter(x -> isProvice.test.sql(x)).sorted((a, b) -> a.getValue().compareTo(b.getValue())).forEach(x -> {
             Kv kv = Kv.of("value", x.get("value")).set("label", x.get("label"));
             List<Kv> childs = new ArrayList<>();
             list.stream().filter(y -> y.getValue().startsWith(x.getValue().substring(0,2))
-                    && isCity.test(y)
+                    && isCity.test.sql(y)
             ).forEach(y -> {
                 childs.add(Kv.of("label", y.get("label")).set("value", y.get("value")));
             });
@@ -2333,7 +2333,8 @@ public class RunTest<T> {
         String login = "https://api.woaihaoyouxi.com/account/login";
         HashMap<String, Object> loginmap = new HashMap<>();
         loginmap.put("bean", buffer1.toString());
-        HttpResponse<String> httpResponse1 = HttpUtils.send(login, loginmap, HttpUtils.HttpMethod.GET);
+//        HttpResponse<String> httpResponse1 = HttpUtils.send(login, loginmap, HttpUtils.HttpMethod.GET);
+        HttpResponse<String> httpResponse1 = null;
         JSONObject jsonResule = JSONObject.fromObject(httpResponse1.body());
         System.out.println(httpResponse1.body());
         System.out.println(httpResponse1.request().uri());
@@ -2434,7 +2435,8 @@ public class RunTest<T> {
             HashMap<String, String> headers = new HashMap<>();
             headers.put("jsessionid", jsessionid);
 
-            HttpResponse<String> httpResponse = HttpUtils.send(url, mapx, HttpUtils.HttpMethod.POST_X, headers);
+//            HttpResponse<String> httpResponse = HttpUtils.send(url, mapx, HttpUtils.HttpMethod.POST_X, headers);
+            HttpResponse<String> httpResponse = null;
             System.out.println("body:" + httpResponse.body());
             System.out.println("gameid:" + gameid + "--userid" + userid);
 
@@ -3016,7 +3018,8 @@ public class RunTest<T> {
 //        HashMap<String, String> headers = new HashMap<>();
 //        headers.put("jsessionid", jsessionid);
 
-        HttpResponse<String> httpResponse = HttpUtils.send(url, mapx, HttpUtils.HttpMethod.POST_X);
+//        HttpResponse<String> httpResponse = HttpUtils.send(url, mapx, HttpUtils.HttpMethod.POST_X);
+        HttpResponse<String> httpResponse = null;
         String body = httpResponse.body();
         if (body.contains("retinfo")) {
             System.out.println("body:" + httpResponse.body());
@@ -5169,8 +5172,10 @@ public class RunTest<T> {
 
     @Test
     public void test0203() {
-
-
+        String uuid = Utility.uuid();
+        System.out.println(uuid);
+        String s = md5("xxxxxxxxxxxxxx");
+        System.out.println(s);
     }
 
     public static void main(String[] args) {
@@ -5190,12 +5195,12 @@ public class RunTest<T> {
     }
 
     public static void test020302(List list) {
-        list.add("test");
+        list.add("test.sql");
         System.out.println(list);
     }
 
     public static void test020303(List list) {
-        list.add(new StringBuilder("test"));
+        list.add(new StringBuilder("test.sql"));
         System.out.println(list);
     }
 
@@ -5266,6 +5271,93 @@ public class RunTest<T> {
         buff.delete(buff.length() - 2, buff.length() + 1);
         buff.append(";");
         FileKit.strToFile(buff.toString(), new File("tmp/20230726长沙五级02.sql"));
+    }
+
+    //最低生活保障sql
+    @Test
+    public void buss1() {
+        StringBuffer buff = new StringBuffer();
+        String[] FIELDS = {"zonecode", "address", "headname", "headcard", "realname", "idcard", "membercount", "", "savemonth", "amount"};
+//        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\双碳题库.xlsx"), FIELDS);
+        List<Map> list = ExcelKit.readExcel(new File("D:\\DESKTOP\\内蒙古项目文件\\最低生活保障\\202301.xlsx"), FIELDS);
+        list.remove(0);
+        buff.append("INSERT INTO public.happinessrecord  (businesstype,businesstypestr,savemonth,zonecode,address,realname,idcard,headname,headcard,membercount,amount,createtime) VALUES  \n");
+        for (Map x : list) {
+            String businesstype = "1";
+            String businesstypestr = "最低生活保障";
+            String savemonth = "2023-01";
+
+            String zonecode = x.get("zonecode").toString().trim();
+            String address = x.get("address").toString().trim();
+            String realname = x.get("realname").toString().trim();
+            String idcard = x.get("idcard").toString().trim();
+            String headname = x.get("headname").toString().trim();
+            String headcard = x.get("headcard").toString().trim();
+            int membercount = Integer.parseInt(x.get("membercount").toString().trim());
+            String amount = x.get("amount").toString().trim();
+            long createtime = System.currentTimeMillis();
+
+            buff.append(String.format("('%s','%s','%s','%s','%s','%s','%s','%s','%s',%s,%s,%s),\n", businesstype, businesstypestr, savemonth, zonecode, address, realname, idcard, headname, headcard, membercount, amount, createtime));
+        }
+
+        buff.delete(buff.length() - 2, buff.length() + 1);
+        buff.append(";");
+        // 入库
+        FileKit.strToFile(buff.toString(), new File("tmp/最低生活保障2023-01.sql"));
+
+    }
+
+    @Test//月份格式解析
+    public void chaaa() {
+
+    }
+
+    @Test//内蒙行政区划数据
+    public void neimengDistrictRead() {
+        String[] FIELDS = {"code", "province", "city", "county", "street", "village"};
+        List<Map> list = ExcelKit.readExcel(new File("D:\\Desktop\\内蒙古区划数据.xlsx"), FIELDS);
+        list.remove(0);
+        StringBuffer buff = new StringBuffer();
+//        buff.append("INSERT INTO `aid_core`.`district` (id,bid,code,name,open,status,level) VALUES  \n");
+        buff.append("INSERT INTO \"public\".\"district\" (\"id\",\"bid\",\"code\",\"name\",\"open\",\"status\",\"level\") VALUES  \n");
+        list.forEach(x -> {
+            String id = "";
+            String name = "";
+            int level = 0;
+            String code = x.get("code").toString().trim();
+            Object province = x.get("province");
+            Object city = x.get("city");
+            Object county = x.get("county");
+            Object street = x.get("street");
+            Object village = x.get("village");
+            if (!Utils.isEmpty(province)) {
+                level = 1;
+                id = code.substring(0, 2);
+                name = province.toString().trim();
+            } else if (!Utils.isEmpty(city)) {
+                level = 2;
+                id = code.substring(0, 4);
+                name = city.toString().trim();
+            } else if (!Utils.isEmpty(county)) {
+                level = 3;
+                id = code.substring(0, 6);
+                name = county.toString().trim();
+            } else if (!Utils.isEmpty(street)) {
+                level = 4;
+                id = code.substring(0, 9);
+                name = street.toString().trim();
+            } else if (!Utils.isEmpty(village)) {
+                level = 5;
+                id = code;
+                name = village.toString().trim();
+            }
+            String bid = id;
+
+            buff.append(String.format("(%s,'%s','%s','%s',%s,%s,%s),\n", id, bid, code, name, 1, 10, level));
+        });
+        buff.delete(buff.length() - 2, buff.length() + 1);
+        buff.append(";");
+        FileKit.strToFile(buff.toString(), new File("tmp/20231027内蒙5级.sql"));
     }
 
 }
