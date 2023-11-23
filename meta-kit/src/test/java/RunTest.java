@@ -5277,9 +5277,9 @@ public class RunTest<T> {
     @Test
     public void buss1() {
         StringBuffer buff = new StringBuffer();
-        String[] FIELDS = {"zonecode", "address", "headname", "headcard", "realname", "idcard", "membercount", "", "savemonth", "amount"};
+        String[] FIELDS = {"zonecode", "address", "headname", "headcard", "realname", "idcard", "membercount", "savemonth", "amount"};
 //        List<Map> list = ExcelKit.readExcel(new File("C:\\Users\\wh\\Desktop\\双碳题库.xlsx"), FIELDS);
-        List<Map> list = ExcelKit.readExcel(new File("D:\\DESKTOP\\内蒙古项目文件\\最低生活保障\\202301.xlsx"), FIELDS);
+        List<Map> list = ExcelKit.readExcel(new File("D:\\DESKTOP\\低保test.csv"), FIELDS);
         list.remove(0);
         buff.append("INSERT INTO public.happinessrecord  (businesstype,businesstypestr,savemonth,zonecode,address,realname,idcard,headname,headcard,membercount,amount,createtime) VALUES  \n");
         for (Map x : list) {
@@ -5315,7 +5315,7 @@ public class RunTest<T> {
     @Test//内蒙行政区划数据
     public void neimengDistrictRead() {
         String[] FIELDS = {"code", "province", "city", "county", "street", "village"};
-        List<Map> list = ExcelKit.readExcel(new File("D:\\Desktop\\内蒙古区划数据.xlsx"), FIELDS);
+        List<Map> list = ExcelKit.readExcel(new File("D:\\Desktop\\内蒙低保系统区划.xlsx"), FIELDS);
         list.remove(0);
         StringBuffer buff = new StringBuffer();
 //        buff.append("INSERT INTO `aid_core`.`district` (id,bid,code,name,open,status,level) VALUES  \n");
@@ -5357,7 +5357,7 @@ public class RunTest<T> {
         });
         buff.delete(buff.length() - 2, buff.length() + 1);
         buff.append(";");
-        FileKit.strToFile(buff.toString(), new File("tmp/20231027内蒙5级.sql"));
+        FileKit.strToFile(buff.toString(), new File("tmp/20231122内蒙5级.sql"));
     }
 
 }

@@ -1,8 +1,5 @@
 import net.tccn.base.FileKit;
 import net.tccn.base.Kv;
-import org.bouncycastle.crypto.engines.SM4Engine;
-import org.bouncycastle.jcajce.provider.asymmetric.ec.GMCipherSpi;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -18,12 +15,12 @@ import java.util.List;
 
 public class SMTest<T> {
 
-    @Test
-    public void SMtest() {
-        Security.addProvider(new BouncyCastleProvider());
-        String text = "我是一段测试aaaa";
-        SM4Engine sm4Engine = new SM4Engine();
-
-    }
+//    @Test
+//    public void SMtest() {
+//        Security.addProvider(new BouncyCastleProvider());
+//        String text = "我是一段测试aaaa";
+//        SM4Engine sm4Engine = new SM4Engine();
+//
+//    }
 
 }
